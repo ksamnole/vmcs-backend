@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using VMCS.API.Models;
 
 namespace VMCS.API
 {
@@ -31,6 +34,10 @@ namespace VMCS.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "VMCS.API", Version = "v1" });
             });
+            services.AddDbContext<ApplicationContext>(options => 
+                options.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
+            services.AddIdentity<User, IdentityRole>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
