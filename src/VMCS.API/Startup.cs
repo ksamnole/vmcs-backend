@@ -36,7 +36,11 @@ namespace VMCS.API
             });
             services.AddDbContext<ApplicationContext>(options => 
                 options.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
-            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ApplicationContext>();
+            services.AddIdentity<User, IdentityRole>(opt =>
+            {
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireUppercase = false;
+            }).AddEntityFrameworkStores<ApplicationContext>();
             
         }
 
