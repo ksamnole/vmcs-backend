@@ -55,5 +55,20 @@ namespace VMCS.API.Controllers
                 await HttpContext.Response.WriteAsync("Sad, but you are not logged in :(");
             }
         }
+
+        [Route("logout")]
+        [HttpGet]
+        public async Task Logout()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
+        [Route("whoami")]
+        [HttpGet]
+        public async Task WhoAmI()
+        {
+            var whoami = HttpContext.User.Identity?.Name??"Anonymous";
+            await HttpContext.Response.WriteAsync(whoami);
+        }
     }
 }

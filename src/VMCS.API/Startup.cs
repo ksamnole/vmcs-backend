@@ -41,7 +41,6 @@ namespace VMCS.API
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequireUppercase = false;
             }).AddEntityFrameworkStores<ApplicationContext>();
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

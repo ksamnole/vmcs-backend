@@ -7,11 +7,8 @@ namespace VMCS.API.Models
     {
         public string Login { get; set; }
 
-        public User()
-        {
-
-        }
-
+        public User() { }
+        
         public User(RegisterDTO registerData)
         {
             Login = registerData.Login;
