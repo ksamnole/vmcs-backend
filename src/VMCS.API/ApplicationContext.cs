@@ -8,7 +8,6 @@ namespace VMCS.API
     {
         public ApplicationContext(DbContextOptions options) : base(options)
         {
-            Database.EnsureCreated();
         }
     }
 }
