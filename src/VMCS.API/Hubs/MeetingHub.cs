@@ -44,6 +44,12 @@ public class MeetingHub : Hub
         {
             await Clients.Group(meetingId).SendAsync("ReceiveMessage", login, text);
         }
+        
+        // TEST 
+        if (meetingId == "-1")
+        {
+            await Clients.All.SendAsync("ReceiveMessage", login, text);
+        }
     }
 
     public async Task SendOffer(string clientId, object offer)
