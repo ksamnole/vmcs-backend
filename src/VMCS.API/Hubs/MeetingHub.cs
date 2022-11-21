@@ -37,18 +37,19 @@ public class MeetingHub : Hub
 
     public async Task SendMessageToMeeting(string text, string login, string meetingId)
     {
+        // TEST 
+        if (meetingId == "-1")
+        {
+            await Clients.All.SendAsync("ReceiveMessage", login, text);
+            return;
+        }
+        
         if (!_meetings.ContainsKey(meetingId))
             throw new ArgumentException();
 
         if (IsMeetingParticipant(Context.ConnectionId, meetingId))
         {
             await Clients.Group(meetingId).SendAsync("ReceiveMessage", login, text);
-        }
-        
-        // TEST 
-        if (meetingId == "-1")
-        {
-            await Clients.All.SendAsync("ReceiveMessage", login, text);
         }
     }
 
