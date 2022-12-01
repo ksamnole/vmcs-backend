@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +8,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using VMCS.API.Hubs;
 using VMCS.API.Middlewares;
+using VMCS.API.Models;
 using VMCS.Core;
+using VMCS.Core.Domains.Auth;
 using VMCS.Data;
+using VMCS.Data.Contexts;
 
 namespace VMCS.API
 {
@@ -37,14 +38,17 @@ namespace VMCS.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "VMCS.API", Version = "v1" });
             });
 
-            services.AddSignalR();
+            services.AddDbContext<AuthenticationContext>(options => 
+                options.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
             services.AddDbContext<ApplicationContext>(options => 
                 options.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
-            services.AddIdentity<User, IdentityRole>(opt =>
+            services.AddIdentity<AuthUser, IdentityRole>(opt =>
             {
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequireUppercase = false;
-            }).AddEntityFrameworkStores<ApplicationContext>();
+            }).AddEntityFrameworkStores<AuthenticationContext>();
+            
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

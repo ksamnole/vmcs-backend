@@ -2,14 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Repositories;
+using VMCS.Data.Contexts;
 
 namespace VMCS.Data.Users.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly DataContext _context;
+        private readonly ApplicationContext _context;
 
-        public UserRepository(DataContext context)
+        public UserRepository(ApplicationContext context)
         {
             _context = context;
         }

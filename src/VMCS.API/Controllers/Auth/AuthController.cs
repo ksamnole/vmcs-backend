@@ -1,21 +1,21 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Models;
+using VMCS.Core.Domains.Auth;
 
-namespace VMCS.API.Controllers
+namespace VMCS.API.Controllers.Auth
 {
 
     [Route("auth")]
     public class AuthController : Controller
     {
-        private SignInManager<User> _signInManager;
-        private UserManager<User> _userManager;
+        private SignInManager<AuthUser> _signInManager;
+        private UserManager<AuthUser> _userManager;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthController(UserManager<AuthUser> userManager, SignInManager<AuthUser> signInManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -25,7 +25,12 @@ namespace VMCS.API.Controllers
         [HttpPost]
         public async Task Register(RegisterDTO registerData)
         {
-            var user = new User(registerData);
+            var user = new AuthUser()
+            {
+                Login = registerData.Login,
+                UserName = registerData.Username,
+                Email = registerData.Email
+            };
 
             var result = await _userManager.CreateAsync(user, registerData.Password);
             if (result.Succeeded)
