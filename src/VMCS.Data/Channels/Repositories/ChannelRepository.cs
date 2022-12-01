@@ -33,7 +33,7 @@ public class ChannelRepository : IChannelRepository
     {
         var entity = new ChannelDbModel()
         {
-            Id = channel.Id,
+            Id = Guid.NewGuid().ToString(),
             Name = channel.Name
         };
 
