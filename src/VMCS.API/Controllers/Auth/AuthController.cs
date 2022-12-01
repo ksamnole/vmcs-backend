@@ -1,10 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Models;
 using VMCS.Core.Domains.Auth;
+using VMCS.Core.Domains.Users;
+using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.API.Controllers.Auth
 {
@@ -14,30 +19,43 @@ namespace VMCS.API.Controllers.Auth
     {
         private SignInManager<AuthUser> _signInManager;
         private UserManager<AuthUser> _userManager;
+        private IUserService _userService;
 
-        public AuthController(UserManager<AuthUser> userManager, SignInManager<AuthUser> signInManager)
+        public AuthController
+            (UserManager<AuthUser> userManager, 
+            SignInManager<AuthUser> signInManager, 
+            IUserService userService)
         {
+            _userService = userService;
             _signInManager = signInManager;
             _userManager = userManager;
         }
 
         [Route("register")]
         [HttpPost]
-        public async Task Register(RegisterDTO registerData)
+        public async Task Register(RegisterDTO registerData, CancellationToken cancellationToken)
         {
+            // Не менять! тут так и надо, потому что UserName Это Login в IdentityUser
             var user = new AuthUser()
             {
-                Login = registerData.Login,
-                UserName = registerData.Username,
+                UserName = registerData.Login,
                 Email = registerData.Email
+            };
+
+            var businessUser = new User()
+            {
+                Login = registerData.Login,
+                Username = registerData.Username
             };
 
             var result = await _userManager.CreateAsync(user, registerData.Password);
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
+                await _userService.Create(businessUser, cancellationToken);
                 await HttpContext.Response.WriteAsync("Success!");
             }
+
             else
             {
                 var errors = string.Join(";\n", result.Errors.Select(error => error.Description));

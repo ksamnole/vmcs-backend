@@ -27,7 +27,6 @@ namespace VMCS.Data.Users.Repositories
                 Id = entity.Id,
                 Login = entity.Login,
                 Username = entity.Username,
-                Password = entity.Password,
                 Email = entity.Email
             };
         }
@@ -39,7 +38,6 @@ namespace VMCS.Data.Users.Repositories
                 Id = it.Id,
                 Login = it.Login,
                 Username = it.Username,
-                Password = it.Password,
                 Email = it.Email
             }).ToListAsync(cancellationToken);
         }
@@ -51,7 +49,6 @@ namespace VMCS.Data.Users.Repositories
                 Id = Guid.NewGuid().ToString(),
                 Login = user.Login,
                 Username = user.Username,
-                Password = user.Password,
                 Email = user.Email
             };
 
@@ -77,7 +74,6 @@ namespace VMCS.Data.Users.Repositories
 
             entity.Login = user.Login;
             entity.Username = user.Username;
-            entity.Password = user.Password;
             entity.Email = user.Email;    
         }
 

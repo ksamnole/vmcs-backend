@@ -6,7 +6,7 @@ namespace VMCS.Data.Contexts
 {
     public class AuthenticationContext : IdentityDbContext<AuthUser>
     {
-        public AuthenticationContext(DbContextOptions options) : base(options)
+        public AuthenticationContext(DbContextOptions<AuthenticationContext> options) : base(options)
         {
         }
     }

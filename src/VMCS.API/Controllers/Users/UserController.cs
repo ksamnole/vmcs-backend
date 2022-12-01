@@ -56,7 +56,6 @@ namespace VMCS.API.Controllers.Users
             {
                 Login = model.Login,
                 Username = model.Username,
-                Password = model.Password,
                 Email = model.Email
             }, cancellationToken);
         }
@@ -69,7 +68,6 @@ namespace VMCS.API.Controllers.Users
                 Id = id,
                 Login = model.Login,
                 Username = model.Username,
-                Password = model.Password,
                 Email = model.Email
                 
             }, cancellationToken);
