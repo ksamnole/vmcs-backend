@@ -8,16 +8,16 @@ namespace VMCS.Data.Users.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly ApplicationContext _context;
+        private readonly ApplicationContext _applicationContext;
 
-        public UserRepository(ApplicationContext context)
+        public UserRepository(ApplicationContext applicationContext)
         {
-            _context = context;
+            _applicationContext = applicationContext;
         }
 
         public async Task<User> GetById(string id, CancellationToken cancellationToken)
         {
-            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == id, cancellationToken: cancellationToken);
+            var entity = await _applicationContext.Users.FirstOrDefaultAsync(it => it.Id == id, cancellationToken: cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
@@ -34,7 +34,7 @@ namespace VMCS.Data.Users.Repositories
 
         public async Task<IEnumerable<User>> GetAll(CancellationToken cancellationToken)
         {
-            return await _context.Users.Select(it => 
+            return await _applicationContext.Users.Select(it => 
             new User { 
                 Id = it.Id,
                 Login = it.Login,
@@ -55,22 +55,22 @@ namespace VMCS.Data.Users.Repositories
                 Email = user.Email
             };
 
-            await _context.Users.AddAsync(entity, cancellationToken);
+            await _applicationContext.Users.AddAsync(entity, cancellationToken);
         }
 
         public async Task Delete(string id, CancellationToken cancellationToken)
         {
-            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == id, cancellationToken);
+            var entity = await _applicationContext.Users.FirstOrDefaultAsync(it => it.Id == id, cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
 
-            _context.Users.Remove(entity);
+            _applicationContext.Users.Remove(entity);
         }
 
         public async Task Update(User user, CancellationToken cancellationToken)
         {
-            var entity = await _context.Users.FirstOrDefaultAsync(it => it.Id == user.Id, cancellationToken);
+            var entity = await _applicationContext.Users.FirstOrDefaultAsync(it => it.Id == user.Id, cancellationToken);
 
             if (entity == null)
                 throw new ObjectNotFoundException($"Пользователь с Id = {user.Id} не найден");
@@ -78,10 +78,10 @@ namespace VMCS.Data.Users.Repositories
             entity.Login = user.Login;
             entity.Username = user.Username;
             entity.Password = user.Password;
-            entity.Email = user.Email;    
+            entity.Email = user.Email;
         }
 
-        public bool ContainsByLogin(string login) => _context
+        public bool ContainsByLogin(string login) => _applicationContext
             .Users
             .Any(user => user.Login == login);
     }

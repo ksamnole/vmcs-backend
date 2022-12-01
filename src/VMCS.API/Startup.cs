@@ -29,7 +29,7 @@ namespace VMCS.API
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddData()
+                .AddData(Configuration)
                 .AddCore();
             
             services.AddControllers();
@@ -37,11 +37,7 @@ namespace VMCS.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "VMCS.API", Version = "v1" });
             });
-
-            services.AddDbContext<AuthenticationContext>(options => 
-                options.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
-            services.AddDbContext<ApplicationContext>(options => 
-                options.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
+            
             services.AddIdentity<AuthUser, IdentityRole>(opt =>
             {
                 opt.Password.RequireNonAlphanumeric = false;
