@@ -3,8 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Channels.Validators;
+using VMCS.Core.Domains.Meetings;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Meetings.Services;
+using VMCS.Core.Domains.Meetings.Validators;
 using VMCS.Core.Domains.Users.Services;
 using VMCS.Core.Domains.Users.Validators;
 
@@ -16,6 +18,7 @@ public static class Bootstrap
     {
         services.AddScoped<IValidator<User>, UserValidator>();
         services.AddScoped<IValidator<Channel>, ChannelValidator>();
+        services.AddScoped<IValidator<Meeting>, MeetingValidator>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IChannelService, ChannelService>();
         services.AddScoped<IMeetingService, MeetingService>();

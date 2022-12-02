@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VMCS.Core.Domains.Channels;
+﻿using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Users;
 
 namespace VMCS.Core.Domains.Meetings
@@ -16,7 +11,7 @@ namespace VMCS.Core.Domains.Meetings
         public bool IsInChannel { get; set; }
 
         public string UserId { get; set; }
-        public User user { get; set; }
+        public User User { get; set; }
 
         public string ChannelId { get; set; }
         public Channel Channel { get; set; }
