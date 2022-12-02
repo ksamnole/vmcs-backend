@@ -1,4 +1,4 @@
-﻿namespace VMCS.API.Controllers.Users
+﻿namespace VMCS.API.Controllers.Users.Dto
 {
     public class ChangeUserDto
     {

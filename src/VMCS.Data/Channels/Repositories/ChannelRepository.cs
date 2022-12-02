@@ -20,7 +20,7 @@ public class ChannelRepository : IChannelRepository
         var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (entity == null)
-            throw new ObjectNotFoundException($"Канал с id = {id} не найден");
+            throw new ObjectNotFoundException($"Channel with id = {id} not found");
 
         return new Channel()
         {
@@ -45,7 +45,7 @@ public class ChannelRepository : IChannelRepository
         var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (entity == null)
-            throw new ObjectNotFoundException($"Канал с id = {id} не найден");
+            throw new ObjectNotFoundException($"Channel with id = {id} not found");
 
         _applicationContext.Channels.Remove(entity);
     }
