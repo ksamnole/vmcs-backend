@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VMCS.Core;
 using VMCS.Core.Domains.Channels.Repositories;
-using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Users.Repositories;
 using VMCS.Data.Channels.Repositories;
 using VMCS.Data.Contexts;
