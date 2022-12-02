@@ -49,27 +49,14 @@ namespace VMCS.API.Controllers.Users
                 });
         }
 
-        [HttpPost]
-        public async Task Create(CreateUserDto model, CancellationToken cancellationToken)
-        {
-            await _userService.Create(new User
-            {
-                Login = model.Login,
-                Username = model.Username,
-                Email = model.Email
-            }, cancellationToken);
-        }
-
         [HttpPut("{id}")]
-        public async Task Update(string id, CreateUserDto model, CancellationToken cancellationToken)
+        public async Task Update(string id, ChangeUserDto model, CancellationToken cancellationToken)
         {
             await _userService.Update(new User
             {
                 Id = id,
-                Login = model.Login,
                 Username = model.Username,
                 Email = model.Email
-                
             }, cancellationToken);
         }
 
