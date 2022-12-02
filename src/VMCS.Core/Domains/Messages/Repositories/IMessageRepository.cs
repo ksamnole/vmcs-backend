@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VMCS.Core.Domains.Messages.Services
+namespace VMCS.Core.Domains.Messages.Repositories
 {
-    public interface IMessageService
+    public interface IMessageRepository
     {
         Task Create(Message message, CancellationToken token);
         Task Delete(string id, CancellationToken token);
