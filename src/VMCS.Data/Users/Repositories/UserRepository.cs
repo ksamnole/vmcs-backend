@@ -60,7 +60,7 @@ namespace VMCS.Data.Users.Repositories
             var entity = await _applicationContext.Users.FirstOrDefaultAsync(it => it.Id == id, cancellationToken);
 
             if (entity == null)
-                throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
+                throw new ObjectNotFoundException($"User with id = {id} not found");
 
             _applicationContext.Users.Remove(entity);
         }
@@ -70,7 +70,7 @@ namespace VMCS.Data.Users.Repositories
             var entity = await _applicationContext.Users.FirstOrDefaultAsync(it => it.Id == user.Id, cancellationToken);
 
             if (entity == null)
-                throw new ObjectNotFoundException($"Пользователь с Id = {user.Id} не найден");
+                throw new ObjectNotFoundException($"User with id = {user.Id} not found");
             
             entity.Username = user.Username;
             entity.Email = user.Email;    
