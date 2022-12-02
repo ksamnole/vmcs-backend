@@ -8,17 +8,12 @@ namespace VMCS.API.Hubs;
 
 public class MeetingHub : Hub
 {
-    private static Dictionary<string, List<string>> _meetings;
-
-    static MeetingHub()
-    {
-        _meetings = new Dictionary<string, List<string>>();
-    }
+    private static Dictionary<string, List<string>> _meetings = new ();
 
     public async Task JoinMeeting(string meetingId)
     {
         if (!_meetings.ContainsKey(meetingId))
-            _meetings.Add(meetingId, new List<string>());
+            throw new ArgumentException();
 
         _meetings[meetingId].Add(Context.ConnectionId);
         
