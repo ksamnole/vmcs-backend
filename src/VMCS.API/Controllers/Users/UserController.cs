@@ -10,7 +10,7 @@ using VMCS.Core.Domains.Users.Services;
 namespace VMCS.API.Controllers.Users
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("user")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;

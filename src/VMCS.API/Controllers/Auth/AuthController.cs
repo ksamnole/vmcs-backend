@@ -14,8 +14,9 @@ using VMCS.Core.Domains.Users.Services;
 namespace VMCS.API.Controllers.Auth
 {
 
+    [ApiController]
     [Route("auth")]
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
         private SignInManager<AuthUser> _signInManager;
         private UserManager<AuthUser> _userManager;

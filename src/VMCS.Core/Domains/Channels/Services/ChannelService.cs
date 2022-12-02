@@ -6,7 +6,7 @@ public class ChannelService : IChannelService
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IUnitOfWork _unitOfWork;
-    
+
     public ChannelService(IChannelRepository channelRepository, IUnitOfWork unitOfWork)
     {
         _channelRepository = channelRepository;

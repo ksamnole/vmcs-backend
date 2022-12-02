@@ -72,8 +72,7 @@ namespace VMCS.Data.Users.Repositories
             if (entity == null)
                 throw new ObjectNotFoundException($"Пользователь с Id = {user.Id} не найден");
 
-            entity.Login = user.Login ?? entity.Login;
-            entity.Username = user.Username ;
+            entity.Username = user.Username;
             entity.Email = user.Email;    
         }
 
