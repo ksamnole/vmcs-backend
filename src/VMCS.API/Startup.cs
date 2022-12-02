@@ -79,6 +79,7 @@ namespace VMCS.API
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<MeetingHub>("/meetingHub");
+                endpoints.MapHub<ChatHub>("/chatHub");
             });
         }
     }
