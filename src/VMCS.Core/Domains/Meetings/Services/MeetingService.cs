@@ -2,26 +2,30 @@
 using VMCS.Core.Domains.Chats;
 using VMCS.Core.Domains.Chats.Services;
 using VMCS.Core.Domains.Meetings.Repositories;
+using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.Core.Domains.Meetings.Services
 {
     internal class MeetingService : IMeetingService
     {
         private readonly IMeetingRepository _meetingRepository;
-        private readonly IChatService _chatService;
+        private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<Meeting> _meetingValidator;
 
-        public MeetingService(IMeetingRepository meetingRepository, IUnitOfWork unitOfWork, IValidator<Meeting> meetingValidator, IChatService chatService)
+        public MeetingService(IMeetingRepository meetingRepository, IUnitOfWork unitOfWork, IValidator<Meeting> meetingValidator, IUserService userService)
         {
             _meetingRepository = meetingRepository;
             _unitOfWork = unitOfWork;
             _meetingValidator = meetingValidator;
-            _chatService = chatService;
+            _userService = userService;
         }
 
         public async Task Create(Meeting meeting, CancellationToken token)
         {
+            var user = await _userService.GetById(meeting.CreatorId, token);
+            meeting.Users.Add(user);
+            
             await _meetingValidator.ValidateAndThrowAsync(meeting, token);
             
             await _meetingRepository.Create(meeting, token);
