@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using VMCS.API.Controllers.Channel.Dto;
 using VMCS.API.Controllers.Users.Dto;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
@@ -47,6 +49,21 @@ namespace VMCS.API.Controllers.Users
                     Email = it.Email
                     
                 });
+        }
+        
+        [HttpGet]
+        [Route("channels")]
+        public async Task<IEnumerable<ShortChannelDto>> GetAllUserChannels(CancellationToken cancellationToken)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var channels = await _userService.GetAllUserChannels(userId, cancellationToken);
+
+            return channels.Select(x => new ShortChannelDto()
+            {
+                Id = x.Id,
+                Name = x.Name
+            });
         }
 
         [HttpPut("{id}")]

@@ -42,7 +42,7 @@ namespace VMCS.Data.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ChatId = table.Column<string>(type: "text", nullable: true),
+                    ChatId = table.Column<string>(type: "text", nullable: false),
                     CreatorId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -52,7 +52,8 @@ namespace VMCS.Data.Migrations
                         name: "FK_Channels_Chats_ChatId",
                         column: x => x.ChatId,
                         principalTable: "Chats",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Channels_Users_CreatorId",
                         column: x => x.CreatorId,
@@ -92,7 +93,7 @@ namespace VMCS.Data.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     ChatId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -108,7 +109,8 @@ namespace VMCS.Data.Migrations
                         name: "FK_Messages_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -143,9 +145,9 @@ namespace VMCS.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsInChannel = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatorId = table.Column<string>(type: "text", nullable: false),
-                    ChannelId = table.Column<string>(type: "text", nullable: true),
-                    ChatId = table.Column<string>(type: "text", nullable: false)
+                    ChannelId = table.Column<string>(type: "text", nullable: false),
+                    ChatId = table.Column<string>(type: "text", nullable: false),
+                    CreatorId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -154,7 +156,8 @@ namespace VMCS.Data.Migrations
                         name: "FK_Meetings_Channels_ChannelId",
                         column: x => x.ChannelId,
                         principalTable: "Channels",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Meetings_Chats_ChatId",
                         column: x => x.ChatId,

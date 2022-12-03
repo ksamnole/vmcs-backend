@@ -8,7 +8,7 @@ namespace VMCS.Data.Contexts
 {
     public class AuthenticationContext : IdentityDbContext<AuthUser>
     {
-        public AuthenticationContext(DbContextOptions options) : base(options)
+        public AuthenticationContext(DbContextOptions<AuthenticationContext> options) : base(options)
         {
         }
         
@@ -21,7 +21,7 @@ namespace VMCS.Data.Contexts
                     .AddJsonFile("appsettings.json")
                     .Build();
 
-                var options = new DbContextOptionsBuilder<ApplicationContext>()
+                var options = new DbContextOptionsBuilder<AuthenticationContext>()
                     .UseNpgsql(configuration.GetConnectionString("ConnectionString")).Options;
 
                 return new AuthenticationContext(options);

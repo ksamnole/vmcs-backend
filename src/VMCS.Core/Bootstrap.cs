@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Channels.Validators;
+using VMCS.Core.Domains.Chats.Services;
 using VMCS.Core.Domains.Meetings;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Meetings.Services;
@@ -27,6 +28,7 @@ public static class Bootstrap
         services.AddScoped<IChannelService, ChannelService>();
         services.AddScoped<IMeetingService, MeetingService>();
         services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<IChatService, ChatService>();
 
         return services;
     }

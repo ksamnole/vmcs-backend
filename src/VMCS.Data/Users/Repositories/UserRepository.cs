@@ -1,5 +1,6 @@
 ﻿using System.Data.Entity.Core;
 using Microsoft.EntityFrameworkCore;
+using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Repositories;
 using VMCS.Data.Contexts;
@@ -20,7 +21,7 @@ namespace VMCS.Data.Users.Repositories
             var entity = await _applicationContext.Users.FirstOrDefaultAsync(it => it.Id == id, cancellationToken: cancellationToken);
 
             if (entity == null)
-                throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
+                throw new ObjectNotFoundException($"User with Id = {id} not found");
 
             return entity;
         }
@@ -28,6 +29,16 @@ namespace VMCS.Data.Users.Repositories
         public async Task<IEnumerable<User>> GetAll(CancellationToken cancellationToken)
         {
             return await _applicationContext.Users.ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Channel>> GetAllUserChannels(string userId, CancellationToken cancellationToken)
+        {
+            var entity = await _applicationContext.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
+            
+            if (entity == null)
+                throw new ObjectNotFoundException($"User with Id = {userId} not found");
+
+            return entity.Channels;
         }
 
         public async Task Create(User user, CancellationToken cancellationToken)

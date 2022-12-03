@@ -12,8 +12,8 @@ using VMCS.Data.Contexts;
 namespace VMCS.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20221203173249_Init")]
-    partial class Init
+    [Migration("20221203195233_Meeting model update")]
+    partial class Meetingmodelupdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,7 @@ namespace VMCS.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ChatId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CreatorId")
@@ -159,6 +160,7 @@ namespace VMCS.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -241,7 +243,9 @@ namespace VMCS.Data.Migrations
                 {
                     b.HasOne("VMCS.Core.Domains.Chats.Chat", "Chat")
                         .WithMany()
-                        .HasForeignKey("ChatId");
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("VMCS.Core.Domains.Users.User", "Creator")
                         .WithMany()
@@ -282,14 +286,16 @@ namespace VMCS.Data.Migrations
             modelBuilder.Entity("VMCS.Core.Domains.Messages.Message", b =>
                 {
                     b.HasOne("VMCS.Core.Domains.Chats.Chat", "Chat")
-                        .WithMany()
+                        .WithMany("Messages")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("VMCS.Core.Domains.Users.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Chat");
 
@@ -299,6 +305,11 @@ namespace VMCS.Data.Migrations
             modelBuilder.Entity("VMCS.Core.Domains.Channels.Channel", b =>
                 {
                     b.Navigation("Meetings");
+                });
+
+            modelBuilder.Entity("VMCS.Core.Domains.Chats.Chat", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

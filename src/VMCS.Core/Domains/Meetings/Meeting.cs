@@ -8,9 +8,12 @@ namespace VMCS.Core.Domains.Meetings
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsInChannel { get; set; }
-
+        public string? ChannelId { get; set; }
+        public string ChatId { get; set; }
+        public string CreatorId { get; set; }
+        
         public User Creator { get; set; }
         public Channel? Channel { get; set; }
         public Chat Chat { get; set; }

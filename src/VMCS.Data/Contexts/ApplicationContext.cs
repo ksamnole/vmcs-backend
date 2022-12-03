@@ -18,7 +18,7 @@ public class ApplicationContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<Chat> Chats { get; set; }
     
-    public ApplicationContext(DbContextOptions options) : base(options) { }
+    public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

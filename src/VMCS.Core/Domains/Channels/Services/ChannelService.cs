@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using VMCS.Core.Domains.Channels.Repositories;
+using VMCS.Core.Domains.Chats;
 
 namespace VMCS.Core.Domains.Channels.Services;
 

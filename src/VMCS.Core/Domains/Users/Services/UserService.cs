@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Users.Repositories;
 
 namespace VMCS.Core.Domains.Users.Services
@@ -24,6 +25,11 @@ namespace VMCS.Core.Domains.Users.Services
         public async Task<IEnumerable<User>> GetAll(CancellationToken cancellationToken)
         {
             return await _userRepository.GetAll(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Channel>> GetAllUserChannels(string userId, CancellationToken cancellationToken)
+        {
+            return await _userRepository.GetAllUserChannels(userId, cancellationToken);
         }
 
         public async Task Create(User user, CancellationToken cancellationToken)
