@@ -2,6 +2,7 @@
 using VMCS.Core.Domains.Chats;
 using VMCS.Core.Domains.Chats.Services;
 using VMCS.Core.Domains.Meetings.Repositories;
+using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.Core.Domains.Meetings.Services
@@ -23,11 +24,11 @@ namespace VMCS.Core.Domains.Meetings.Services
 
         public async Task Create(Meeting meeting, CancellationToken token)
         {
-            var user = await _userService.GetById(meeting.CreatorId, token);
-            meeting.Users.Add(user);
-            
             await _meetingValidator.ValidateAndThrowAsync(meeting, token);
             
+            var user = await _userService.GetById(meeting.CreatorId, token);
+            meeting.Users = new List<User> { user };
+
             await _meetingRepository.Create(meeting, token);
             await _unitOfWork.SaveChange();
         }

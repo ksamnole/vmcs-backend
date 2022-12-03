@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using VMCS.Core.Domains.Channels.Repositories;
 using VMCS.Core.Domains.Chats;
+using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.Core.Domains.Channels.Services;
@@ -27,10 +28,10 @@ public class ChannelService : IChannelService
 
     public async Task Create(Channel channel, CancellationToken cancellationToken)
     {
-        var user = await _userService.GetById(channel.CreatorId, cancellationToken);
-        channel.Users.Add(user);
-        
         await _channelValidator.ValidateAndThrowAsync(channel, cancellationToken);
+        
+        var user = await _userService.GetById(channel.CreatorId, cancellationToken);
+        channel.Users = new List<User> { user };
         
         await _channelRepository.Create(channel, cancellationToken);
         await _unitOfWork.SaveChange();

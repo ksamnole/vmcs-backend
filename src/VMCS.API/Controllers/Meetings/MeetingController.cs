@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿#nullable enable
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using VMCS.API.Controllers.Meetings.Dto;
@@ -40,10 +41,7 @@ namespace VMCS.API.Controllers.Meetings
         public async Task Create(CreateMeetingDto meetingDto, CancellationToken token)
         {
             var creatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
-            if (string.IsNullOrEmpty(creatorId))
-                throw new ValidationException("Please log in");
-            
+
             await _meetingService.Create(new Meeting()
             {
                 Name = meetingDto.Name,
