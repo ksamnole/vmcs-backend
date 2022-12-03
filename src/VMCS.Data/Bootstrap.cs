@@ -1,16 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VMCS.Core;
 using VMCS.Core.Domains.Channels.Repositories;
-using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Meetings.Repositories;
 using VMCS.Core.Domains.Messages.Repositories;
 using VMCS.Core.Domains.Users.Repositories;
 using VMCS.Data.Channels.Repositories;
 using VMCS.Data.Contexts;
 using VMCS.Data.Meetings.Repositories;
-using VMCS.Data.Messages;
 using VMCS.Data.Messages.Repositories;
 using VMCS.Data.Users.Repositories;
 

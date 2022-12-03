@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using VMCS.API.Hubs;
 using VMCS.API.Middlewares;
-using VMCS.API.Models;
 using VMCS.Core;
 using VMCS.Core.Domains.Auth;
 using VMCS.Data;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Chats;
 using VMCS.Core.Domains.Meetings;
@@ -32,9 +33,13 @@ public class ApplicationContext : DbContext
     {
         public ApplicationContext CreateDbContext(string[] args)
         {
-            var options = new DbContextOptionsBuilder()
-                .UseNpgsql("Host=localhost;Port=5432;Database=vmcs;Username=vmcs;Password=qwerty321")
-                .Options;
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory() + @"\..\VMCS.API")
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var options = new DbContextOptionsBuilder<ApplicationContext>()
+                .UseNpgsql(configuration.GetConnectionString("ConnectionString")).Options;
 
             return new ApplicationContext(options);
         }
