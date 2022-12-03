@@ -22,37 +22,17 @@ namespace VMCS.Data.Users.Repositories
             if (entity == null)
                 throw new ObjectNotFoundException($"Пользователь с Id = {id} не найден");
 
-            return new User
-            {
-                Id = entity.Id,
-                Login = entity.Login,
-                Username = entity.Username,
-                Email = entity.Email
-            };
+            return entity;
         }
 
         public async Task<IEnumerable<User>> GetAll(CancellationToken cancellationToken)
         {
-            return await _applicationContext.Users.Select(it => 
-            new User { 
-                Id = it.Id,
-                Login = it.Login,
-                Username = it.Username,
-                Email = it.Email
-            }).ToListAsync(cancellationToken);
+            return await _applicationContext.Users.ToListAsync(cancellationToken);
         }
 
         public async Task Create(User user, CancellationToken cancellationToken)
         {
-            var entity = new UserDbModel
-            {
-                Id = Guid.NewGuid().ToString(),
-                Login = user.Login,
-                Username = user.Username,
-                Email = user.Email
-            };
-
-            await _applicationContext.Users.AddAsync(entity, cancellationToken);
+            await _applicationContext.Users.AddAsync(user, cancellationToken);
         }
 
         public async Task Delete(string id, CancellationToken cancellationToken)

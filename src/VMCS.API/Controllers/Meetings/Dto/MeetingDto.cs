@@ -3,7 +3,7 @@
     public class MeetingDto
     {
         public string Name;
-        public string UserId;
+        public string CreatorId;
         public bool IsInChannel;
         public string ChannelId;
     }

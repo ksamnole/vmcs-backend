@@ -1,4 +1,5 @@
 ﻿using VMCS.Core.Domains.Channels;
+using VMCS.Core.Domains.Chats;
 using VMCS.Core.Domains.Users;
 
 namespace VMCS.Core.Domains.Meetings
@@ -10,12 +11,9 @@ namespace VMCS.Core.Domains.Meetings
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsInChannel { get; set; }
 
-        public string UserId { get; set; }
-        public User User { get; set; }
-
-        public string ChannelId { get; set; }
-        public Channel Channel { get; set; }
+        public User Creator { get; set; }
+        public Channel? Channel { get; set; }
+        public Chat Chat { get; set; }
+        public List<User> Users { get; set; }
     }
-
-    
 }

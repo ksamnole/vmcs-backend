@@ -18,26 +18,16 @@ public class ChannelRepository : IChannelRepository
     public async Task<Channel> GetById(string id, CancellationToken cancellationToken)
     {
         var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
+        
         if (entity == null)
             throw new ObjectNotFoundException($"Channel with id = {id} not found");
 
-        return new Channel()
-        {
-            Id = entity.Id,
-            Name = entity.Name
-        };
+        return entity;
     }
 
     public async Task Create(Channel channel, CancellationToken cancellationToken)
     {
-        var entity = new ChannelDbModel()
-        {
-            Id = Guid.NewGuid().ToString(),
-            Name = channel.Name
-        };
-
-        await _applicationContext.Channels.AddAsync(entity, cancellationToken);
+        await _applicationContext.Channels.AddAsync(channel, cancellationToken);
     }
 
     public async Task Delete(string id, CancellationToken cancellationToken)

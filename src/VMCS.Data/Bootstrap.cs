@@ -11,6 +11,7 @@ using VMCS.Data.Channels.Repositories;
 using VMCS.Data.Contexts;
 using VMCS.Data.Meetings.Repositories;
 using VMCS.Data.Messages;
+using VMCS.Data.Messages.Repositories;
 using VMCS.Data.Users.Repositories;
 
 namespace VMCS.Data;

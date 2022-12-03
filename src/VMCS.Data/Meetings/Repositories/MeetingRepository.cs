@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VMCS.Core.Domains.Meetings.Repositories;
-using VMCS.Core.Domains.Meetings;
+﻿using VMCS.Core.Domains.Meetings.Repositories;
 using VMCS.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Entity.Core;
+using VMCS.Core.Domains.Meetings;
 
 namespace VMCS.Data.Meetings.Repositories
 {
@@ -22,21 +17,12 @@ namespace VMCS.Data.Meetings.Repositories
 
         public async Task Create(Meeting meeting, CancellationToken token)
         {
-            var meetingDb = new MeetingDbModel()
-            {
-                Id = meeting.Id,
-                Name= meeting.Name,
-                Channel = meeting.Channel,
-                CreatedAt = meeting.CreatedAt,
-                IsInChannel = meeting.IsInChannel,
-            };
-
-            _applicationContext.Meetings.Add(meetingDb);
+            await _applicationContext.Meetings.AddAsync(meeting, token);
         }
 
         public async Task Delete(string id, CancellationToken token)
         {
-            var meeting = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id);
+            var meeting = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
 
             if (meeting is null)
                 throw new ObjectNotFoundException($"Meeting with id = {id} not found");
@@ -46,19 +32,12 @@ namespace VMCS.Data.Meetings.Repositories
 
         public async Task<Meeting> GetMeetingByIdAsync(string id, CancellationToken token)
         {
-            var meeting = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id);
-
+            var meeting = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
+            
             if (meeting is null)
                 throw new ObjectNotFoundException($"Meeting with id = {id} not found");
 
-            return new Meeting()
-            {
-                Id = meeting.Id,
-                Name = meeting.Name,
-                Channel = meeting.Channel,
-                CreatedAt = meeting.CreatedAt,
-                IsInChannel = meeting.IsInChannel,
-            };
+            return meeting;
         }
     }
 }

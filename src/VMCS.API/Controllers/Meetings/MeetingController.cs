@@ -25,9 +25,7 @@ namespace VMCS.API.Controllers.Meetings
             await _meetingService.Create(new Meeting()
             {
                 Name = meetingDto.Name,
-                IsInChannel = meetingDto.IsInChannel,
-                ChannelId = meetingDto.ChannelId,
-                UserId = meetingDto.UserId
+                IsInChannel = meetingDto.IsInChannel
             }, token);
         }
 
@@ -46,8 +44,8 @@ namespace VMCS.API.Controllers.Meetings
             {
                 Name = meeting.Name,
                 IsInChannel = meeting.IsInChannel,
-                ChannelId = meeting.ChannelId,
-                UserId = meeting.UserId
+                ChannelId = meeting.Channel.Id,
+                CreatorId = meeting.Creator.Id
             };
         }
     }

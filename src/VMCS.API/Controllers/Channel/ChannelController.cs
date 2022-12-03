@@ -34,7 +34,6 @@ namespace VMCS.API.Controllers.Channel
         {
             await _channelService.Create(new Core.Domains.Channels.Channel()
             {
-                Id = model.Id,
                 Name = model.Name
             }, cancellationToken);
         }
