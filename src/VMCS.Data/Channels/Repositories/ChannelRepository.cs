@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Data.Entity.Core;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Repositories;

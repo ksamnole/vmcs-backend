@@ -40,6 +40,8 @@ namespace VMCS.API
             {
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequireUppercase = false;
+                opt.Password.RequiredLength = 4;
+                opt.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<AuthenticationContext>();
             
             services.AddSignalR();

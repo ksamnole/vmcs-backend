@@ -1,5 +1,8 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Channel.Dto;
 using VMCS.Core.Domains.Channels.Services;
@@ -8,6 +11,7 @@ namespace VMCS.API.Controllers.Channel
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ChannelController : ControllerBase
     {
         private readonly IChannelService _channelService;
@@ -24,17 +28,19 @@ namespace VMCS.API.Controllers.Channel
 
             return new ChannelDto()
             {
-                Id = model.Id,
                 Name = model.Name
             };
         }
-        
+
+
         [HttpPost]
         public async Task Create(ChannelDto model, CancellationToken cancellationToken)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _channelService.Create(new Core.Domains.Channels.Channel()
             {
-                Name = model.Name
+                Name = model.Name,
+                CreatorId = userId
             }, cancellationToken);
         }
         

@@ -45,11 +45,14 @@ namespace VMCS.API.Controllers.Auth
 
             var businessUser = new User()
             {
+                Id = user.Id,
                 Login = registerData.Login,
-                Username = registerData.Username
+                Username = registerData.Username,
+                Email= registerData.Email,
             };
 
             var result = await _userManager.CreateAsync(user, registerData.Password);
+           
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
