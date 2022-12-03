@@ -5,6 +5,7 @@ using VMCS.API.Controllers.Meetings.Dto;
 using VMCS.Core.Domains.Meetings.Services;
 using VMCS.Core.Domains.Meetings;
 using System.Threading;
+using VMCS.Core;
 using VMCS.Core.Domains.Chats;
 
 namespace VMCS.API.Controllers.Meetings
@@ -39,6 +40,9 @@ namespace VMCS.API.Controllers.Meetings
         public async Task Create(CreateMeetingDto meetingDto, CancellationToken token)
         {
             var creatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (string.IsNullOrEmpty(creatorId))
+                throw new ValidationException("Please log in");
             
             await _meetingService.Create(new Meeting()
             {

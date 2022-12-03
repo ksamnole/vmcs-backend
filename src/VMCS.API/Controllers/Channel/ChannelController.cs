@@ -7,6 +7,7 @@ using VMCS.API.Controllers.Channel.Dto;
 using VMCS.API.Controllers.Meetings.Dto;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Chats;
+using VMCS.Core;
 
 namespace VMCS.API.Controllers.Channel
 {
@@ -43,12 +44,15 @@ namespace VMCS.API.Controllers.Channel
         [HttpPost]
         public async Task Create(CreateChannelDto model, CancellationToken cancellationToken)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var creatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(creatorId))
+                throw new ValidationException("Please log in");
 
             await _channelService.Create(new Core.Domains.Channels.Channel()
             {
                 Name = model.Name,
-                CreatorId = userId,
+                CreatorId = creatorId,
                 Chat = new Chat()
             }, cancellationToken);
         }
