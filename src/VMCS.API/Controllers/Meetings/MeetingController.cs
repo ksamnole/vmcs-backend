@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -6,6 +7,9 @@ using VMCS.API.Controllers.Meetings.Dto;
 using VMCS.Core.Domains.Meetings.Services;
 using VMCS.Core.Domains.Meetings;
 using System.Threading;
+using AutoMapper;
+using VMCS.API.Controllers.Chats.Dto;
+using VMCS.API.Controllers.Users.Dto;
 using VMCS.Core;
 using VMCS.Core.Domains.Chats;
 
@@ -17,10 +21,12 @@ namespace VMCS.API.Controllers.Meetings
     public class MeetingController : ControllerBase
     {
         private readonly IMeetingService _meetingService;
+        private readonly IMapper _mapper;
 
-        public MeetingController(IMeetingService meetingService)
+        public MeetingController(IMeetingService meetingService, IMapper mapper)
         {
             _meetingService = meetingService;
+            _mapper = mapper;
         }
         
         [HttpGet("{id}")]
@@ -32,8 +38,8 @@ namespace VMCS.API.Controllers.Meetings
             {
                 Id = meeting.Id,
                 Name = meeting.Name,
-                Chat = meeting.Chat,
-                Users = meeting.Users
+                Chat = _mapper.Map<ShortChatDto>(meeting.Chat),
+                Users = meeting.Users.Select(x => _mapper.Map<ShortUserDto>(x))
             };
         }
 
@@ -41,14 +47,16 @@ namespace VMCS.API.Controllers.Meetings
         public async Task Create(CreateMeetingDto meetingDto, CancellationToken token)
         {
             var creatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            
+            if (string.IsNullOrEmpty(creatorId))
+                throw new ValidationException("Please log in");
+            
             await _meetingService.Create(new Meeting()
             {
                 Name = meetingDto.Name,
                 IsInChannel = meetingDto.IsInChannel,
                 ChannelId = meetingDto.ChannelId,
-                CreatorId = creatorId,
-                Chat = new Chat()
+                CreatorId = creatorId
             }, token);
         }
 

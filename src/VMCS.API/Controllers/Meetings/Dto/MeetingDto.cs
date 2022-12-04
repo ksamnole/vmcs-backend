@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using VMCS.Core.Domains.Chats;
-using VMCS.Core.Domains.Users;
+using VMCS.API.Controllers.Chats.Dto;
+using VMCS.API.Controllers.Users.Dto;
 
 namespace VMCS.API.Controllers.Meetings.Dto
 {
@@ -8,7 +8,7 @@ namespace VMCS.API.Controllers.Meetings.Dto
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public Chat Chat { get; set; }
-        public IEnumerable<User> Users { get; set; }
+        public ShortChatDto Chat { get; set; }
+        public IEnumerable<ShortUserDto> Users { get; set; }
     }
 }

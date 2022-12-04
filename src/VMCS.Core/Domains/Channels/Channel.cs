@@ -13,6 +13,6 @@ public class Channel
     
     public User Creator { get; set; }
     public Chat Chat { get; set; }
-    public List<User> Users { get; set; }
-    public List<Meeting> Meetings { get; set; }
+    public IEnumerable<User> Users { get; set; } = new List<User>();
+    public IEnumerable<Meeting> Meetings { get; set; } = new List<Meeting>();
 }

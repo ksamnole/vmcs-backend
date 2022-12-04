@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VMCS.Data.Contexts;
@@ -11,9 +12,11 @@ using VMCS.Data.Contexts;
 namespace VMCS.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20221204123154_Update message table")]
+    partial class Updatemessagetable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,6 +38,21 @@ namespace VMCS.Data.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("ChannelUser");
+                });
+
+            modelBuilder.Entity("ChatUser", b =>
+                {
+                    b.Property<string>("ChatsId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("text");
+
+                    b.HasKey("ChatsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ChatUser");
                 });
 
             modelBuilder.Entity("MeetingUser", b =>
@@ -100,7 +118,7 @@ namespace VMCS.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ClosedAt")
+                    b.Property<DateTime>("ClosedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
@@ -190,6 +208,21 @@ namespace VMCS.Data.Migrations
                     b.HasOne("VMCS.Core.Domains.Channels.Channel", null)
                         .WithMany()
                         .HasForeignKey("ChannelsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VMCS.Core.Domains.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ChatUser", b =>
+                {
+                    b.HasOne("VMCS.Core.Domains.Chats.Chat", null)
+                        .WithMany()
+                        .HasForeignKey("ChatsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

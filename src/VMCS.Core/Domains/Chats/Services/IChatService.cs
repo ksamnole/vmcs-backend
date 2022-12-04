@@ -2,5 +2,5 @@
 
 public interface IChatService
 {
-    Task Create(Chat chat, CancellationToken cancellationToken);
+    Task Delete(string id, CancellationToken cancellationToken);
 }

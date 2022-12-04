@@ -8,7 +8,7 @@ namespace VMCS.Data.Meetings.Repositories
 {
     public class MeetingRepository : IMeetingRepository
     {
-        private ApplicationContext _applicationContext;
+        private readonly ApplicationContext _applicationContext;
         
         public MeetingRepository(ApplicationContext applicationContext)
         {
@@ -22,22 +22,25 @@ namespace VMCS.Data.Meetings.Repositories
 
         public async Task Delete(string id, CancellationToken token)
         {
-            var meeting = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
+            var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
 
-            if (meeting is null)
+            if (entity is null)
                 throw new ObjectNotFoundException($"Meeting with id = {id} not found");
 
-            _applicationContext.Remove(meeting);
+            _applicationContext.Meetings.Remove(entity);
         }
 
         public async Task<Meeting> GetMeetingByIdAsync(string id, CancellationToken token)
         {
-            var meeting = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
+            var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
             
-            if (meeting is null)
+            if (entity is null)
                 throw new ObjectNotFoundException($"Meeting with id = {id} not found");
+            
+            await _applicationContext.Chats.LoadAsync(token);
+            await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(token);
 
-            return meeting;
+            return entity;
         }
     }
 }

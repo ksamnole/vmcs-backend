@@ -9,6 +9,7 @@ namespace VMCS.Core.Domains.Meetings
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? ClosedAt { get; set; }
         public bool IsInChannel { get; set; }
         public string CreatorId { get; set; }
         public string? ChannelId { get; set; }
@@ -17,6 +18,6 @@ namespace VMCS.Core.Domains.Meetings
         public User Creator { get; set; }
         public Channel? Channel { get; set; }
         public Chat Chat { get; set; }
-        public List<User> Users { get; set; }
+        public IEnumerable<User> Users { get; set; }
     }
 }

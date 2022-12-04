@@ -1,13 +1,14 @@
-﻿using System.Configuration;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VMCS.Core;
 using VMCS.Core.Domains.Channels.Repositories;
+using VMCS.Core.Domains.Chats.Repositories;
 using VMCS.Core.Domains.Meetings.Repositories;
 using VMCS.Core.Domains.Messages.Repositories;
 using VMCS.Core.Domains.Users.Repositories;
 using VMCS.Data.Channels.Repositories;
+using VMCS.Data.Chats.Repositories;
 using VMCS.Data.Contexts;
 using VMCS.Data.Meetings.Repositories;
 using VMCS.Data.Messages.Repositories;
@@ -24,6 +25,7 @@ public static class Bootstrap
         services.AddScoped<IChannelRepository, ChannelRepository>();
         services.AddScoped<IMeetingRepository, MeetingRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
+        services.AddScoped<IChatRepository, ChatRepository>();
         
         services.AddDbContext<AuthenticationContext>(options => 
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));

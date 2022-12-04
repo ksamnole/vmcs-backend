@@ -40,7 +40,8 @@ namespace VMCS.API.Controllers.Auth
             var user = new AuthUser()
             {
                 UserName = registerData.Login,
-                Email = registerData.Email
+                Email = registerData.Email,
+                GivenName = registerData.Username
             };
 
             var businessUser = new User()
@@ -55,7 +56,8 @@ namespace VMCS.API.Controllers.Auth
            
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, false);
+                await _signInManager.SignInWithClaimsAsync(user, false, new []
+                    { new Claim(ClaimTypes.GivenName, registerData.Username) });
                 await _userService.Create(businessUser, cancellationToken);
                 await HttpContext.Response.WriteAsync("Success!");
             }

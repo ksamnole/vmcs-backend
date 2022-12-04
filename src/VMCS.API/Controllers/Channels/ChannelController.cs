@@ -2,42 +2,46 @@
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Channel.Dto;
+using VMCS.API.Controllers.Chats.Dto;
 using VMCS.API.Controllers.Meetings.Dto;
+using VMCS.API.Controllers.Messages.Dto;
+using VMCS.API.Controllers.Users.Dto;
+using VMCS.API.Mappers;
+using VMCS.Core;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Chats;
-using VMCS.Core;
 
-namespace VMCS.API.Controllers.Channel
+namespace VMCS.API.Controllers.Channels
 {
     [ApiController]
     [Route("channels")]
     public class ChannelController : ControllerBase
     {
         private readonly IChannelService _channelService;
+        private readonly IMapper _mapper;
 
-        public ChannelController(IChannelService channelService)
+        public ChannelController(IChannelService channelService, IMapper mapper)
         {
             _channelService = channelService;
+            _mapper = mapper;
         }
 
         [HttpGet("{id}")]
         public async Task<ChannelDto> Get(string id, CancellationToken cancellationToken)
         {
             var model = await _channelService.GetById(id, cancellationToken);
-
+            
             return new ChannelDto()
             {
                 Id = model.Id,
                 Name = model.Name,
-                Chat = model.Chat,
-                Users = model.Users,
-                Meetings = model.Meetings.Select(x => new ShortMeetingDto()
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                })
+                Chat = _mapper.Map<ShortChatDto>(model.Chat),
+                Creator = _mapper.Map<ShortUserDto>(model.Creator),
+                Users = model.Users.Select(x => _mapper.Map<ShortUserDto>(x)),
+                Meetings = model.Meetings.Select(x => _mapper.Map<ShortMeetingDto>(x))
             };
         }
 
@@ -52,8 +56,7 @@ namespace VMCS.API.Controllers.Channel
             await _channelService.Create(new Core.Domains.Channels.Channel()
             {
                 Name = model.Name,
-                CreatorId = creatorId,
-                Chat = new Chat()
+                CreatorId = creatorId
             }, cancellationToken);
         }
         

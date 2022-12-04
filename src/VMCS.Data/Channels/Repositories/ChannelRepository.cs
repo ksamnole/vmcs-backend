@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Data.Entity.Core;
+﻿using System.Data.Entity.Core;
+using Microsoft.EntityFrameworkCore;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Repositories;
 using VMCS.Data.Contexts;
@@ -17,10 +17,16 @@ public class ChannelRepository : IChannelRepository
 
     public async Task<Channel> GetById(string id, CancellationToken cancellationToken)
     {
-        var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var entity = await _applicationContext.Channels
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         
         if (entity == null)
             throw new ObjectNotFoundException($"Channel with id = {id} not found");
+        
+        await _applicationContext.Chats.LoadAsync(cancellationToken);
+        await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(cancellationToken);
+        await _applicationContext.Meetings.LoadAsync(cancellationToken);
+        await _applicationContext.Messages.LoadAsync(cancellationToken);
 
         return entity;
     }

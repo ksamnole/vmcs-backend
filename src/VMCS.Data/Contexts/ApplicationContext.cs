@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Chats;
@@ -28,7 +29,12 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Message>().Setup().ToTable("Messages");
         modelBuilder.Entity<Chat>().Setup().ToTable("Chats");
     }
-    
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.LogTo(Console.WriteLine, new[] { RelationalEventId.CommandExecuted });
+    }
+
     public class Factory : IDesignTimeDbContextFactory<ApplicationContext>
     {
         public ApplicationContext CreateDbContext(string[] args)

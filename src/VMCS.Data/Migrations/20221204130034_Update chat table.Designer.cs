@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VMCS.Data.Contexts;
@@ -11,9 +12,11 @@ using VMCS.Data.Contexts;
 namespace VMCS.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20221204130034_Update chat table")]
+    partial class Updatechattable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,7 +86,12 @@ namespace VMCS.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Chats", (string)null);
                 });
@@ -100,7 +108,7 @@ namespace VMCS.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ClosedAt")
+                    b.Property<DateTime>("ClosedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
@@ -234,6 +242,13 @@ namespace VMCS.Data.Migrations
                     b.Navigation("Creator");
                 });
 
+            modelBuilder.Entity("VMCS.Core.Domains.Chats.Chat", b =>
+                {
+                    b.HasOne("VMCS.Core.Domains.Users.User", null)
+                        .WithMany("Chats")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("VMCS.Core.Domains.Meetings.Meeting", b =>
                 {
                     b.HasOne("VMCS.Core.Domains.Channels.Channel", "Channel")
@@ -284,6 +299,11 @@ namespace VMCS.Data.Migrations
             modelBuilder.Entity("VMCS.Core.Domains.Chats.Chat", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("VMCS.Core.Domains.Users.User", b =>
+                {
+                    b.Navigation("Chats");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,11 +7,13 @@ namespace VMCS.Core.Domains.Messages
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Text { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public string UserId { get; set; }
+        public string Username { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
+        public string? UserId { get; set; }
         public string ChatId { get; set; }
         
-        public User User { get; set; }
+        public User? User { get; set; }
         public Chat Chat { get; set;}
     }
 }
