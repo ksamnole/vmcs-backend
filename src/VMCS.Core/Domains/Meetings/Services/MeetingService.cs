@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
-using VMCS.Core.Domains.Chats;
-using VMCS.Core.Domains.Chats.Services;
 using VMCS.Core.Domains.Meetings.Repositories;
-using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.Core.Domains.Meetings.Services
