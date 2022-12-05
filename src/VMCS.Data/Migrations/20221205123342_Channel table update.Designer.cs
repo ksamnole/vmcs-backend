@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VMCS.Data.Contexts;
@@ -11,9 +12,11 @@ using VMCS.Data.Contexts;
 namespace VMCS.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20221205123342_Channel table update")]
+    partial class Channeltableupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,6 +74,8 @@ namespace VMCS.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ChatId");
+
                     b.HasIndex("CreatorId");
 
                     b.ToTable("Channels", (string)null);
@@ -81,19 +86,7 @@ namespace VMCS.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("ChannelId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("MeetingId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ChannelId")
-                        .IsUnique();
-
-                    b.HasIndex("MeetingId")
-                        .IsUnique();
 
                     b.ToTable("Chats", (string)null);
                 });
@@ -130,6 +123,8 @@ namespace VMCS.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChannelId");
+
+                    b.HasIndex("ChatId");
 
                     b.HasIndex("CreatorId");
 
@@ -225,38 +220,34 @@ namespace VMCS.Data.Migrations
 
             modelBuilder.Entity("VMCS.Core.Domains.Channels.Channel", b =>
                 {
+                    b.HasOne("VMCS.Core.Domains.Chats.Chat", "Chat")
+                        .WithMany()
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("VMCS.Core.Domains.Users.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Chat");
+
                     b.Navigation("Creator");
-                });
-
-            modelBuilder.Entity("VMCS.Core.Domains.Chats.Chat", b =>
-                {
-                    b.HasOne("VMCS.Core.Domains.Channels.Channel", "Channel")
-                        .WithOne("Chat")
-                        .HasForeignKey("VMCS.Core.Domains.Chats.Chat", "ChannelId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("VMCS.Core.Domains.Meetings.Meeting", "Meeting")
-                        .WithOne("Chat")
-                        .HasForeignKey("VMCS.Core.Domains.Chats.Chat", "MeetingId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Channel");
-
-                    b.Navigation("Meeting");
                 });
 
             modelBuilder.Entity("VMCS.Core.Domains.Meetings.Meeting", b =>
                 {
                     b.HasOne("VMCS.Core.Domains.Channels.Channel", "Channel")
                         .WithMany("Meetings")
-                        .HasForeignKey("ChannelId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ChannelId");
+
+                    b.HasOne("VMCS.Core.Domains.Chats.Chat", "Chat")
+                        .WithMany()
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("VMCS.Core.Domains.Users.User", "Creator")
                         .WithMany()
@@ -265,6 +256,8 @@ namespace VMCS.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Channel");
+
+                    b.Navigation("Chat");
 
                     b.Navigation("Creator");
                 });
@@ -288,21 +281,12 @@ namespace VMCS.Data.Migrations
 
             modelBuilder.Entity("VMCS.Core.Domains.Channels.Channel", b =>
                 {
-                    b.Navigation("Chat")
-                        .IsRequired();
-
                     b.Navigation("Meetings");
                 });
 
             modelBuilder.Entity("VMCS.Core.Domains.Chats.Chat", b =>
                 {
                     b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("VMCS.Core.Domains.Meetings.Meeting", b =>
-                {
-                    b.Navigation("Chat")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

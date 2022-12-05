@@ -26,11 +26,10 @@ namespace VMCS.Core.Domains.Meetings.Services
 
         public async Task Create(Meeting meeting, CancellationToken token)
         {
-            await _meetingValidator.ValidateAndThrowAsync(meeting, token);
-            
             var user = await _userService.GetById(meeting.CreatorId, token);
-            meeting.Users = new List<User> { user };
-            meeting.Chat = new Chat();
+            meeting.Users.Add(user);
+            
+            await _meetingValidator.ValidateAndThrowAsync(meeting, token);
 
             await _meetingRepository.Create(meeting, token);
             await _unitOfWork.SaveChange();
@@ -38,9 +37,6 @@ namespace VMCS.Core.Domains.Meetings.Services
 
         public async Task Delete(string id, CancellationToken token)
         {
-            var meeting = await _meetingRepository.GetMeetingByIdAsync(id, token);
-
-            await _chatService.Delete(meeting.ChatId, token);
             await _meetingRepository.Delete(id, token);
             await _unitOfWork.SaveChange();
         }

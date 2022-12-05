@@ -11,7 +11,13 @@ namespace VMCS.Core.Domains.Users
         public string Username { get; set; }
         public string Email { get; set; }
         
-        public IEnumerable<Channel> Channels { get; set; }
-        public IEnumerable<Meeting> Meetings { get; set; }
+        public virtual ICollection<Channel> Channels { get; set; }
+        public virtual ICollection<Meeting> Meetings { get; set; }
+
+        public User()
+        {
+            Channels = new List<Channel>();
+            Meetings = new List<Meeting>();
+        }
     }
 }

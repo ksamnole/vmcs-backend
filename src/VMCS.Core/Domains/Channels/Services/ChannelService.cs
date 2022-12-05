@@ -34,24 +34,17 @@ public class ChannelService : IChannelService
 
     public async Task Create(Channel channel, CancellationToken cancellationToken)
     {
+        var user = await _userService.GetById(channel.CreatorId, cancellationToken);
+        channel.Users.Add(user);
+
         await _channelValidator.ValidateAndThrowAsync(channel, cancellationToken);
         
-        var user = await _userService.GetById(channel.CreatorId, cancellationToken);
-        channel.Users = new List<User> { user };
-        channel.Chat = new Chat();
-
         await _channelRepository.Create(channel, cancellationToken);
         await _unitOfWork.SaveChange();
     }
 
     public async Task Delete(string id, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetById(id, cancellationToken);
-        var meetingsId = channel.Meetings.Select(x => x.Id);
-        foreach (var meetingId in meetingsId)
-            await _meetingService.Delete(meetingId, cancellationToken);
-
-        await _chatService.Delete(channel.ChatId, cancellationToken);
         await _channelRepository.Delete(id, cancellationToken);
         await _unitOfWork.SaveChange();
     }

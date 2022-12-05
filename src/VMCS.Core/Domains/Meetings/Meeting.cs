@@ -18,6 +18,14 @@ namespace VMCS.Core.Domains.Meetings
         public User Creator { get; set; }
         public Channel? Channel { get; set; }
         public Chat Chat { get; set; }
-        public IEnumerable<User> Users { get; set; }
+        public virtual ICollection<User> Users { get; set; }
+
+        public Meeting()
+        {
+            Chat = new Chat();
+            Users = new List<User>();
+
+            ChatId = Chat.Id;
+        }
     }
 }
