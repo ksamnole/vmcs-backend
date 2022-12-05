@@ -12,19 +12,15 @@ public class ChannelService : IChannelService
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IUserService _userService;
-    private readonly IChatService _chatService;
-    private readonly IMeetingService _meetingService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<Channel> _channelValidator;
     
-    public ChannelService(IChannelRepository channelRepository, IUnitOfWork unitOfWork, IValidator<Channel> channelValidator, IUserService userService, IChatService chatService, IMeetingService meetingService)
+    public ChannelService(IChannelRepository channelRepository, IUnitOfWork unitOfWork, IValidator<Channel> channelValidator, IUserService userService)
     {
         _channelRepository = channelRepository;
         _unitOfWork = unitOfWork;
         _channelValidator = channelValidator;
         _userService = userService;
-        _chatService = chatService;
-        _meetingService = meetingService;
     }
     
     public async Task<Channel> GetById(string id, CancellationToken cancellationToken)

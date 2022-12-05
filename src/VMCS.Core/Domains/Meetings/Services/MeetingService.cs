@@ -11,17 +11,15 @@ namespace VMCS.Core.Domains.Meetings.Services
     {
         private readonly IMeetingRepository _meetingRepository;
         private readonly IUserService _userService;
-        private readonly IChatService _chatService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<Meeting> _meetingValidator;
 
-        public MeetingService(IMeetingRepository meetingRepository, IUnitOfWork unitOfWork, IValidator<Meeting> meetingValidator, IUserService userService, IChatService chatService)
+        public MeetingService(IMeetingRepository meetingRepository, IUnitOfWork unitOfWork, IValidator<Meeting> meetingValidator, IUserService userService)
         {
             _meetingRepository = meetingRepository;
             _unitOfWork = unitOfWork;
             _meetingValidator = meetingValidator;
             _userService = userService;
-            _chatService = chatService;
         }
 
         public async Task Create(Meeting meeting, CancellationToken token)
