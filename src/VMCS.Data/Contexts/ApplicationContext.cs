@@ -19,6 +19,8 @@ public class ApplicationContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<Chat> Chats { get; set; }
     
+    public DbSet<ChannelInvitation> ChannelInvitations { get; set; }
+    
     public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,6 +30,8 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Meeting>().Setup().ToTable("Meetings");
         modelBuilder.Entity<Message>().Setup().ToTable("Messages");
         modelBuilder.Entity<Chat>().Setup().ToTable("Chats");
+
+        modelBuilder.Entity<ChannelInvitation>().ToTable("ChannelInvitations");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
