@@ -4,11 +4,9 @@ using VMCS.Core.Domains.Users;
 
 namespace VMCS.Core.Domains.Meetings
 {
-    public class Meeting
+    public class Meeting : BaseEntity
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? ClosedAt { get; set; }
         public bool IsInChannel { get; set; }
         public string CreatorId { get; set; }
