@@ -27,7 +27,7 @@ namespace VMCS.Core.Domains.ChannelInvitations.Services
             var invitation = await _channelInvitationRepository.Get(invitationId, cancellationToken);
             var channel = await _channelService.GetById(invitation.ChannelId, cancellationToken);
             var user = await _userService.GetById(userId, cancellationToken);
-
+            
             await _channelService.AddUser(user, channel, cancellationToken);
             await _channelInvitationRepository.Delete(invitationId, cancellationToken);
             await _unitOfWork.SaveChange();
@@ -38,6 +38,9 @@ namespace VMCS.Core.Domains.ChannelInvitations.Services
             var channel = await _channelService.GetById(invitation.ChannelId, cancellationToken);
             var user = await _userService.GetById(invitation.SenderId, cancellationToken);
 
+            if (invitation.RecipientId == invitation.SenderId)
+                throw new ValidationException("Sender and recipient are the same");
+            
             if (!channel.Users.Contains(user))
                 throw new ValidationException("User are not in this channel!");
 

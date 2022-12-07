@@ -86,7 +86,8 @@ namespace VMCS.API.Controllers.Users
             {
                 SenderUsername = x.Sender.Username,
                 RecipientUsername = x.Recipient.Username,
-                ChannelName = x.Channel.Name
+                ChannelName = x.Channel.Name,
+                Id = x.Id
             });
         }
 
