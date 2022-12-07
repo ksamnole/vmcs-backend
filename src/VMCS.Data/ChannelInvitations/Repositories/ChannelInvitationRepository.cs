@@ -15,6 +15,16 @@ public class ChannelInvitationRepository : IChannelInvitationRepository
         _applicationContext = applicationContext;
     }
 
+    public async Task<ChannelInvitation> Get(string id, CancellationToken cancellationToken)
+    {
+        var entity = await _applicationContext.ChannelInvitations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        
+        if (entity == null)
+            throw new ObjectNotFoundException($"Invitation to channel with Id = {id} not found");
+
+        return entity;
+    }
+
     public async Task Create(ChannelInvitation channelInvitation, CancellationToken cancellationToken)
     {
         await _applicationContext.ChannelInvitations.AddAsync(channelInvitation, cancellationToken);
