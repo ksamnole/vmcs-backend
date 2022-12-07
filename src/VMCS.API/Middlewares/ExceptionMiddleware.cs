@@ -21,6 +21,12 @@ namespace VMCS.API.Middlewares
             {
                 await next(httpContext);
             }
+            catch (FluentValidation.ValidationException exception)
+            {
+                var errors = exception.Errors.Select(x => $"{ x.PropertyName }: { x.ErrorMessage }");
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                await httpContext.Response.WriteAsJsonAsync(new { Message = errorMessage });
+            }
             catch (ValidationException exception)
             {
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
