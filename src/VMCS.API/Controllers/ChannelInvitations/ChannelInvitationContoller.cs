@@ -4,8 +4,9 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
+using VMCS.Core.Domains.ChannelInvitations;
+using VMCS.Core.Domains.ChannelInvitations.Services;
 using VMCS.Core.Domains.Channels;
-using VMCS.Core.Domains.Channels.Services;
 
 namespace VMCS.API.Controllers.ChannelInvitations
 {
@@ -50,7 +51,7 @@ namespace VMCS.API.Controllers.ChannelInvitations
         {
             var invitation = new ChannelInvitation()
             {
-                RecepientId = request.RecepientId,
+                RecipientId = request.RecipientId,
                 ChannelId = request.ChannelId,
                 SenderId = User.FindFirstValue(ClaimTypes.NameIdentifier),
             };

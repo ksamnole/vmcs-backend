@@ -2,15 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using VMCS.Core.Domains.ChannelInvitations.Repositories;
+using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Repositories;
+using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
-namespace VMCS.Core.Domains.Channels.Services
+namespace VMCS.Core.Domains.ChannelInvitations.Services
 {
     internal class ChannelInvitationService : IChannelInvitationService
     {
@@ -19,9 +22,9 @@ namespace VMCS.Core.Domains.Channels.Services
         private readonly IChannelInvitationRepository _channelInvitationRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ChannelInvitationService(IChannelService channelService, 
-            IUserService userService, 
-            IChannelInvitationRepository channelInvitationRepository, 
+        public ChannelInvitationService(IChannelService channelService,
+            IUserService userService,
+            IChannelInvitationRepository channelInvitationRepository,
             IUnitOfWork unitOfWork)
         {
             _channelService = channelService;
@@ -30,9 +33,10 @@ namespace VMCS.Core.Domains.Channels.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Accept(string userId, string channelId, CancellationToken cancellationToken)
+        public async Task Accept(string invitationId, string userId, CancellationToken cancellationToken)
         {
-            var channel = await _channelService.GetById(channelId, cancellationToken);
+            var invitation = await _channelInvitationRepository.Get(invitationId, cancellationToken);
+            var channel = await _channelService.GetById(invitation.ChannelId, cancellationToken);
             var user = await _userService.GetById(userId, cancellationToken);
 
             await _channelService.AddUser(user, channel, cancellationToken);
@@ -47,16 +51,29 @@ namespace VMCS.Core.Domains.Channels.Services
                 throw new ValidationException("User are not in this channel!");
 
             await _channelInvitationRepository.Create(invitation, cancellationToken);
+            await _unitOfWork.SaveChange();
         }
 
-        public async Task Decline(string userId, string channelId, CancellationToken cancellationToken)
+        public async Task Decline(string invitationId, string userId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var invitation = await _channelInvitationRepository.Get(invitationId, cancellationToken);
+            if (invitation.RecipientId != userId)
+            {
+                throw new ValidationException("User are not recipient!");
+            }
+            await _channelInvitationRepository.Delete(invitationId, cancellationToken);
+            await _unitOfWork.SaveChange();
         }
 
-        public async Task Delete(string invitaionId, CancellationToken cancellationToken)
+        public async Task Delete(string invitationId, string userId, CancellationToken cancellationToken)
         {
-            await _channelInvitationRepository.Delete(invitaionId, cancellationToken);
+            var invitation = await _channelInvitationRepository.Get(invitationId, cancellationToken);
+            if (invitation.SenderId != userId)
+            {
+                throw new ValidationException("User are not sender!");
+            }
+            await _channelInvitationRepository.Delete(invitationId, cancellationToken);
+            await _unitOfWork.SaveChange();
         }
     }
 }

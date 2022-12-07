@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using VMCS.Core.Domains.ChannelInvitations;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Chats;
 using VMCS.Core.Domains.Meetings;

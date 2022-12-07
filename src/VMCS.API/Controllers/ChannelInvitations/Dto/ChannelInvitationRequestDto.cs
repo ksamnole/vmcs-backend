@@ -3,6 +3,6 @@
     public class ChannelInvitationRequestDto
     {
         public string ChannelId { get; set; }
-        public string RecepientId { get; set; }
+        public string RecipientId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using VMCS.Core.Domains.ChannelInvitations;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Users.Repositories;
 

@@ -1,4 +1,5 @@
-﻿using VMCS.Core.Domains.Channels;
+﻿using VMCS.Core.Domains.ChannelInvitations;
+using VMCS.Core.Domains.Channels;
 
 namespace VMCS.Core.Domains.Users.Services
 {

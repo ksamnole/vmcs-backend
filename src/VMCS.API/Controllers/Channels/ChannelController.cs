@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Channel.Dto;
 using VMCS.API.Controllers.Chats.Dto;
@@ -18,6 +19,7 @@ namespace VMCS.API.Controllers.Channels
 {
     [ApiController]
     [Route("channels")]
+    [Authorize]
     public class ChannelController : ControllerBase
     {
         private readonly IChannelService _channelService;

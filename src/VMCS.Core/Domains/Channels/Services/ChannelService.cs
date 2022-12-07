@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using VMCS.Core.Domains.Channels.Repositories;
+using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.Core.Domains.Channels.Services;
@@ -38,6 +39,12 @@ public class ChannelService : IChannelService
     public async Task Delete(string id, CancellationToken cancellationToken)
     {
         await _channelRepository.Delete(id, cancellationToken);
+        await _unitOfWork.SaveChange();
+    }
+
+    public async Task AddUser(User user, Channel channel, CancellationToken cancellationToken)
+    {
+        await _channelRepository.AddUser(user, channel, cancellationToken);
         await _unitOfWork.SaveChange();
     }
 }

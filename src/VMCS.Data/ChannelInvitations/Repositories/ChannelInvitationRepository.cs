@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity.Core;
 using Microsoft.EntityFrameworkCore;
+using VMCS.Core.Domains.ChannelInvitations;
 using VMCS.Core.Domains.ChannelInvitations.Repositories;
-using VMCS.Core.Domains.Channels;
 using VMCS.Data.Contexts;
 
 namespace VMCS.Data.ChannelInvitations.Repositories;

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Repositories;
+using VMCS.Core.Domains.Users;
 using VMCS.Data.Contexts;
 
 namespace VMCS.Data.Channels.Repositories;
@@ -44,5 +45,15 @@ public class ChannelRepository : IChannelRepository
             throw new ObjectNotFoundException($"Channel with id = {id} not found");
 
         _applicationContext.Channels.Remove(entity);
+    }
+
+    public async Task AddUser(User user, Channel channel, CancellationToken cancellationToken)
+    {
+        var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == channel.Id);
+
+        if (entity == null)
+            throw new ObjectNotFoundException($"Channel with id = {channel.Id} not found");
+
+        entity.Users.Add(user);
     }
 }
