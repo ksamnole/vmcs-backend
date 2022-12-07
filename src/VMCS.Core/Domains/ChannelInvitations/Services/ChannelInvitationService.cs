@@ -27,6 +27,11 @@ namespace VMCS.Core.Domains.ChannelInvitations.Services
             var invitation = await _channelInvitationRepository.Get(invitationId, cancellationToken);
             var channel = await _channelService.GetById(invitation.ChannelId, cancellationToken);
             var user = await _userService.GetById(userId, cancellationToken);
+
+            if (userId != invitation.RecipientId)
+            {
+                throw new ValidationException("User id and id of the invitation recipient does not match.");
+            }
             
             await _channelService.AddUser(user, channel, cancellationToken);
             await _channelInvitationRepository.Delete(invitationId, cancellationToken);
