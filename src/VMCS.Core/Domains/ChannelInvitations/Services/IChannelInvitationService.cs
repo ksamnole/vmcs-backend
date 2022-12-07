@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VMCS.Core.Domains.Channels;
-
-namespace VMCS.Core.Domains.ChannelInvitations.Services
+﻿namespace VMCS.Core.Domains.ChannelInvitations.Services
 {
     public interface IChannelInvitationService
     {

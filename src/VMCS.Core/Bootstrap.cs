@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using VMCS.Core.Domains.ChannelInvitations.Services;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Channels.Validators;
@@ -29,6 +30,7 @@ public static class Bootstrap
         services.AddScoped<IMeetingService, MeetingService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<IChannelInvitationService, ChannelInvitationService>();
 
         return services;
     }

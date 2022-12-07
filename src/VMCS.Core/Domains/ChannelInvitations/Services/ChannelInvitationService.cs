@@ -1,16 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-using VMCS.Core.Domains.ChannelInvitations.Repositories;
-using VMCS.Core.Domains.Channels;
-using VMCS.Core.Domains.Channels.Repositories;
+﻿using VMCS.Core.Domains.ChannelInvitations.Repositories;
 using VMCS.Core.Domains.Channels.Services;
-using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.Core.Domains.ChannelInvitations.Services
@@ -40,6 +29,8 @@ namespace VMCS.Core.Domains.ChannelInvitations.Services
             var user = await _userService.GetById(userId, cancellationToken);
 
             await _channelService.AddUser(user, channel, cancellationToken);
+            await _channelInvitationRepository.Delete(invitationId, cancellationToken);
+            await _unitOfWork.SaveChange();
         }
 
         public async Task Create(ChannelInvitation invitation, CancellationToken cancellationToken)

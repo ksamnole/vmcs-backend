@@ -14,34 +14,34 @@ namespace VMCS.API.Controllers.ChannelInvitations
     [Route("channelInvitation")]
     [ApiController]
     [Authorize]
-    public class ChannelInvitationContoller : ControllerBase
+    public class ChannelInvitationController : ControllerBase
     {
         private readonly IChannelInvitationService _channelInvitationService;
 
-        public ChannelInvitationContoller(IChannelInvitationService channelInvitationService)
+        public ChannelInvitationController(IChannelInvitationService channelInvitationService)
         {
             _channelInvitationService = channelInvitationService;
         }
 
         [Route("accept/{id}")]
         [HttpGet]
-        public async Task Accept(string invitationId, CancellationToken cancellationToken)
+        public async Task Accept(string id, CancellationToken cancellationToken)
         {
-            await _channelInvitationService.Accept(invitationId, User.FindFirstValue(ClaimTypes.NameIdentifier), cancellationToken);
+            await _channelInvitationService.Accept(id, User.FindFirstValue(ClaimTypes.NameIdentifier), cancellationToken);
         }
 
         [Route("delete/{id}")]
         [HttpGet]
-        public async Task Delete(string invitationId, CancellationToken cancellationToken)
+        public async Task Delete(string id, CancellationToken cancellationToken)
         {
-            await _channelInvitationService.Delete(invitationId, User.FindFirstValue(ClaimTypes.NameIdentifier), cancellationToken);
+            await _channelInvitationService.Delete(id, User.FindFirstValue(ClaimTypes.NameIdentifier), cancellationToken);
         }
 
         [Route("decline/{id}")]
         [HttpGet]
-        public async Task Decline(string invitationId, CancellationToken cancellationToken)
+        public async Task Decline(string id, CancellationToken cancellationToken)
         {
-            await _channelInvitationService.Delete(invitationId, User.FindFirstValue(ClaimTypes.NameIdentifier), cancellationToken);
+            await _channelInvitationService.Delete(id, User.FindFirstValue(ClaimTypes.NameIdentifier), cancellationToken);
         }
 
 
