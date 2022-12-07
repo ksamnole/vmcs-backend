@@ -6,4 +6,5 @@ public interface IChannelInvitationRepository
 {
     Task Create(ChannelInvitation channelInvitation, CancellationToken cancellationToken);
     Task Delete(string id, CancellationToken cancellationToken);
+    Task Get(string id, CancellationToken cancellationToken);
 }
