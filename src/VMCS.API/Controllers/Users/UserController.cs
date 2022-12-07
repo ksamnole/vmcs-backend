@@ -5,7 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Channel.Dto;
+using VMCS.API.Controllers.ChannelInvitations.Dto;
 using VMCS.API.Controllers.Users.Dto;
+using VMCS.Core;
+using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
@@ -56,6 +59,9 @@ namespace VMCS.API.Controllers.Users
         public async Task<IEnumerable<ShortChannelDto>> GetAllUserChannels(CancellationToken cancellationToken)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (string.IsNullOrEmpty(userId))
+                throw new ValidationException("Please log in");
 
             var channels = await _userService.GetAllUserChannels(userId, cancellationToken);
 
@@ -63,6 +69,24 @@ namespace VMCS.API.Controllers.Users
             {
                 Id = x.Id,
                 Name = x.Name
+            });
+        }
+        
+        [HttpGet]
+        [Route("invitations/channel")]
+        public async Task<IEnumerable<ChannelInvitationDto>> GetAllUserChannelInvitations(CancellationToken cancellationToken)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (string.IsNullOrEmpty(userId))
+                throw new ValidationException("Please log in");
+
+            var channelInvitations = await _userService.GetAllUserChannelInvitations(userId, cancellationToken);
+            return channelInvitations.Select(x => new ChannelInvitationDto()
+            {
+                SenderUsername = x.Sender.Username,
+                RecipientUsername = x.Recipient.Username,
+                ChannelName = x.Channel.Name
             });
         }
 

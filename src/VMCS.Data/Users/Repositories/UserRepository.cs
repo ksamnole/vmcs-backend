@@ -41,6 +41,20 @@ namespace VMCS.Data.Users.Repositories
             return entity.Channels;
         }
 
+        public async Task<IEnumerable<ChannelInvitation>> GetAllUserChannelInvitations(string userId, CancellationToken cancellationToken)
+        {
+            var entity = await _applicationContext.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
+            
+            if (entity == null)
+                throw new ObjectNotFoundException($"User with Id = {userId} not found");
+            
+            await _applicationContext.Users.LoadAsync(cancellationToken);
+            await _applicationContext.Channels.LoadAsync(cancellationToken);
+
+            return await _applicationContext.ChannelInvitations.Where(x => x.RecipientId == userId)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task Create(User user, CancellationToken cancellationToken)
         {
             await _applicationContext.Users.AddAsync(user, cancellationToken);
