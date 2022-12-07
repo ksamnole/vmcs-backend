@@ -32,6 +32,11 @@ namespace VMCS.Core.Domains.Users.Services
             return await _userRepository.GetAllUserChannels(userId, cancellationToken);
         }
 
+        public async Task<IEnumerable<ChannelInvitation>> GetAllUserChannelInvitations(string userId, CancellationToken cancellationToken)
+        {
+            return await _userRepository.GetAllUserChannelInvitations(userId, cancellationToken);
+        }
+
         public async Task Create(User user, CancellationToken cancellationToken)
         {
             await _userValidator.ValidateAndThrowAsync(user, cancellationToken);
