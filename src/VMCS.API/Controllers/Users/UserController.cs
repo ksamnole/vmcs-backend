@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Channel.Dto;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
+using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Users.Dto;
 using VMCS.Core;
 using VMCS.Core.Domains.Channels;
@@ -68,7 +69,8 @@ namespace VMCS.API.Controllers.Users
             return channels.Select(x => new ShortChannelDto()
             {
                 Id = x.Id,
-                Name = x.Name
+                Name = x.Name,
+                ChatId = x.ChatId
             });
         }
         

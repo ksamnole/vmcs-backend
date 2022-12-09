@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,24 +22,24 @@ public class ChatHub : Hub
         _messageService = messageService;
     }
 
-    public async Task JoinChat(string meetingId)
+    public async Task JoinChat(string chatId)
     {
-        if (!_chats.ContainsKey(meetingId))
-            _chats.Add(meetingId, new List<string>());
+        if (!_chats.ContainsKey(chatId))
+            _chats.Add(chatId, new List<string>());
 
-        _chats[meetingId].Add(Context.ConnectionId);
+        _chats[chatId].Add(Context.ConnectionId);
         
-        await Groups.AddToGroupAsync(Context.ConnectionId, meetingId);
+        await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
     }
         
-    public async Task LeaveChat(string meetingId)
+    public async Task LeaveChat(string chatId)
     {
-        if (!_chats.ContainsKey(meetingId))
-            throw new ArgumentException(meetingId);
+        if (!_chats.ContainsKey(chatId))
+            throw new ArgumentException(chatId);
         
-        _chats[meetingId].Remove(Context.ConnectionId);
+        _chats[chatId].Remove(Context.ConnectionId);
         
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, meetingId);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatId);
     }
     
     public async Task SendMessage(string text, string chatId)
@@ -59,6 +58,6 @@ public class ChatHub : Hub
             Username = username
         }, CancellationToken.None);
         
-        await Clients.Group(chatId).SendAsync("ReceiveMessage", username, text);
+        await Clients.Group(chatId).SendAsync("ReceiveMessage", username, text, chatId);
     }
 }
