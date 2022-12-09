@@ -22,6 +22,12 @@ public class ChatHub : Hub
         _messageService = messageService;
     }
 
+    public async Task JoinChats(IEnumerable<string> chatsId)
+    {
+        foreach (var chatId in chatsId)
+            await JoinChat(chatId);
+    }
+
     public async Task JoinChat(string chatId)
     {
         if (!_chats.ContainsKey(chatId))
