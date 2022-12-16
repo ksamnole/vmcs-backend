@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using VMCS.API.Models;
 using VMCS.Core.Domains.Auth;
 using VMCS.Core.Domains.Users;
@@ -20,21 +25,24 @@ namespace VMCS.API.Controllers.Auth
     {
         private SignInManager<AuthUser> _signInManager;
         private UserManager<AuthUser> _userManager;
+        private IConfiguration _configuration;
         private IUserService _userService;
 
         public AuthController
-            (UserManager<AuthUser> userManager, 
-            SignInManager<AuthUser> signInManager, 
-            IUserService userService)
+            (UserManager<AuthUser> userManager,
+            SignInManager<AuthUser> signInManager,
+            IUserService userService,
+            IConfiguration configuration)
         {
             _userService = userService;
             _signInManager = signInManager;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         [Route("register")]
         [HttpPost]
-        public async Task Register(RegisterDTO registerData, CancellationToken cancellationToken)
+        public async Task<IActionResult> Register(RegisterDTO registerData, CancellationToken cancellationToken)
         {
             // Не менять! тут так и надо, потому что UserName Это Login в IdentityUser
             var user = new AuthUser()
@@ -42,7 +50,7 @@ namespace VMCS.API.Controllers.Auth
                 UserName = registerData.Login,
                 Email = registerData.Email,
                 GivenName = registerData.Username
-            };
+            };          
 
             var businessUser = new User()
             {
@@ -52,37 +60,40 @@ namespace VMCS.API.Controllers.Auth
                 Email= registerData.Email,
             };
 
-            var result = await _userManager.CreateAsync(user, registerData.Password);
-           
+            var result = await _userManager.CreateAsync(user, registerData.Password);          
+
             if (result.Succeeded)
             {
-                await _signInManager.SignInWithClaimsAsync(user, false, new []
-                    { new Claim(ClaimTypes.GivenName, registerData.Username) });
+                var claims = await GetUserClaims(user);
+
+                var token = GetToken(claims);
+
                 await _userService.Create(businessUser, cancellationToken);
-                await HttpContext.Response.WriteAsync("Success!");
+                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), expiration = token.ValidTo});
             }
 
             else
             {
                 var errors = string.Join(";\n", result.Errors.Select(error => error.Description));
-                await HttpContext.Response.WriteAsync("Not today, buddy :(");
-                await HttpContext.Response.WriteAsync($"\n{errors}");
+                return BadRequest(errors);
             }
         }
 
         [Route("login")]
         [HttpPost]
-        public async Task Login(LoginDTO loginData)
+        public async Task<IActionResult> Login(LoginDTO loginData)
         {
-            var result = await _signInManager.PasswordSignInAsync(loginData.Login, loginData.Password, false, false);
-            if (result.Succeeded)
-            {
-                await HttpContext.Response.WriteAsync("Logged in!");
-            }
-            else
-            {
-                await HttpContext.Response.WriteAsync("Sad, but you are not logged in :(");
-            }
+            var user = await _userManager.FindByNameAsync(loginData.Login);
+            if (user == null) 
+                return BadRequest("Wrong credentials");
+            if (!await _userManager.CheckPasswordAsync(user, loginData.Password))
+                return BadRequest("Wrong credentials");
+
+            var claims = await GetUserClaims(user);
+
+            var token = GetToken(claims);
+
+            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), expiration = token.ValidTo });
         }
 
         [Route("logout")]
@@ -98,6 +109,32 @@ namespace VMCS.API.Controllers.Auth
         {
             var whoami = HttpContext.User.Identity?.Name??"Anonymous";
             await HttpContext.Response.WriteAsync(whoami);
+        }
+
+        private JwtSecurityToken GetToken(List<Claim> authClaims)
+        {
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+
+            return token;
+        }
+
+        private async Task<List<Claim>> GetUserClaims(AuthUser user)
+        {
+            var claims = new List<Claim>() {
+                    new Claim(ClaimTypes.GivenName, user.GivenName),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                };
+
+            return claims.Concat(await _userManager.GetClaimsAsync(user)).ToList();
         }
     }
 }
