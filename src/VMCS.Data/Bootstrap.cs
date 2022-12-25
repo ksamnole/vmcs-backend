@@ -34,7 +34,7 @@ public static class Bootstrap
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
         services.AddDbContext<ApplicationContext>(options => 
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
-        
+
         return services;
     }
 }

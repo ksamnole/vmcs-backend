@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
 using VMCS.Core.Domains.ChannelInvitations;
 using VMCS.Core.Domains.ChannelInvitations.Services;
-using VMCS.Core.Domains.Channels;
 
 namespace VMCS.API.Controllers.ChannelInvitations
 {
