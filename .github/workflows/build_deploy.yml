@@ -2,9 +2,9 @@ name: Publish on Docker Hub and Deploy
 
 on:
   push:
-    branches: [ dev ] # Change to master on production
+    branches: [ master ]
   pull_request:
-    branches: [ dev ] # Change to master on production
+    branches: [ master ]
 
 jobs:
   build_and_pub:
