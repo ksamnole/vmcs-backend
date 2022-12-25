@@ -18,7 +18,6 @@ using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.API.Controllers.Auth
 {
-
     [ApiController]
     [Route("auth")]
     public class AuthController : ControllerBase

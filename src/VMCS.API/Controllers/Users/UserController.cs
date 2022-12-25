@@ -4,12 +4,10 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VMCS.API.Controllers.Channel.Dto;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Users.Dto;
 using VMCS.Core;
-using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 

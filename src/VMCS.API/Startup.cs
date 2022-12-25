@@ -1,3 +1,4 @@
+using System.Data.Entity.Migrations.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System.Text;
+using VMCS.API.HostedServices;
 using VMCS.API.Hubs;
 using VMCS.API.Mappers;
 using VMCS.API.Middlewares;
@@ -31,6 +33,8 @@ namespace VMCS.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHostedService<MigrationHostedService>();
+            
             services
                 .AddData(Configuration)
                 .AddCore();
@@ -107,20 +111,17 @@ namespace VMCS.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VMCS.API v1"));
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VMCS.API v1"));
-                app.UseCors(x => x
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .SetIsOriginAllowed(origin => true) // allow any origin
-                    .AllowCredentials()); // allow credentials
-            }
-
-            // app.UseHttpsRedirection();
+                // app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseAuthentication();
