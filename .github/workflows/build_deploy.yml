@@ -8,6 +8,7 @@ on:
 
 jobs:
   build_and_pub:
+    runs-on: [ubuntu-latest]
     name: Push Docker image to Docker Hub
     steps:
       -
