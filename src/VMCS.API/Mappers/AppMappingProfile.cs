@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Chats.Dto;
 using VMCS.API.Controllers.Messages.Dto;
 using VMCS.API.Controllers.Users.Dto;
+using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Chats;
 using VMCS.Core.Domains.Meetings;
 using VMCS.Core.Domains.Messages;
@@ -17,5 +19,6 @@ public class AppMappingProfile : Profile
         CreateMap<Message, ShortMessageDto>();
         CreateMap<Chat, ShortChatDto>();
         CreateMap<Meeting, ShortMessageDto>();
+        CreateMap<Channel, ShortChannelDto>();
     }
 }

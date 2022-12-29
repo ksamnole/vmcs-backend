@@ -49,18 +49,20 @@ namespace VMCS.API.Controllers.Channels
         }
 
         [HttpPost]
-        public async Task<Core.Domains.Channels.Channel> Create(CreateChannelDto model, CancellationToken cancellationToken)
+        public async Task<ShortChannelDto> Create(CreateChannelDto model, CancellationToken cancellationToken)
         {
             var creatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(creatorId))
                 throw new ValidationException("Please log in");
 
-            return await _channelService.Create(new Core.Domains.Channels.Channel()
+            var channel = await _channelService.Create(new Core.Domains.Channels.Channel()
             {
                 Name = model.Name,
                 CreatorId = creatorId
             }, cancellationToken);
+
+            return _mapper.Map<ShortChannelDto>(channel);
         }
         
         [HttpDelete("{id}")]
