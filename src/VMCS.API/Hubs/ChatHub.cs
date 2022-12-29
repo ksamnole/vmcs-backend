@@ -56,7 +56,7 @@ public class ChatHub : Hub
         var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         var username = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
 
-        await _messageService.Create(new Message()
+        var message = await _messageService.Create(new Message()
         {
             ChatId = chatId,
             Text = text,
@@ -64,6 +64,6 @@ public class ChatHub : Hub
             Username = username
         }, CancellationToken.None);
         
-        await Clients.Group(chatId).SendAsync("ReceiveMessage", username, text, chatId);
+        await Clients.Group(chatId).SendAsync("ReceiveMessage", message.Id ,message.Username, message.Text, message.ChatId);
     }
 }

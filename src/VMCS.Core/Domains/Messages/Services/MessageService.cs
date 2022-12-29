@@ -13,10 +13,12 @@ namespace VMCS.Core.Domains.Messages.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Create(Message message, CancellationToken token)
+        public async Task<Message> Create(Message message, CancellationToken token)
         {
             await _messageRepository.Create(message, token);
             await _unitOfWork.SaveChange();
+            
+            return message;
         }
 
         public async Task CreateAll(IEnumerable<Message> messages, CancellationToken token)
