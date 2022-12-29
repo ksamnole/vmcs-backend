@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
@@ -12,8 +11,10 @@ public class MeetingHub : Hub
 
     public async Task JoinMeeting(string meetingId)
     {
+        // TODO: Получать встречу (id) из базы данных
+        
         if (!_meetings.ContainsKey(meetingId))
-            throw new ArgumentException();
+            _meetings[meetingId] = new List<string>();
 
         _meetings[meetingId].Add(Context.ConnectionId);
         
@@ -30,27 +31,12 @@ public class MeetingHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, meetingId);
     }
 
-    public async Task SendMessageToMeeting(string text, string login, string meetingId)
+    public async Task SendOffer(string meetingId, object offer)
     {
-        // TEST 
-        if (meetingId == "-1")
-        {
-            await Clients.All.SendAsync("ReceiveMessage", login, text);
-            return;
-        }
+        if (_meetings[meetingId].Count < 2)
+            throw new HubException("Send offer is called for less than two connections");
         
-        if (!_meetings.ContainsKey(meetingId))
-            throw new ArgumentException();
-
-        if (IsMeetingParticipant(Context.ConnectionId, meetingId))
-        {
-            await Clients.Group(meetingId).SendAsync("ReceiveMessage", login, text);
-        }
-    }
-
-    public async Task SendOffer(string clientId, object offer)
-    {
-        await Clients.Client(clientId).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
+        await Clients.OthersInGroup(meetingId).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
     }
         
     public async Task SendAnswer(string clientId, object answer)
@@ -58,13 +44,8 @@ public class MeetingHub : Hub
         await Clients.Client(clientId).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
     }
 
-    public async Task AddIceCandidate(string roomId, object obj)
+    public async Task AddIceCandidate(string meetingId, object iceCandidate)
     {
-        await Clients.OthersInGroup(roomId).SendAsync("ReceiveIceCandidate", Context.ConnectionId, obj);
-    }
-    
-    private static bool IsMeetingParticipant(string connectionId, string meetingId)
-    {
-        return _meetings[meetingId].FirstOrDefault(id => id == connectionId) != null;
+        await Clients.OthersInGroup(meetingId).SendAsync("ReceiveIceCandidate", Context.ConnectionId, iceCandidate);
     }
 }
