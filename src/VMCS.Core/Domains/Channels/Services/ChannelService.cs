@@ -25,7 +25,7 @@ public class ChannelService : IChannelService
         return await _channelRepository.GetById(id, cancellationToken);
     }
 
-    public async Task Create(Channel channel, CancellationToken cancellationToken)
+    public async Task<Channel> Create(Channel channel, CancellationToken cancellationToken)
     {
         var user = await _userService.GetById(channel.CreatorId, cancellationToken);
         channel.Users.Add(user);
@@ -34,6 +34,8 @@ public class ChannelService : IChannelService
         
         await _channelRepository.Create(channel, cancellationToken);
         await _unitOfWork.SaveChange();
+
+        return channel;
     }
 
     public async Task Delete(string id, CancellationToken cancellationToken)

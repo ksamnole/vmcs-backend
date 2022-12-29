@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Channel.Dto;
+using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Chats.Dto;
 using VMCS.API.Controllers.Meetings.Dto;
 using VMCS.API.Controllers.Messages.Dto;
@@ -48,14 +49,14 @@ namespace VMCS.API.Controllers.Channels
         }
 
         [HttpPost]
-        public async Task Create(CreateChannelDto model, CancellationToken cancellationToken)
+        public async Task<Core.Domains.Channels.Channel> Create(CreateChannelDto model, CancellationToken cancellationToken)
         {
             var creatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(creatorId))
                 throw new ValidationException("Please log in");
 
-            await _channelService.Create(new Core.Domains.Channels.Channel()
+            return await _channelService.Create(new Core.Domains.Channels.Channel()
             {
                 Name = model.Name,
                 CreatorId = creatorId

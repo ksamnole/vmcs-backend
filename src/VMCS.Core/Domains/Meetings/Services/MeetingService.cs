@@ -19,7 +19,7 @@ namespace VMCS.Core.Domains.Meetings.Services
             _userService = userService;
         }
 
-        public async Task Create(Meeting meeting, CancellationToken token)
+        public async Task<Meeting> Create(Meeting meeting, CancellationToken token)
         {
             var user = await _userService.GetById(meeting.CreatorId, token);
             meeting.Users.Add(user);
@@ -28,6 +28,8 @@ namespace VMCS.Core.Domains.Meetings.Services
 
             await _meetingRepository.Create(meeting, token);
             await _unitOfWork.SaveChange();
+
+            return meeting;
         }
 
         public async Task Delete(string id, CancellationToken token)

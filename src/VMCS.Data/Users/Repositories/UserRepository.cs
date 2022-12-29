@@ -35,9 +35,11 @@ namespace VMCS.Data.Users.Repositories
         public async Task<IEnumerable<Channel>> GetAllUserChannels(string userId, CancellationToken cancellationToken)
         {
             var entity = await _applicationContext.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
-            
+
             if (entity == null)
                 throw new ObjectNotFoundException($"User with Id = {userId} not found");
+
+            await _applicationContext.Entry(entity).Collection(x => x.Channels).LoadAsync(cancellationToken);
 
             return entity.Channels;
         }

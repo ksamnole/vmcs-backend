@@ -44,14 +44,14 @@ namespace VMCS.API.Controllers.Meetings
         }
 
         [HttpPost]
-        public async Task Create(CreateMeetingDto meetingDto, CancellationToken token)
+        public async Task<Meeting> Create(CreateMeetingDto meetingDto, CancellationToken token)
         {
             var creatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             
             if (string.IsNullOrEmpty(creatorId))
                 throw new ValidationException("Please log in");
             
-            await _meetingService.Create(new Meeting()
+            return await _meetingService.Create(new Meeting()
             {
                 Name = meetingDto.Name,
                 IsInChannel = meetingDto.IsInChannel,
