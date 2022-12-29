@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using VMCS.Core.Domains.Messages;
 using VMCS.Core.Domains.Messages.Services;
@@ -12,13 +11,11 @@ namespace VMCS.API.Hubs;
 
 public class ChatHub : Hub
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMessageService _messageService;
     private static Dictionary<string, List<string>> _chats = new();
 
-    public ChatHub(IHttpContextAccessor httpContextAccessor, IMessageService messageService)
+    public ChatHub(IMessageService messageService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _messageService = messageService;
     }
 
@@ -50,11 +47,8 @@ public class ChatHub : Hub
     
     public async Task SendMessage(string text, string chatId)
     {
-        if (_httpContextAccessor.HttpContext == null)
-            throw new Exception();
-        
-        var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var username = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
+        var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var username = Context.User.FindFirstValue(ClaimTypes.GivenName);
 
         var message = await _messageService.Create(new Message()
         {
