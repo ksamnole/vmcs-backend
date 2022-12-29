@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
@@ -19,6 +20,8 @@ public class MeetingHub : Hub
         _meetings[meetingId].Add(Context.ConnectionId);
         
         await Groups.AddToGroupAsync(Context.ConnectionId, meetingId);
+        
+        await Clients.OthersInGroup(meetingId).SendAsync("JoinedNewClient", Context.ConnectionId);
     }
         
     public async Task LeaveMeeting(string meetingId)
@@ -31,12 +34,9 @@ public class MeetingHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, meetingId);
     }
 
-    public async Task SendOffer(string meetingId, object offer)
+    public async Task SendOffer(string clientId, object offer)
     {
-        if (_meetings[meetingId].Count < 2)
-            throw new HubException("Send offer is called for less than two connections");
-        
-        await Clients.OthersInGroup(meetingId).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
+        await Clients.Client(clientId).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
     }
         
     public async Task SendAnswer(string clientId, object answer)
@@ -47,5 +47,13 @@ public class MeetingHub : Hub
     public async Task AddIceCandidate(string meetingId, object iceCandidate)
     {
         await Clients.OthersInGroup(meetingId).SendAsync("ReceiveIceCandidate", Context.ConnectionId, iceCandidate);
+    }
+
+    public override Task OnDisconnectedAsync(Exception exception)
+    {
+        foreach (var meeting in _meetings.Values.Where(meeting => meeting.Contains(Context.ConnectionId)))
+            meeting.Remove(Context.ConnectionId);
+
+        return base.OnDisconnectedAsync(exception);
     }
 }
