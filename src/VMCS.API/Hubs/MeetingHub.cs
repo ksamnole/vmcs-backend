@@ -44,9 +44,9 @@ public class MeetingHub : Hub
         await Clients.Client(clientId).SendAsync("ReceiveAnswer", Context.ConnectionId, answer);
     }
 
-    public async Task AddIceCandidate(string meetingId, object iceCandidate)
+    public async Task AddIceCandidate(string clientId, object iceCandidate)
     {
-        await Clients.OthersInGroup(meetingId).SendAsync("ReceiveIceCandidate", Context.ConnectionId, iceCandidate);
+        await Clients.Client(clientId).SendAsync("ReceiveIceCandidate", Context.ConnectionId, iceCandidate);
     }
 
     public override Task OnDisconnectedAsync(Exception exception)
