@@ -36,3 +36,5 @@ _ReSharper*/
 packages/
 .idea/
 .vscode/
+#Configuration data
+appsettings.json
