@@ -21,7 +21,7 @@ public class MeetingHub : Hub
         
         await Groups.AddToGroupAsync(Context.ConnectionId, meetingId);
         
-        await Clients.OthersInGroup(meetingId).SendAsync("JoinedNewClient", Context.ConnectionId);
+        await Clients.OthersInGroup(meetingId).SendAsync("JoinClient", Context.ConnectionId);
     }
         
     public async Task LeaveMeeting(string meetingId)
@@ -32,6 +32,8 @@ public class MeetingHub : Hub
         _meetings[meetingId].Remove(Context.ConnectionId);
         
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, meetingId);
+        
+        await Clients.OthersInGroup(meetingId).SendAsync("LeaveClient", Context.ConnectionId);
     }
 
     public async Task SendOffer(string clientId, object offer)
