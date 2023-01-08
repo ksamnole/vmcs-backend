@@ -31,4 +31,11 @@ services:
       - "5000:5000"
       - "5001:5001"
     environment:
-      ConnectionStrings:ConnectionString: Host=storage;Port=5432;Database=vmcs;Username=vmcs;Password=qwerty321
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:5001;http://+:5000
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=1234567890
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__ConnectionString=Host=storage;Port=5432;Database=vmcs;Username=vmcs;Password=qwerty321
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      

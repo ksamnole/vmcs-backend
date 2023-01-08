@@ -1,5 +1,6 @@
 using System;
 using System.Data.Entity.Migrations.Model;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -124,8 +125,8 @@ namespace VMCS.API
         {
             app.UseMiddleware<ExceptionMiddleware>();
             
-            app.UseHttpsRedirection();
-
+            // app.UseHttpsRedirection();
+            
             app.UseRouting();
             
             app.UseDeveloperExceptionPage();
@@ -137,11 +138,9 @@ namespace VMCS.API
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
 
-                // app.UseHttpsRedirection();
-
             app.UseRouting();
+            
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
