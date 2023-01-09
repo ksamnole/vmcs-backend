@@ -125,6 +125,8 @@ namespace VMCS.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseMiddleware<ExceptionMiddleware>();
+            
+            app.UseRouting();
 
             if (env.IsDevelopment())
             {
@@ -139,7 +141,6 @@ namespace VMCS.API
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
             
-            app.UseRouting();
             
             // app.UseHttpsRedirection();
 

@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Users.Dto;
@@ -44,6 +45,7 @@ namespace VMCS.API.Controllers.Users
         }
 
         [HttpGet]
+        [Route("all")]
         public async Task<IEnumerable<UserDto>> GetAll(CancellationToken cancellationToken)
         {
             var users = await _userService.GetAll(cancellationToken);
