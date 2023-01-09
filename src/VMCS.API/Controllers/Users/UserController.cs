@@ -24,10 +24,15 @@ namespace VMCS.API.Controllers.Users
             _userService = userService;
         }
 
-        [HttpGet("{id}")]
-        public async Task<UserDto> Get(string id, CancellationToken cancellationToken)
+        [HttpGet]
+        public async Task<UserDto> Get(CancellationToken cancellationToken)
         {
-            var model = await _userService.GetById(id, cancellationToken);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (string.IsNullOrEmpty(userId))
+                throw new ValidationException("Please log in");
+            
+            var model = await _userService.GetById(userId, cancellationToken);
 
             return new UserDto
             {
