@@ -59,15 +59,21 @@ namespace VMCS.API.Controllers.Auth
                 Email= registerData.Email,
             };
 
-            var result = await _userManager.CreateAsync(user, registerData.Password);          
+            await _userService.Create(businessUser, cancellationToken);
+
+            var result = await _userManager.CreateAsync(user, registerData.Password);
+
+            if (!result.Succeeded)
+            {
+                await _userService.Delete(businessUser.Id, cancellationToken);
+            }
 
             if (result.Succeeded)
             {
                 var claims = await GetUserClaims(user);
 
                 var token = GetToken(claims);
-
-                await _userService.Create(businessUser, cancellationToken);
+                
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), expiration = token.ValidTo});
             }
 
@@ -117,7 +123,7 @@ namespace VMCS.API.Controllers.Auth
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddHours(3),
+                expires: DateTime.Now.AddHours(24),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
