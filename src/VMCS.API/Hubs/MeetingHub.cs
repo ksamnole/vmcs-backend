@@ -41,7 +41,9 @@ public class MeetingHub : Hub
 
     public async Task SendOffer(string clientId, object offer)
     {
-        await Clients.Client(clientId).SendAsync("ReceiveOffer", Context.ConnectionId, offer);
+        var username = Context.User.FindFirstValue(ClaimTypes.GivenName) ?? "Anonymous";
+        
+        await Clients.Client(clientId).SendAsync("ReceiveOffer", Context.ConnectionId, offer, username);
     }
         
     public async Task SendAnswer(string clientId, object answer)
