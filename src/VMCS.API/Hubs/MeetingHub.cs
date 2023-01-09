@@ -15,7 +15,7 @@ public class MeetingHub : Hub
         // TODO: Получать встречу (id) из базы данных
         
         if (!_meetings.ContainsKey(meetingId))
-            _meetings[meetingId] = new List<string>();
+            _meetings.Add(meetingId, new List<string>());
 
         _meetings[meetingId].Add(Context.ConnectionId);
         

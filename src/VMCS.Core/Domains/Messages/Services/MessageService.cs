@@ -1,4 +1,5 @@
-﻿using VMCS.Core.Domains.Messages.Repositories;
+﻿using FluentValidation;
+using VMCS.Core.Domains.Messages.Repositories;
 
 namespace VMCS.Core.Domains.Messages.Services
 {
@@ -6,15 +7,19 @@ namespace VMCS.Core.Domains.Messages.Services
     {
         private readonly IMessageRepository _messageRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IValidator<Message> _messageValidator;
 
-        public MessageService(IMessageRepository messageRepository, IUnitOfWork unitOfWork)
+        public MessageService(IMessageRepository messageRepository, IValidator<Message> messageValidator, IUnitOfWork unitOfWork)
         {
             _messageRepository = messageRepository;
+            _messageValidator = messageValidator;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Message> Create(Message message, CancellationToken token)
         {
+            await _messageValidator.ValidateAndThrowAsync(message, token);
+            
             await _messageRepository.Create(message, token);
             await _unitOfWork.SaveChange();
             
@@ -23,6 +28,11 @@ namespace VMCS.Core.Domains.Messages.Services
 
         public async Task CreateAll(IEnumerable<Message> messages, CancellationToken token)
         {
+            foreach (var message in messages)
+            {
+                await _messageValidator.ValidateAndThrowAsync(message, token);
+            }
+            
             await _messageRepository.CreateAll(messages, token);
             await _unitOfWork.SaveChange();
         }

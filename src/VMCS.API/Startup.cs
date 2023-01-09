@@ -43,11 +43,12 @@ namespace VMCS.API
                 .AddCore();
             
             services.AddAutoMapper(typeof(AppMappingProfile));
-            
-            services.AddControllers().AddNewtonsoftJson(
-                options => {
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; 
-                });
+
+            services.AddControllers();
+            // services.AddControllers().AddNewtonsoftJson(
+            //     options => {
+            //         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; 
+            //     });
             
             services.AddSwaggerGen(c =>
             {
@@ -124,22 +125,24 @@ namespace VMCS.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseMiddleware<ExceptionMiddleware>();
-            
-            // app.UseHttpsRedirection();
-            
-            app.UseRouting();
-            
-            app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VMCS.API v1"));
+
+            if (env.IsDevelopment())
+            {
+                // app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VMCS.API v1"));
+            }
+
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
-
+            
             app.UseRouting();
             
+            // app.UseHttpsRedirection();
+
             app.UseAuthentication();
             app.UseAuthorization();
 

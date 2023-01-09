@@ -77,11 +77,8 @@ namespace VMCS.API.Controllers.Auth
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), expiration = token.ValidTo});
             }
 
-            else
-            {
-                var errors = string.Join(";\n", result.Errors.Select(error => error.Description));
-                return BadRequest(errors);
-            }
+            var errors = string.Join(";\n", result.Errors.Select(error => error.Description));
+            return BadRequest(errors);
         }
 
         [Route("login")]
