@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
@@ -12,6 +13,8 @@ public class MeetingHub : Hub
 
     public async Task JoinMeeting(string meetingId)
     {
+        var username = Context.User.FindFirstValue(ClaimTypes.GivenName) ?? "Anonymous";
+        
         // TODO: Получать встречу (id) из базы данных
         
         if (!_meetings.ContainsKey(meetingId))
@@ -21,7 +24,7 @@ public class MeetingHub : Hub
         
         await Groups.AddToGroupAsync(Context.ConnectionId, meetingId);
         
-        await Clients.OthersInGroup(meetingId).SendAsync("JoinClient", Context.ConnectionId);
+        await Clients.OthersInGroup(meetingId).SendAsync("JoinClient", Context.ConnectionId, username);
     }
         
     public async Task LeaveMeeting(string meetingId)
