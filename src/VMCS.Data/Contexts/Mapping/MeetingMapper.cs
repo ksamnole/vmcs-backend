@@ -19,6 +19,7 @@ public static class MeetingMapper
         typeBuilder.Property(x => x.Name).IsRequired();
         typeBuilder.Property(x => x.IsInChannel).IsRequired();
 
+
         return typeBuilder;
     }
 }

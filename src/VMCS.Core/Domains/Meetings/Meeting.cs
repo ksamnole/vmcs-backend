@@ -18,6 +18,8 @@ namespace VMCS.Core.Domains.Meetings
         public Chat Chat { get; set; }
         public virtual ICollection<User> Users { get; set; }
 
+        public string? RepositoryId { get; set; }
+
         public Meeting()
         {
             Chat = new Chat();
