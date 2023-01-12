@@ -10,6 +10,6 @@ namespace VMCS.API.Controllers.Meetings.Dto
         public string Name { get; set; }
         public ShortChatDto Chat { get; set; }
         public IEnumerable<ShortUserDto> Users { get; set; }
-        public string? RepositoryId { get; set; }
+        public string RepositoryId { get; set; }
     }
 }

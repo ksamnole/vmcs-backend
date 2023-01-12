@@ -39,7 +39,8 @@ namespace VMCS.API.Controllers.Meetings
                 Id = meeting.Id,
                 Name = meeting.Name,
                 Chat = _mapper.Map<ShortChatDto>(meeting.Chat),
-                Users = meeting.Users.Select(x => _mapper.Map<ShortUserDto>(x))
+                Users = meeting.Users.Select(x => _mapper.Map<ShortUserDto>(x)),
+                RepositoryId = meeting.RepositoryId
             };
         }
 

@@ -42,5 +42,24 @@ namespace VMCS.Data.Meetings.Repositories
 
             return entity;
         }
+
+        public async Task SetRepositoryToMeeting(string repositoryId, string meetingId, CancellationToken token)
+        {
+            var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(x => x.Id == meetingId);
+
+            if (entity == null)
+            {
+                throw new ArgumentException($"Meeting with id : {meetingId} doesn't exists");
+            }
+
+            if (entity.RepositoryId is not null)
+            {
+                throw new InvalidOperationException($"Meeting already has repository");
+
+            }
+
+            entity.RepositoryId = repositoryId;
+            await _applicationContext.SaveChangesAsync();
+        }
     }
 }

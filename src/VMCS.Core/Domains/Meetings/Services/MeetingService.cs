@@ -42,5 +42,11 @@ namespace VMCS.Core.Domains.Meetings.Services
         {
             return _meetingRepository.GetMeetingByIdAsync(id, token);
         }
+
+        public async Task SetRepositoryToMeeting(string repositoryId, string meetingId, CancellationToken token)
+        {
+            await _meetingRepository.SetRepositoryToMeeting(repositoryId, meetingId, token);
+            await _unitOfWork.SaveChange();
+        }
     }
 }

@@ -8,6 +8,8 @@ using System;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
 using System.Runtime.InteropServices;
+using VMCS.Core.Domains.Meetings.Services;
+using System.Threading;
 
 namespace VMCS.API.Hubs
 {
@@ -19,10 +21,12 @@ namespace VMCS.API.Hubs
         private static Dictionary<string, List<string>> _reposOfConnections = new Dictionary<string, List<string>>();
         private static Dictionary<string, string> _meetingToRepositoryIds = new Dictionary<string, string>();
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMeetingService _meetingService;
 
-        public CodeSharingHub(IWebHostEnvironment webHostEnvironment)
+        public CodeSharingHub(IWebHostEnvironment webHostEnvironment, IMeetingService meetingService)
         {
             _webHostEnvironment = webHostEnvironment;
+            _meetingService = meetingService;
         }
 
         public override Task OnConnectedAsync()
@@ -74,9 +78,11 @@ namespace VMCS.API.Hubs
                 {
                     Id = 0,
                     Name = repoName
-                },
-                Id = "aaa"
+                }
             };
+
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
+            await _meetingService.SetRepositoryToMeeting(repository.Id, meetingId, cancellationToken);
 
             _reposOfConnections[Context.ConnectionId].Add(repository.Id);
 

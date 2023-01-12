@@ -11,5 +11,6 @@ namespace VMCS.Core.Domains.Meetings.Services
         Task<Meeting> GetMeetingByIdAsync(string id, CancellationToken token);
         Task<Meeting> Create(Meeting meeting, CancellationToken token);
         Task Delete(string id, CancellationToken token);
+        Task SetRepositoryToMeeting(string repositoryId, string meetingId, CancellationToken token);
     }
 }
