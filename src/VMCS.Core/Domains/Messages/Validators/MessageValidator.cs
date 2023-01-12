@@ -6,7 +6,7 @@ public class MessageValidator : AbstractValidator<Message>
 {
     public MessageValidator()
     {
-        RuleFor(x => x.Text).NotEmpty()
-            .WithMessage("Please specify a text of the message");
+        RuleFor(x => x.Text)
+            .NotEmpty().WithMessage("Please specify a text of the message");
     }
 }

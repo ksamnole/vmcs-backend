@@ -43,11 +43,12 @@ namespace VMCS.API
                 .AddCore();
             
             services.AddAutoMapper(typeof(AppMappingProfile));
-            
-            services.AddControllers().AddNewtonsoftJson(
-                options => {
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; 
-                });
+
+            services.AddControllers();
+            // services.AddControllers().AddNewtonsoftJson(
+            //     options => {
+            //         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; 
+            //     });
             
             services.AddSwaggerGen(c =>
             {
@@ -106,8 +107,9 @@ namespace VMCS.API
                         var accessToken = context.Request.Query["access_token"];
 
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/chatHub")))
+                        if (!string.IsNullOrEmpty(accessToken) && 
+                            (path.StartsWithSegments("/chatHub") 
+                             || path.StartsWithSegments("/meetingHub")))
                         {
                             context.Token = accessToken;
                         }
@@ -125,21 +127,24 @@ namespace VMCS.API
         {
             app.UseMiddleware<ExceptionMiddleware>();
             
-            // app.UseHttpsRedirection();
-            
             app.UseRouting();
-            
-            app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VMCS.API v1"));
+
+            if (env.IsDevelopment())
+            {
+                // app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VMCS.API v1"));
+            }
+
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
-
-            app.UseRouting();
             
+            
+            // app.UseHttpsRedirection();
+
             app.UseAuthentication();
             app.UseAuthorization();
 

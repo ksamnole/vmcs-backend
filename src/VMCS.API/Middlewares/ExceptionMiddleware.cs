@@ -8,24 +8,26 @@ namespace VMCS.API.Middlewares
 {
     public class ExceptionMiddleware
     {
-        public readonly RequestDelegate next;
+        private readonly RequestDelegate _next;
 
         public ExceptionMiddleware(RequestDelegate next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
             try
             {
-                await next(httpContext);
+                await _next(httpContext);
             }
             catch (FluentValidation.ValidationException exception)
             {
-                var errors = exception.Errors.Select(x => $"{ x.PropertyName }: { x.ErrorMessage }");
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                await httpContext.Response.WriteAsJsonAsync(new { Message = errorMessage });
+                var errors = exception.Errors
+                    .Select(x => new { Property = x.PropertyName, Message = x.ErrorMessage });
+
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await httpContext.Response.WriteAsJsonAsync(new { Errors = errors });
             }
             catch (ValidationException exception)
             {

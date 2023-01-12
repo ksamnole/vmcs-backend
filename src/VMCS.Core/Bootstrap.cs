@@ -25,6 +25,7 @@ public static class Bootstrap
         services.AddScoped<IValidator<Channel>, ChannelValidator>();
         services.AddScoped<IValidator<Meeting>, MeetingValidator>();
         services.AddScoped<IValidator<Message>, MessageValidator>();
+        
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IChannelService, ChannelService>();
         services.AddScoped<IMeetingService, MeetingService>();

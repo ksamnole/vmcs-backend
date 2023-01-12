@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Users.Dto;
@@ -24,10 +25,15 @@ namespace VMCS.API.Controllers.Users
             _userService = userService;
         }
 
-        [HttpGet("{id}")]
-        public async Task<UserDto> Get(string id, CancellationToken cancellationToken)
+        [HttpGet]
+        public async Task<UserDto> Get(CancellationToken cancellationToken)
         {
-            var model = await _userService.GetById(id, cancellationToken);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (string.IsNullOrEmpty(userId))
+                throw new ValidationException("Please log in");
+            
+            var model = await _userService.GetById(userId, cancellationToken);
 
             return new UserDto
             {
@@ -39,6 +45,7 @@ namespace VMCS.API.Controllers.Users
         }
 
         [HttpGet]
+        [Route("all")]
         public async Task<IEnumerable<UserDto>> GetAll(CancellationToken cancellationToken)
         {
             var users = await _userService.GetAll(cancellationToken);

@@ -41,7 +41,7 @@ namespace VMCS.Core.Domains.Users.Services
         public async Task Create(User user, CancellationToken cancellationToken)
         {
             await _userValidator.ValidateAndThrowAsync(user, cancellationToken);
-            
+
             await _userRepository.Create(user, cancellationToken);
             await _unitOfWork.SaveChange();
         }
