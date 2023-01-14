@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using VMCS.API.Controllers.Messages.Dto;
 using VMCS.Core.Domains.Messages;
 using VMCS.Core.Domains.Messages.Services;
 
@@ -57,7 +58,7 @@ public class ChatHub : Hub
             UserId = userId,
             Username = username
         }, CancellationToken.None);
-        
-        await Clients.Group(chatId).SendAsync("ReceiveMessage", message.Id ,message.Username, message.Text, message.ChatId);
+
+        await Clients.Group(chatId).SendAsync("ReceiveMessage", message);
     }
 }
