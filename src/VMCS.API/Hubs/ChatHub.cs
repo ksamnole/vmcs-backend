@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using VMCS.API.Controllers.Messages.Dto;
 using VMCS.Core.Domains.Messages;
@@ -13,11 +14,13 @@ namespace VMCS.API.Hubs;
 public class ChatHub : Hub
 {
     private readonly IMessageService _messageService;
+    private readonly IMapper _mapper;
     private static Dictionary<string, List<string>> _chats = new();
 
-    public ChatHub(IMessageService messageService)
+    public ChatHub(IMessageService messageService, IMapper mapper)
     {
         _messageService = messageService;
+        _mapper = mapper;
     }
 
     public async Task JoinChats(IEnumerable<string> chatsId)
@@ -59,6 +62,8 @@ public class ChatHub : Hub
             Username = username
         }, CancellationToken.None);
 
-        await Clients.Group(chatId).SendAsync("ReceiveMessage", message);
+        var messageDto = _mapper.Map<MessageDto>(message);
+
+        await Clients.Group(chatId).SendAsync("ReceiveMessage", messageDto);
     }
 }

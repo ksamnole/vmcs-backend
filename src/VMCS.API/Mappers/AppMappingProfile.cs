@@ -21,5 +21,7 @@ public class AppMappingProfile : Profile
         CreateMap<Chat, ShortChatDto>();
         CreateMap<Meeting, ShortMeetingDto>();
         CreateMap<Channel, ShortChannelDto>();
+        
+        CreateMap<Message, MessageDto>();
     }
 }
