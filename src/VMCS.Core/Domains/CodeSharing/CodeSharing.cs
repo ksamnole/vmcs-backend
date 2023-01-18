@@ -17,12 +17,10 @@ namespace VMCS.Core.Domains.CodeSharing
         private Dictionary<string, List<string>> _reposOfConnections = new Dictionary<string, List<string>>();
         private Dictionary<string, IFileRepository> _repositories = new Dictionary<string, IFileRepository>();
         private IMeetingService _meetingService;
-        private string _tempFolderPath;
 
-        public CodeSharing(IMeetingService meetingService, string tempFolderPath) 
+        public CodeSharing(IMeetingService meetingService) 
         {
             _meetingService = meetingService;
-            _tempFolderPath = tempFolderPath;
         }
 
         public void Change(string text, string repositoryId, int fileId, string connectionId)
