@@ -6,5 +6,5 @@ namespace VMCS.API.Controllers.Chats.Dto;
 public class ShortChatDto
 {
     public string Id { get; set; }
-    public IEnumerable<ShortMessageDto> Messages { get; set; }
+    public IEnumerable<MessageDto> Messages { get; set; }
 }
