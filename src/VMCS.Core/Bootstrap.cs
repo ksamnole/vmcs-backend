@@ -14,6 +14,7 @@ using VMCS.Core.Domains.Messages.Validators;
 using VMCS.Core.Domains.Users.Services;
 using VMCS.Core.Domains.Users.Validators;
 using VMCS.Core.Domains.Messages.Services;
+using VMCS.Core.Domains.CodeSharing;
 
 namespace VMCS.Core;
 
@@ -32,6 +33,8 @@ public static class Bootstrap
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IChannelInvitationService, ChannelInvitationService>();
+
+        services.AddSingleton<ICodeSharing, CodeSharing>();
 
         return services;
     }

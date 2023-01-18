@@ -58,7 +58,7 @@ namespace VMCS.API.Hubs.CodeSharing
 
         public async Task CreateRepository(string meetingId, string repoName)
         {
-            var repository = await _codeSharing.CreateRepository(meetingId, repoName, Context.ConnectionId);
+            var repository = await _codeSharing.CreateRepository(meetingId, repoName, Context.ConnectionId, _meetingService);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, repository.Id);
             await Clients.Caller.SendAsync("ConnectToRepository", repository);
