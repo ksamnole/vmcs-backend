@@ -18,6 +18,7 @@ namespace VMCS.API.Hubs.CodeSharing
     public class CodeSharingHub : Hub
     {
         private static ICodeSharing _codeSharing;
+        private static IMeetingService _meetingService;
 
         public CodeSharingHub(IWebHostEnvironment webHostEnvironment, IMeetingService meetingService, ICodeSharing codeSharing)
         {
@@ -49,7 +50,10 @@ namespace VMCS.API.Hubs.CodeSharing
             _codeSharing.ConnectToRepository(repositoryId, Context.ConnectionId);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, repositoryId);
-            await Clients.Caller.SendAsync("ConnectToRepository", _repositories[repositoryId]);
+
+
+            await Clients.Caller.SendAsync("ConnectToRepository",
+                _codeSharing.GetRepositoryById(repositoryId));
         }
 
         public async Task CreateRepository(string meetingId, string repoName)
@@ -72,12 +76,12 @@ namespace VMCS.API.Hubs.CodeSharing
             await Clients.Group(repoId).SendAsync("CreateFolder", folderName, parentFolderId, repoId);
         }
 
-        public async Task Change(string text, string repositoroyId, int fileId)
+        public async Task Change(string text, string repositoryId, int fileId)
         {
-            _codeSharing.Change(text, repositoroyId, fileId, Context.ConnectionId);
+            _codeSharing.Change(text, repositoryId, fileId, Context.ConnectionId);
             //_codeSharing.Change(change, Context.ConnectionId);
 
-            await Clients.OthersInGroup(change.RepoId).SendAsync("Change", text, repositoroyId, fileId);
+            await Clients.OthersInGroup(repositoryId).SendAsync("Change", text, repositoryId, fileId);
         }
     }
 }

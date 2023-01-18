@@ -12,6 +12,7 @@ namespace VMCS.Core.Domains.FileRepositories
         string MeetingId { get; }
         string Name { get; }
         string Id { get; }
+        Folder Directory { get; }
 
         void CreateFolder(string folderName, int parentFolderId);
         void DeleteFolder(int folderId);

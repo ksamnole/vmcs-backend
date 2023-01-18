@@ -13,7 +13,7 @@ namespace VMCS.Core.Domains.FileRepositories
         public string Id { get; } = Guid.NewGuid().ToString();
         public string MeetingId { get; }
         public string Name { get; }
-        private Folder Directory { get; }
+        public Folder Directory { get; }
 
         private Dictionary<int, TextFile> _repositoryFiles = new Dictionary<int, TextFile>();
         private Dictionary<int, Folder> _repositoryFolders = new Dictionary<int, Folder>();
@@ -92,11 +92,11 @@ namespace VMCS.Core.Domains.FileRepositories
         {
             currentFolder = currentFolder.CreateSubdirectory(folder.Name);
             currentFolder.Create();
-            foreach (var file in folder.Files)
-            {
-                var text = new string(file.TextInBytes.Select(b => (char)b).ToArray());
-                File.WriteAllText(Path.Combine(currentFolder.FullName, file.Name), text);
-            }
+            //foreach (var file in folder.Files)
+            //{
+            //    var text = new string(file.TextInBytes.Select(b => (char)b).ToArray());
+            //    File.WriteAllText(Path.Combine(currentFolder.FullName, file.Name), text);
+            //}
 
             foreach (var subFolder in folder.Folders)
             {

@@ -20,5 +20,6 @@ namespace VMCS.Core.Domains.CodeSharing
         void Change(string text, string repositoryId, int fileId, string connectionId);
         void AddConnection(string connectionId);
         void RemoveConnection(string connectionId);
+        Task<IFileRepository> GetRepositoryById(string repositoryId);
     }
 }

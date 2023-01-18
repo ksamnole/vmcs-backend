@@ -103,5 +103,10 @@ namespace VMCS.Core.Domains.CodeSharing
 
             _reposOfConnections.Remove(connectionId);
         }
+
+        public async Task<IFileRepository> GetRepositoryById(string repositoryId)
+        {
+            return _repositories[repositoryId];
+        }
     }
 }
