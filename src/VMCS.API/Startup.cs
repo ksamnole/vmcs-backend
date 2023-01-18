@@ -21,6 +21,7 @@ using VMCS.Core;
 using VMCS.Core.Domains.Auth;
 using VMCS.Data;
 using VMCS.Data.Contexts;
+using VMCS.API.Hubs.CodeSharing;
 
 namespace VMCS.API
 {
