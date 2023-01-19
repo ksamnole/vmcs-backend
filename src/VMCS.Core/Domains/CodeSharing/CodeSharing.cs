@@ -12,7 +12,7 @@ using VMCS.Core.Domains.Meetings.Services;
 
 namespace VMCS.Core.Domains.CodeSharing
 {
-    internal class CodeSharing : ICodeSharing
+    public class CodeSharing : ICodeSharing
     {
         private readonly Dictionary<string, List<string>> _reposOfConnections = new Dictionary<string, List<string>>();
         private readonly Dictionary<string, IFileRepository> _repositories = new Dictionary<string, IFileRepository>();
@@ -50,6 +50,8 @@ namespace VMCS.Core.Domains.CodeSharing
         {
             if (!_reposOfConnections[connectionId].Contains(repositoryId))
                 throw new Exception("Creating folder in not connected repository");
+            if (folderName == "" || folderName.Where(x => !char.IsLetterOrDigit(x)).Any())
+                throw new ArgumentException("Invalid name of folder");
 
             _repositories[repositoryId].CreateFolder(folderName, parentFolderId);
         }
@@ -61,6 +63,9 @@ namespace VMCS.Core.Domains.CodeSharing
 
             if (entity is not null)
                 throw new ArgumentException($"Repository in meeting with id: {meetingId} already exists");
+
+            if (repositoryName == "" || repositoryName.Where(x => !char.IsLetterOrDigit(x)).Any())
+                throw new ArgumentException("Invalid name for repository");
 
             var repository = new FileRepository(meetingId, repositoryName);
 
@@ -83,6 +88,9 @@ namespace VMCS.Core.Domains.CodeSharing
         {
             if (!_reposOfConnections[connectionId].Contains(repositoryId))
                 throw new Exception("Uploading file to not connected repository");
+
+            if (file.Name == "" || file.Name.Where(x => !char.IsLetterOrDigit(x)).Any())
+                throw new Exception("Invalid name for file");
 
             _repositories[repositoryId].UploadFile(folderId, file);
         }
