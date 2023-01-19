@@ -33,7 +33,7 @@ namespace VMCS.Core.Domains.FileRepositories
                 Name = name
             };
 
-            _repositoryFolders.Add(0, Directory);
+            _repositoryFolders.Add(Directory.Id, Directory);
         }
 
         public Folder CreateFolder(string folderName, int parentFolderId)
