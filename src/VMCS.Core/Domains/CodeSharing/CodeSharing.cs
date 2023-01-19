@@ -16,6 +16,7 @@ namespace VMCS.Core.Domains.CodeSharing
     {
         private readonly Dictionary<string, List<string>> _reposOfConnections = new Dictionary<string, List<string>>();
         private readonly Dictionary<string, IFileRepository> _repositories = new Dictionary<string, IFileRepository>();
+        private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new UniqueIdentifierCreator();
 
         public CodeSharing() 
         {
@@ -67,7 +68,7 @@ namespace VMCS.Core.Domains.CodeSharing
             if (repositoryName == "" || repositoryName.Where(x => !char.IsLetterOrDigit(x)).Any())
                 throw new ArgumentException("Invalid name for repository");
 
-            var repository = new FileRepository(meetingId, repositoryName);
+            var repository = new FileRepository(meetingId, repositoryName, _uniqueIdentifierCreator);
 
             CancellationToken cancellationToken = new CancellationTokenSource().Token;
             await meetingService.SetRepositoryToMeeting(repository.Id, meetingId, cancellationToken);

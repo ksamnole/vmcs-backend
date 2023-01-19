@@ -11,7 +11,7 @@ namespace VMCS.Core.Domains.FileRepositories
 {
     public class FileRepository : IFileRepository
     {
-        private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new UniqueIdentifierCreator();
+        private readonly UniqueIdentifierCreator _uniqueIdentifierCreator;
         public string Id { get; } = Guid.NewGuid().ToString();
         public string MeetingId { get; }
         public string Name { get; }
@@ -20,13 +20,14 @@ namespace VMCS.Core.Domains.FileRepositories
         private readonly Dictionary<int, TextFile> _repositoryFiles = new Dictionary<int, TextFile>();
         private readonly Dictionary<int, Folder> _repositoryFolders = new Dictionary<int, Folder>();
 
-        public FileRepository(string meetingId, string name)
+        public FileRepository(string meetingId, string name, UniqueIdentifierCreator uniqueIdentifierCreator)
         {
+            _uniqueIdentifierCreator = uniqueIdentifierCreator;
             MeetingId = meetingId;
             Name = name;
             Directory = new Folder()
             {
-                Id = 0,
+                Id = _uniqueIdentifierCreator.GetUniqueIdentifier(),
                 Files = new List<TextFile>(),
                 Folders = new List<Folder>(),
                 Name = name
