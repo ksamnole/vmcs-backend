@@ -88,7 +88,7 @@ namespace VMCS.API.Hubs.CodeSharing
             _codeSharing.Change(text, repositoryId, fileId, Context.ConnectionId);
             //_codeSharing.Change(change, Context.ConnectionId);
 
-            await Clients.OthersInGroup(repositoryId).SendAsync("Change", text, repositoryId, fileId);
+            await Clients.Group(repositoryId).SendAsync("Change", text, repositoryId, fileId);
         }
     }
 }
