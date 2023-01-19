@@ -18,9 +18,8 @@ namespace VMCS.Core.Domains.CodeSharing
         private Dictionary<string, IFileRepository> _repositories = new Dictionary<string, IFileRepository>();
         private IMeetingService _meetingService;
 
-        public CodeSharing(IMeetingService meetingService) 
+        public CodeSharing() 
         {
-            _meetingService = meetingService;
         }
 
         public void Change(string text, string repositoryId, int fileId, string connectionId)
@@ -55,7 +54,8 @@ namespace VMCS.Core.Domains.CodeSharing
             _repositories[repositoryId].CreateFolder(folderName, parentFolderId);
         }
 
-        public async Task<FileRepository> CreateRepository(string meetingId, string repositoryName, string connectionId)
+        public async Task<FileRepository> CreateRepository(string meetingId, string repositoryName,
+            string connectionId, IMeetingService meetingService)
         {
             var entity = _repositories.Values.FirstOrDefault(r => r.MeetingId == meetingId);
 
@@ -65,7 +65,7 @@ namespace VMCS.Core.Domains.CodeSharing
             var repository = new FileRepository(meetingId, repositoryName);
 
             CancellationToken cancellationToken = new CancellationTokenSource().Token;
-            await _meetingService.SetRepositoryToMeeting(repository.Id, meetingId, cancellationToken);
+            await meetingService.SetRepositoryToMeeting(repository.Id, meetingId, cancellationToken);
 
             _reposOfConnections[connectionId].Add(repository.Id);
 

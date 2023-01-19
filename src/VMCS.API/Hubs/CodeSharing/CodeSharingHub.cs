@@ -51,14 +51,13 @@ namespace VMCS.API.Hubs.CodeSharing
 
             await Groups.AddToGroupAsync(Context.ConnectionId, repositoryId);
 
-
-            await Clients.Caller.SendAsync("ConnectToRepository",
-                _codeSharing.GetRepositoryById(repositoryId));
+            var repository = await _codeSharing.GetRepositoryById(repositoryId);
+            await Clients.Caller.SendAsync("ConnectToRepository", repository);
         }
 
         public async Task CreateRepository(string meetingId, string repoName)
         {
-            var repository = await _codeSharing.CreateRepository(meetingId, repoName, Context.ConnectionId);
+            var repository = await _codeSharing.CreateRepository(meetingId, repoName, Context.ConnectionId, _meetingService);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, repository.Id);
             await Clients.Caller.SendAsync("ConnectToRepository", repository);
@@ -66,7 +65,7 @@ namespace VMCS.API.Hubs.CodeSharing
 
         public async Task SaveRepository(string repoId)
         {
-            _codeSharing.SaveRepository(repoId);
+            await _codeSharing.SaveRepository(repoId);
         }
 
         public async Task CreateFolder(string folderName, string repoId, int parentFolderId)

@@ -26,7 +26,8 @@ namespace VMCS.Core.Domains.FileRepositories
             {
                 Id = 0,
                 Files = new List<TextFile>(),
-                Folders = new List<Folder>()
+                Folders = new List<Folder>(),
+                Name = name
             };
 
             _repositoryFolders.Add(0, Directory);
