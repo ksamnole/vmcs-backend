@@ -15,8 +15,8 @@ namespace VMCS.Core.Domains.FileRepositories
         public string Name { get; }
         public Folder Directory { get; }
 
-        private Dictionary<int, TextFile> _repositoryFiles = new Dictionary<int, TextFile>();
-        private Dictionary<int, Folder> _repositoryFolders = new Dictionary<int, Folder>();
+        private readonly Dictionary<int, TextFile> _repositoryFiles = new Dictionary<int, TextFile>();
+        private readonly Dictionary<int, Folder> _repositoryFolders = new Dictionary<int, Folder>();
 
         public FileRepository(string meetingId, string name)
         {
@@ -39,15 +39,15 @@ namespace VMCS.Core.Domains.FileRepositories
             { 
                 Id = _repositoryFolders.Count, 
                 Files = new List<TextFile>(),
-                Folders = new List<Folder>(),
+                Folders = new List<Folder>(), 
                 Name = folderName
             };
 
             if (!_repositoryFolders.ContainsKey(parentFolderId))
                 throw new ArgumentException($"Folder with id {parentFolderId} doesn`t exist");
 
-            _repositoryFolders.Add(folder.Id, folder);      
-            _repositoryFolders[parentFolderId] = folder;
+            _repositoryFolders.Add(folder.Id, folder);
+            _repositoryFolders[parentFolderId].Folders.Add(folder);
         }
 
         public void DeleteFolder(int folderId)

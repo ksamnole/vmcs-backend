@@ -14,9 +14,8 @@ namespace VMCS.Core.Domains.CodeSharing
 {
     internal class CodeSharing : ICodeSharing
     {
-        private Dictionary<string, List<string>> _reposOfConnections = new Dictionary<string, List<string>>();
-        private Dictionary<string, IFileRepository> _repositories = new Dictionary<string, IFileRepository>();
-        private IMeetingService _meetingService;
+        private readonly Dictionary<string, List<string>> _reposOfConnections = new Dictionary<string, List<string>>();
+        private readonly Dictionary<string, IFileRepository> _repositories = new Dictionary<string, IFileRepository>();
 
         public CodeSharing() 
         {
