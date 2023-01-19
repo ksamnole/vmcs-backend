@@ -43,7 +43,7 @@ namespace VMCS.API.Hubs.CodeSharing
             var entity = new TextFile() { Name = file.Name, Text = file.Text };
             _codeSharing.Upload(entity, folderId, repoId, Context.ConnectionId);
 
-            await Clients.Group(repoId).SendAsync("Upload", file, folderId, repoId);
+            await Clients.Group(repoId).SendAsync("Upload", new TextFileReturnDTO { Id = entity.Id, Name = file.Name, Text = file.Text});
         }
 
         public async Task ConnectToRepository(string repositoryId)
@@ -71,9 +71,16 @@ namespace VMCS.API.Hubs.CodeSharing
 
         public async Task CreateFolder(string folderName, string repoId, int parentFolderId)
         {
-            _codeSharing.CreateFolder(folderName, repoId, parentFolderId, Context.ConnectionId);
+            var folder = _codeSharing.CreateFolder(folderName, repoId, parentFolderId, Context.ConnectionId);
+            var returnDTO = new FolderReturnDTO() 
+            { 
+                Id= folder.Id, 
+                Name = folder.Name, 
+                Files = folder.Files, 
+                Folders = folder.Folders
+            };
 
-            await Clients.Group(repoId).SendAsync("CreateFolder", folderName, parentFolderId, repoId);
+            await Clients.Group(repoId).SendAsync("CreateFolder", returnDTO);
         }
 
         public async Task Change(string text, string repositoryId, int fileId)

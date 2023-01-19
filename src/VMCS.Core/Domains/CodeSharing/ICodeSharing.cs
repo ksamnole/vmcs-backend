@@ -17,7 +17,7 @@ namespace VMCS.Core.Domains.CodeSharing
         Task<FileRepository> CreateRepository(string meetingId, string repositoryName, string connectionId, IMeetingService meetingService);
         void ConnectToRepository(string repositoryId, string connectionId);
         Task SaveRepository(string repositoryId);
-        void CreateFolder(string folderName, string repositoryId, int parentFolderId, string connectionId);
+        Folder CreateFolder(string folderName, string repositoryId, int parentFolderId, string connectionId);
         void Change(string text, string repositoryId, int fileId, string connectionId);
         void AddConnection(string connectionId);
         void RemoveConnection(string connectionId);

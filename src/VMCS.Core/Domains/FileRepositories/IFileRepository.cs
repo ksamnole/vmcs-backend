@@ -14,7 +14,7 @@ namespace VMCS.Core.Domains.FileRepositories
         string Id { get; }
         Folder Directory { get; }
 
-        void CreateFolder(string folderName, int parentFolderId);
+        Folder CreateFolder(string folderName, int parentFolderId);
         void DeleteFolder(int folderId);
         void UploadFile(int folderId, TextFile textFile);
         void DeleteFile(int fileId);

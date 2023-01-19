@@ -4,12 +4,14 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VMCS.Core.Domains.CodeSharing;
 using VMCS.Core.Domains.CodeSharing.Models;
 
 namespace VMCS.Core.Domains.FileRepositories
 {
     public class FileRepository : IFileRepository
     {
+        private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new UniqueIdentifierCreator();
         public string Id { get; } = Guid.NewGuid().ToString();
         public string MeetingId { get; }
         public string Name { get; }
@@ -33,11 +35,11 @@ namespace VMCS.Core.Domains.FileRepositories
             _repositoryFolders.Add(0, Directory);
         }
 
-        public void CreateFolder(string folderName, int parentFolderId)
+        public Folder CreateFolder(string folderName, int parentFolderId)
         {
             var folder = new Folder() 
             { 
-                Id = _repositoryFolders.Count, 
+                Id = _uniqueIdentifierCreator.GetUniqueIdentifier(), 
                 Files = new List<TextFile>(),
                 Folders = new List<Folder>(), 
                 Name = folderName
@@ -48,6 +50,8 @@ namespace VMCS.Core.Domains.FileRepositories
 
             _repositoryFolders.Add(folder.Id, folder);
             _repositoryFolders[parentFolderId].Folders.Add(folder);
+
+            return folder;
         }
 
         public void DeleteFolder(int folderId)
@@ -68,7 +72,7 @@ namespace VMCS.Core.Domains.FileRepositories
 
         public void UploadFile(int folderId, TextFile file)
         {
-            file.Id = _repositoryFiles.Count;
+            file.Id = _uniqueIdentifierCreator.GetUniqueIdentifier();
             var files = _repositoryFolders[folderId].Files;
             files.Add(file);
 
@@ -94,11 +98,12 @@ namespace VMCS.Core.Domains.FileRepositories
         {
             currentFolder = currentFolder.CreateSubdirectory(folder.Name);
             currentFolder.Create();
-            //foreach (var file in folder.Files)
-            //{
-            //    var text = new string(file.TextInBytes.Select(b => (char)b).ToArray());
-            //    File.WriteAllText(Path.Combine(currentFolder.FullName, file.Name), text);
-            //}
+            foreach (var file in folder.Files)
+            {
+                //var text = new string(file.TextInBytes.Select(b => (char)b).ToArray());
+                var text = file.Text;
+                File.WriteAllText(Path.Combine(currentFolder.FullName, file.Name), text);
+            }
 
             foreach (var subFolder in folder.Folders)
             {

@@ -46,14 +46,14 @@ namespace VMCS.Core.Domains.CodeSharing
             _reposOfConnections[connectionId].Add(repositoryId);
         }
 
-        public void CreateFolder(string folderName, string repositoryId, int parentFolderId, string connectionId)
+        public Folder CreateFolder(string folderName, string repositoryId, int parentFolderId, string connectionId)
         {
             if (!_reposOfConnections[connectionId].Contains(repositoryId))
                 throw new Exception("Creating folder in not connected repository");
             if (folderName == "" || folderName.Where(x => !char.IsLetterOrDigit(x)).Any())
                 throw new ArgumentException("Invalid name of folder");
 
-            _repositories[repositoryId].CreateFolder(folderName, parentFolderId);
+            return _repositories[repositoryId].CreateFolder(folderName, parentFolderId);
         }
 
         public async Task<FileRepository> CreateRepository(string meetingId, string repositoryName,
