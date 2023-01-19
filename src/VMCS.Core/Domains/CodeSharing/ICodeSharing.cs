@@ -13,7 +13,6 @@ namespace VMCS.Core.Domains.CodeSharing
 {
     public interface ICodeSharing
     {
-
         void Upload(TextFile file, int folderId, string repsitoryoId, string connectionId);
         Task<FileRepository> CreateRepository(string meetingId, string repositoryName, string connectionId, IMeetingService meetingService);
         void ConnectToRepository(string repositoryId, string connectionId);

@@ -55,7 +55,8 @@ namespace VMCS.Core.Domains.CodeSharing
             _repositories[repositoryId].CreateFolder(folderName, parentFolderId);
         }
 
-        public async Task<FileRepository> CreateRepository(string meetingId, string repositoryName, string connectionId, IMeetingService meetingService)
+        public async Task<FileRepository> CreateRepository(string meetingId, string repositoryName,
+            string connectionId, IMeetingService meetingService)
         {
             var entity = _repositories.Values.FirstOrDefault(r => r.MeetingId == meetingId);
 
