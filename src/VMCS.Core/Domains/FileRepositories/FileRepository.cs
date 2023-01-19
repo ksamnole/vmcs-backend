@@ -68,6 +68,7 @@ namespace VMCS.Core.Domains.FileRepositories
 
         public void UploadFile(int folderId, TextFile file)
         {
+            file.Id = _repositoryFiles.Count;
             var files = _repositoryFolders[folderId].Files;
             files.Add(file);
 

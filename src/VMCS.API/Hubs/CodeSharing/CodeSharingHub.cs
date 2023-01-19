@@ -38,9 +38,10 @@ namespace VMCS.API.Hubs.CodeSharing
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task Upload(TextFile file, int folderId, string repoId)
+        public async Task Upload(TextFileDTO file, int folderId, string repoId)
         {
-            _codeSharing.Upload(file, folderId, repoId, Context.ConnectionId);
+            var entity = new TextFile() { Name = file.Name, Text = file.Text };
+            _codeSharing.Upload(entity, folderId, repoId, Context.ConnectionId);
 
             await Clients.Group(repoId).SendAsync("Upload", file, folderId, repoId);
         }
