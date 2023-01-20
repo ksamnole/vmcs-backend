@@ -13,5 +13,14 @@ namespace VMCS.Core.Domains.CodeSharing.Models
         public List<TextFile> Files { get; set; } = new List<TextFile>();
         public List<Folder> Folders { get; set; } = new List<Folder>();
         public bool IsDeleted { get; set; }
+
+
+        public Folder() { }
+
+        public Folder (string name)
+        {
+            Name = name;
+        }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Compression;
@@ -17,10 +18,12 @@ namespace VMCS.Core.Domains.CodeSharing
         private readonly Dictionary<string, List<string>> _reposOfConnections = new Dictionary<string, List<string>>();
         private readonly Dictionary<string, IFileRepository> _repositories = new Dictionary<string, IFileRepository>();
         private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new UniqueIdentifierCreator();
+        private readonly IValidator<TextFile> _fileValidator;
 
-        public CodeSharing() 
+
+        public CodeSharing(IValidator<TextFile> fileValidator) 
         {
-            
+            _fileValidator = fileValidator;
         }
 
         public void Change(string text, string repositoryId, int fileId, string connectionId)
@@ -47,14 +50,12 @@ namespace VMCS.Core.Domains.CodeSharing
             _reposOfConnections[connectionId].Add(repositoryId);
         }
 
-        public Folder CreateFolder(string folderName, string repositoryId, int parentFolderId, string connectionId)
+        public Folder CreateFolder(Folder folder, string repositoryId, int parentFolderId, string connectionId)
         {
             if (!_reposOfConnections[connectionId].Contains(repositoryId))
                 throw new Exception("Creating folder in not connected repository");
-            if (folderName == "" || folderName.Where(x => !char.IsLetterOrDigit(x)).Any())
-                throw new ArgumentException("Invalid name of folder");
 
-            return _repositories[repositoryId].CreateFolder(folderName, parentFolderId);
+            return _repositories[repositoryId].CreateFolder(folder, parentFolderId);
         }
 
         public async Task<FileRepository> CreateRepository(string meetingId, string repositoryName,
@@ -90,8 +91,7 @@ namespace VMCS.Core.Domains.CodeSharing
             if (!_reposOfConnections[connectionId].Contains(repositoryId))
                 throw new Exception("Uploading file to not connected repository");
 
-            if (file.Name == "" || file.Name.Where(x => !char.IsLetterOrDigit(x)).Any())
-                throw new Exception("Invalid name for file");
+            _fileValidator.ValidateAndThrow(file);
 
             _repositories[repositoryId].UploadFile(folderId, file);
         }

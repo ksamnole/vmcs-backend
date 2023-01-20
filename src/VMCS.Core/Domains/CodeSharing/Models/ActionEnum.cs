@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VMCS.Core.Domains.CodeSharing
+namespace VMCS.Core.Domains.CodeSharing.Models
 {
     public enum ActionEnum
     {

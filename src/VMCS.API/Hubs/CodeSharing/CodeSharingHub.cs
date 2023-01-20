@@ -71,7 +71,7 @@ namespace VMCS.API.Hubs.CodeSharing
 
         public async Task CreateFolder(string folderName, string repoId, int parentFolderId)
         {
-            var folder = _codeSharing.CreateFolder(folderName, repoId, parentFolderId, Context.ConnectionId);
+            var folder = _codeSharing.CreateFolder(new Folder(folderName), repoId, parentFolderId, Context.ConnectionId);
             var returnDTO = new FolderReturnDTO() 
             { 
                 Id= folder.Id, 

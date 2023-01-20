@@ -28,23 +28,15 @@ namespace VMCS.Core.Domains.FileRepositories
             Directory = new Folder()
             {
                 Id = _uniqueIdentifierCreator.GetUniqueIdentifier(),
-                Files = new List<TextFile>(),
-                Folders = new List<Folder>(),
                 Name = name
             };
 
             _repositoryFolders.Add(Directory.Id, Directory);
         }
 
-        public Folder CreateFolder(string folderName, int parentFolderId)
+        public Folder CreateFolder(Folder folder, int parentFolderId)
         {
-            var folder = new Folder() 
-            { 
-                Id = _uniqueIdentifierCreator.GetUniqueIdentifier(), 
-                Files = new List<TextFile>(),
-                Folders = new List<Folder>(), 
-                Name = folderName
-            };
+            folder.Id = _uniqueIdentifierCreator.GetUniqueIdentifier();
 
             if (!_repositoryFolders.ContainsKey(parentFolderId))
                 throw new ArgumentException($"Folder with id {parentFolderId} doesn`t exist");
