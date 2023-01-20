@@ -1,6 +1,3 @@
-using System;
-using System.Data.Entity.Migrations.Model;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using System.Text;
 using System.Threading.Tasks;
 using VMCS.API.HostedServices;
@@ -108,9 +104,7 @@ namespace VMCS.API
                         var accessToken = context.Request.Query["access_token"];
 
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && 
-                            (path.StartsWithSegments("/chatHub") 
-                             || path.StartsWithSegments("/meetingHub")))
+                        if (!string.IsNullOrEmpty(accessToken))
                         {
                             context.Token = accessToken;
                         }
