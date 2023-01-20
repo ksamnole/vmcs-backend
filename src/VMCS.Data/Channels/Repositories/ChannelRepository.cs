@@ -20,10 +20,10 @@ public class ChannelRepository : IChannelRepository
     {
         var entity = await _applicationContext.Channels
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-        
+
         if (entity == null)
             throw new ObjectNotFoundException($"Channel with id = {id} not found");
-        
+
         await _applicationContext.Chats.LoadAsync(cancellationToken);
         await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(cancellationToken);
         await _applicationContext.Meetings.LoadAsync(cancellationToken);

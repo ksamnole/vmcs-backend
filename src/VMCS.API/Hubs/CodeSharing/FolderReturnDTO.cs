@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using VMCS.Core.Domains.CodeSharing.Models;
 
-namespace VMCS.API.Hubs.CodeSharing
+namespace VMCS.API.Hubs.CodeSharing;
+
+public class FolderReturnDTO
 {
-    public class FolderReturnDTO
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public List<TextFile> Files { get; set; } = new List<TextFile>();
-        public List<Folder> Folders { get; set; } = new List<Folder>();
-    }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public List<TextFile> Files { get; set; } = new();
+    public List<Folder> Folders { get; set; } = new();
 }

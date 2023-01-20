@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace VMCS.Core.Domains.CodeSharing.Models;
 
-namespace VMCS.Core.Domains.CodeSharing.Models
+public enum ActionEnum
 {
-    public enum ActionEnum
-    {
-        Insert,
-        Delete
-    }
+    Insert,
+    Delete
 }

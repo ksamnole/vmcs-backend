@@ -1,65 +1,66 @@
-﻿using VMCS.Core.Domains.Meetings.Repositories;
-using VMCS.Data.Contexts;
+﻿using System.Data.Entity.Core;
 using Microsoft.EntityFrameworkCore;
-using System.Data.Entity.Core;
 using VMCS.Core.Domains.Meetings;
+using VMCS.Core.Domains.Meetings.Repositories;
+using VMCS.Data.Contexts;
 
-namespace VMCS.Data.Meetings.Repositories
+namespace VMCS.Data.Meetings.Repositories;
+
+public class MeetingRepository : IMeetingRepository
 {
-    public class MeetingRepository : IMeetingRepository
+    private readonly ApplicationContext _applicationContext;
+
+    public MeetingRepository(ApplicationContext applicationContext)
     {
-        private readonly ApplicationContext _applicationContext;
-        
-        public MeetingRepository(ApplicationContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        _applicationContext = applicationContext;
+    }
 
-        public async Task Create(Meeting meeting, CancellationToken token)
-        {
-            await _applicationContext.Meetings.AddAsync(meeting, token);
-        }
+    public async Task Create(Meeting meeting, CancellationToken token)
+    {
+        await _applicationContext.Meetings.AddAsync(meeting, token);
+    }
 
-        public async Task Delete(string id, CancellationToken token)
-        {
-            var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
+    public async Task Delete(string id, CancellationToken token)
+    {
+        var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
 
-            if (entity is null)
-                throw new ObjectNotFoundException($"Meeting with id = {id} not found");
+        if (entity is null)
+            throw new ObjectNotFoundException($"Meeting with id = {id} not found");
 
-            _applicationContext.Meetings.Remove(entity);
-        }
+        _applicationContext.Meetings.Remove(entity);
+    }
 
-        public async Task<Meeting> GetMeetingByIdAsync(string id, CancellationToken token)
-        {
-            var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
-            
-            if (entity is null)
-                throw new ObjectNotFoundException($"Meeting with id = {id} not found");
-            
-            await _applicationContext.Chats.LoadAsync(token);
-            await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(token);
+    public async Task<Meeting> GetMeetingByIdAsync(string id, CancellationToken token)
+    {
+        var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(m => m.Id == id, token);
 
-            return entity;
-        }
+        if (entity is null)
+            throw new ObjectNotFoundException($"Meeting with id = {id} not found");
 
-        public async Task SetRepositoryToMeeting(string repositoryId, string meetingId, CancellationToken token)
-        {
-            var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(x => x.Id == meetingId);
+        await _applicationContext.Chats.LoadAsync(token);
+        await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(token);
 
-            if (entity == null)
-            {
-                throw new ArgumentException($"Meeting with id : {meetingId} doesn't exists");
-            }
+        return entity;
+    }
 
-            if (entity.RepositoryId is not null)
-            {
-                throw new InvalidOperationException($"Meeting already has repository");
+    public async Task SetRepositoryToMeeting(string repositoryId, string meetingId, CancellationToken token)
+    {
+        var entity = await _applicationContext.Meetings.FirstOrDefaultAsync(x => x.Id == meetingId, token);
 
-            }
+        if (entity == null)
+            throw new ArgumentException($"Meeting with id : {meetingId} doesn't exists");
 
-            entity.RepositoryId = repositoryId;
-            await _applicationContext.SaveChangesAsync();
-        }
+        if (entity.RepositoryId is not null)
+            throw new InvalidOperationException("Meeting already has repository");
+
+        entity.RepositoryId = repositoryId;
+        await _applicationContext.SaveChangesAsync(token);
+    }
+
+    public bool ContainsById(string meetingId)
+    {
+        return _applicationContext
+            .Meetings
+            .Any(meeting => meeting.Id == meetingId);
     }
 }

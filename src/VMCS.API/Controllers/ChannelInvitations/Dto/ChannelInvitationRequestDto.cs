@@ -1,8 +1,7 @@
-﻿namespace VMCS.API.Controllers.ChannelInvitations.Dto
+﻿namespace VMCS.API.Controllers.ChannelInvitations.Dto;
+
+public class ChannelInvitationRequestDto
 {
-    public class ChannelInvitationRequestDto
-    {
-        public string ChannelId { get; set; }
-        public string RecipientId { get; set; }
-    }
+    public string ChannelId { get; set; }
+    public string RecipientId { get; set; }
 }

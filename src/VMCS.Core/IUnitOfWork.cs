@@ -1,7 +1,6 @@
-﻿namespace VMCS.Core
+﻿namespace VMCS.Core;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        Task<int> SaveChange();
-    }
+    Task<int> SaveChange();
 }

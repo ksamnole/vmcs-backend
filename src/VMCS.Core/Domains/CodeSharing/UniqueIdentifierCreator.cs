@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace VMCS.Core.Domains.CodeSharing;
 
-namespace VMCS.Core.Domains.CodeSharing
+public class UniqueIdentifierCreator
 {
-    public class UniqueIdentifierCreator
-    {
-        private int id;
+    private int id;
 
-        public int GetUniqueIdentifier()
-        {
-            return id++;
-        } 
+    public int GetUniqueIdentifier()
+    {
+        return id++;
     }
 }

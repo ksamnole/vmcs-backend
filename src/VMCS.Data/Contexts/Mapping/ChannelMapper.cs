@@ -10,8 +10,8 @@ public static class ChannelMapper
         typeBuilder.HasOne(x => x.Creator);
         typeBuilder.HasMany(x => x.Users).WithMany(x => x.Channels);
 
-        typeBuilder.Property(x => x.Name).IsRequired();   
-        
+        typeBuilder.Property(x => x.Name).IsRequired();
+
         return typeBuilder;
     }
 }

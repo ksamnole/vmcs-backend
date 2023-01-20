@@ -15,7 +15,7 @@ public static class MeetingMapper
             .WithMany(x => x.Meetings)
             .HasForeignKey(x => x.ChannelId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         typeBuilder.Property(x => x.Name).IsRequired();
         typeBuilder.Property(x => x.IsInChannel).IsRequired();
 
