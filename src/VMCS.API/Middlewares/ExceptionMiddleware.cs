@@ -1,44 +1,43 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using VMCS.Core;
 
-namespace VMCS.API.Middlewares
+namespace VMCS.API.Middlewares;
+
+public class ExceptionMiddleware
 {
-    public class ExceptionMiddleware
+    private readonly RequestDelegate _next;
+
+    public ExceptionMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public ExceptionMiddleware(RequestDelegate next)
+    public async Task Invoke(HttpContext httpContext)
+    {
+        try
         {
-            _next = next;
+            await _next(httpContext);
         }
-
-        public async Task Invoke(HttpContext httpContext)
+        catch (ValidationException exception)
         {
-            try
-            {
-                await _next(httpContext);
-            }
-            catch (FluentValidation.ValidationException exception)
-            {
-                var errors = exception.Errors
-                    .Select(x => new { Property = x.PropertyName, Message = x.ErrorMessage });
+            var errors = exception.Errors
+                .Select(x => new { Property = x.PropertyName, Message = x.ErrorMessage });
 
-                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await httpContext.Response.WriteAsJsonAsync(new { Errors = errors });
-            }
-            catch (ValidationException exception)
-            {
-                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await httpContext.Response.WriteAsJsonAsync(new { Message = exception.Message, Value = exception.Value });
-            }
-            catch (Exception exception)
-            {
-                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                await httpContext.Response.WriteAsJsonAsync(new { Message = "Внутренняя ошибка сервера" });
-            }
+            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await httpContext.Response.WriteAsJsonAsync(new { Errors = errors });
+        }
+        catch (Core.ValidationException exception)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await httpContext.Response.WriteAsJsonAsync(new { exception.Message, exception.Value });
+        }
+        catch (Exception exception)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await httpContext.Response.WriteAsJsonAsync(new { Message = "Внутренняя ошибка сервера" });
         }
     }
 }

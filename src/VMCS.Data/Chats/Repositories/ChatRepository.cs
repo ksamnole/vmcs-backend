@@ -8,12 +8,12 @@ namespace VMCS.Data.Chats.Repositories;
 public class ChatRepository : IChatRepository
 {
     private readonly ApplicationContext _applicationContext;
-    
+
     public ChatRepository(ApplicationContext applicationContext)
     {
         _applicationContext = applicationContext;
     }
-    
+
     public async Task Delete(string id, CancellationToken cancellationToken)
     {
         var entity = await _applicationContext.Chats.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -22,5 +22,12 @@ public class ChatRepository : IChatRepository
             throw new ObjectNotFoundException($"Chat with id = {id} not found");
 
         _applicationContext.Chats.Remove(entity);
+    }
+
+    public bool ContainsById(string chatId)
+    {
+        return _applicationContext
+            .Chats
+            .Any(chat => chat.Id == chatId);
     }
 }

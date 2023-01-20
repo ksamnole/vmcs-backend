@@ -1,8 +1,7 @@
-﻿namespace VMCS.API.Models
+﻿namespace VMCS.API.Models;
+
+public class LoginDTO
 {
-    public class LoginDTO
-    {
-        public string Login { get; set; }
-        public string Password { get; set; }
-    }
+    public string Login { get; set; }
+    public string Password { get; set; }
 }

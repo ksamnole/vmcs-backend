@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace VMCS.Core.Domains.FileRepositories;
 
-namespace VMCS.Core.Domains.FileRepositories
+public interface IFileRepositoryRepository
 {
-    public interface IFileRepositoryRepository
-    {
-        Task Add(FileRepository fileRepository);
-
-    }
+    Task Add(FileRepository fileRepository);
 }

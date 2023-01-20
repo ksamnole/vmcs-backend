@@ -29,10 +29,10 @@ public static class Bootstrap
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IChannelInvitationRepository, ChannelInvitationRepository>();
-        
-        services.AddDbContext<AuthenticationContext>(options => 
+
+        services.AddDbContext<AuthenticationContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
-        services.AddDbContext<ApplicationContext>(options => 
+        services.AddDbContext<ApplicationContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
 
         return services;

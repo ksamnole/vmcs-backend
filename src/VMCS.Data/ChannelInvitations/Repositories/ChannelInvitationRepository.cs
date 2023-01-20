@@ -17,8 +17,9 @@ public class ChannelInvitationRepository : IChannelInvitationRepository
 
     public async Task<ChannelInvitation> Get(string id, CancellationToken cancellationToken)
     {
-        var entity = await _applicationContext.ChannelInvitations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-        
+        var entity =
+            await _applicationContext.ChannelInvitations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
         if (entity == null)
             throw new ObjectNotFoundException($"Invitation to channel with Id = {id} not found");
 
@@ -32,7 +33,8 @@ public class ChannelInvitationRepository : IChannelInvitationRepository
 
     public async Task Delete(string id, CancellationToken cancellationToken)
     {
-        var entity = await _applicationContext.ChannelInvitations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var entity =
+            await _applicationContext.ChannelInvitations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (entity == null)
             throw new ObjectNotFoundException($"Invitation to channel with Id = {id} not found");

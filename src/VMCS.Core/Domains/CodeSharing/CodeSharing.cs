@@ -1,119 +1,110 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.FileRepositories;
 using VMCS.Core.Domains.Meetings.Services;
 
-namespace VMCS.Core.Domains.CodeSharing
+namespace VMCS.Core.Domains.CodeSharing;
+
+public class CodeSharing : ICodeSharing
 {
-    public class CodeSharing : ICodeSharing
+    private readonly IValidator<TextFile> _fileValidator;
+    private readonly Dictionary<string, IFileRepository> _repositories = new();
+    private readonly Dictionary<string, List<string>> _reposOfConnections = new();
+    private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new();
+
+
+    public CodeSharing(IValidator<TextFile> fileValidator)
     {
-        private readonly Dictionary<string, List<string>> _reposOfConnections = new Dictionary<string, List<string>>();
-        private readonly Dictionary<string, IFileRepository> _repositories = new Dictionary<string, IFileRepository>();
-        private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new UniqueIdentifierCreator();
+        _fileValidator = fileValidator;
+    }
 
-        public CodeSharing() 
-        {
-            
-        }
+    public void Change(string text, string repositoryId, int fileId, string connectionId)
+    {
+        _repositories[repositoryId].ChangeFile(text, fileId);
+        //if (!_reposOfConnections[connectionId].Contains(change.RepoId))
+        //    throw new Exception("Changing files in not connected repository");
 
-        public void Change(string text, string repositoryId, int fileId, string connectionId)
-        {
-            _repositories[repositoryId].ChangeFile(text, fileId);
-            //if (!_reposOfConnections[connectionId].Contains(change.RepoId))
-            //    throw new Exception("Changing files in not connected repository");
+        //var chint = change.InsertedChars;
+        //var text = _repositoryFiles[change.RepoId][change.FileId].TextInBytes;
 
-            //var chint = change.InsertedChars;
-            //var text = _repositoryFiles[change.RepoId][change.FileId].TextInBytes;
+        //if (change.Action == ActionEnum.Insert)
+        //{
+        //    text = text.Take(change.Position).Concat(chint).Concat(text.Skip(change.Position)).ToList();
+        //}
+        //if (change.Action == ActionEnum.Delete)
+        //{
+        //    text = text.Take(change.Position).Concat(text.Skip(change.Position + change.CharsDeleted)).ToList();
+        //}
+    }
 
-            //if (change.Action == ActionEnum.Insert)
-            //{
-            //    text = text.Take(change.Position).Concat(chint).Concat(text.Skip(change.Position)).ToList();
-            //}
-            //if (change.Action == ActionEnum.Delete)
-            //{
-            //    text = text.Take(change.Position).Concat(text.Skip(change.Position + change.CharsDeleted)).ToList();
-            //}
-        }
+    public void ConnectToRepository(string repositoryId, string connectionId)
+    {
+        _reposOfConnections[connectionId].Add(repositoryId);
+    }
 
-        public void ConnectToRepository(string repositoryId, string connectionId)
-        {
-            _reposOfConnections[connectionId].Add(repositoryId);
-        }
+    public Folder CreateFolder(Folder folder, string repositoryId, int parentFolderId, string connectionId)
+    {
+        if (!_reposOfConnections[connectionId].Contains(repositoryId))
+            throw new Exception("Creating folder in not connected repository");
 
-        public Folder CreateFolder(string folderName, string repositoryId, int parentFolderId, string connectionId)
-        {
-            if (!_reposOfConnections[connectionId].Contains(repositoryId))
-                throw new Exception("Creating folder in not connected repository");
-            if (folderName == "" || folderName.Where(x => !char.IsLetterOrDigit(x)).Any())
-                throw new ArgumentException("Invalid name of folder");
+        return _repositories[repositoryId].CreateFolder(folder, parentFolderId);
+    }
 
-            return _repositories[repositoryId].CreateFolder(folderName, parentFolderId);
-        }
+    public async Task<FileRepository> CreateRepository(string meetingId, string repositoryName,
+        string connectionId, IMeetingService meetingService)
+    {
+        var entity = _repositories.Values.FirstOrDefault(r => r.MeetingId == meetingId);
 
-        public async Task<FileRepository> CreateRepository(string meetingId, string repositoryName,
-            string connectionId, IMeetingService meetingService)
-        {
-            var entity = _repositories.Values.FirstOrDefault(r => r.MeetingId == meetingId);
+        if (entity is not null)
+            throw new ArgumentException($"Repository in meeting with id: {meetingId} already exists");
 
-            if (entity is not null)
-                throw new ArgumentException($"Repository in meeting with id: {meetingId} already exists");
+        if (repositoryName == "" || repositoryName.Any(x => !char.IsLetterOrDigit(x)))
+            throw new ArgumentException("Invalid name for repository");
 
-            if (repositoryName == "" || repositoryName.Where(x => !char.IsLetterOrDigit(x)).Any())
-                throw new ArgumentException("Invalid name for repository");
+        var repository = new FileRepository(meetingId, repositoryName, _uniqueIdentifierCreator);
 
-            var repository = new FileRepository(meetingId, repositoryName, _uniqueIdentifierCreator);
+        var cancellationToken = new CancellationTokenSource().Token;
+        await meetingService.SetRepositoryToMeeting(repository.Id, meetingId, cancellationToken);
 
-            CancellationToken cancellationToken = new CancellationTokenSource().Token;
-            await meetingService.SetRepositoryToMeeting(repository.Id, meetingId, cancellationToken);
+        _reposOfConnections[connectionId].Add(repository.Id);
 
-            _reposOfConnections[connectionId].Add(repository.Id);
+        _repositories.Add(repository.Id, repository);
 
-            _repositories.Add(repository.Id, repository);
+        return repository;
+    }
 
-            return repository;
-        }
+    public async Task SaveRepository(string repositoryId)
+    {
+        await _repositories[repositoryId].Save();
+    }
 
-        public async Task SaveRepository(string repositoryId)
-        {
-            await _repositories[repositoryId].Save();
-        }
+    public void Upload(TextFile file, int folderId, string repositoryId, string connectionId)
+    {
+        if (!_reposOfConnections[connectionId].Contains(repositoryId))
+            throw new Exception("Uploading file to not connected repository");
 
-        public void Upload(TextFile file, int folderId, string repositoryId, string connectionId)
-        {
-            if (!_reposOfConnections[connectionId].Contains(repositoryId))
-                throw new Exception("Uploading file to not connected repository");
+        _fileValidator.ValidateAndThrow(file);
 
-            if (file.Name == "" || file.Name.Where(x => !char.IsLetterOrDigit(x)).Any())
-                throw new Exception("Invalid name for file");
+        _repositories[repositoryId].UploadFile(folderId, file);
+    }
 
-            _repositories[repositoryId].UploadFile(folderId, file);
-        }
+    public void AddConnection(string connectionId)
+    {
+        if (_reposOfConnections.ContainsKey(connectionId))
+            throw new ArgumentException($"Connection with id : {connectionId} already connected.");
+        _reposOfConnections.Add(connectionId, new List<string>());
+    }
 
-        public void AddConnection(string connectionId)
-        {
-            if (_reposOfConnections.ContainsKey(connectionId))
-                throw new ArgumentException($"Connection with id : {connectionId} already connected.");
-            _reposOfConnections.Add(connectionId, new List<string>());
-        }
+    public void RemoveConnection(string connectionId)
+    {
+        if (!_reposOfConnections.ContainsKey(connectionId))
+            throw new ArgumentException($"There is no connection with id : {connectionId}");
 
-        public void RemoveConnection(string connectionId)
-        {
-            if (!_reposOfConnections.ContainsKey(connectionId))
-                throw new ArgumentException($"There is no connection with id : {connectionId}");
+        _reposOfConnections.Remove(connectionId);
+    }
 
-            _reposOfConnections.Remove(connectionId);
-        }
-
-        public async Task<IFileRepository> GetRepositoryById(string repositoryId)
-        {
-            return _repositories[repositoryId];
-        }
+    public async Task<IFileRepository> GetRepositoryById(string repositoryId)
+    {
+        return _repositories[repositoryId];
     }
 }

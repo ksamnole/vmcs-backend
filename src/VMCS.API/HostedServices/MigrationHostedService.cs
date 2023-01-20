@@ -6,39 +6,38 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using VMCS.Data.Contexts;
 
-namespace VMCS.API.HostedServices
+namespace VMCS.API.HostedServices;
+
+public class MigrationHostedService : IHostedService
 {
-    public class MigrationHostedService : IHostedService
+    private readonly IServiceProvider _serviceProvider;
+
+    public MigrationHostedService(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
+        _serviceProvider = serviceProvider;
+    }
 
-        public MigrationHostedService(IServiceProvider serviceProvider)
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        using (var scope = _serviceProvider.CreateScope())
         {
-            _serviceProvider = serviceProvider;
-        }
+            DatabaseUpdate(scope.ServiceProvider.GetService<ApplicationContext>());
+            DatabaseUpdate(scope.ServiceProvider.GetService<AuthenticationContext>());
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                DatabaseUpdate(scope.ServiceProvider.GetService<ApplicationContext>());
-                DatabaseUpdate(scope.ServiceProvider.GetService<AuthenticationContext>());
-
-                return Task.CompletedTask;
-            }
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
             return Task.CompletedTask;
         }
+    }
 
-        private static void DatabaseUpdate(DbContext context)
-        {
-            if (context == null)
-                throw new Exception($"{nameof(ApplicationContext)} not registered");
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 
-            context.Database.Migrate();
-        }
+    private static void DatabaseUpdate(DbContext context)
+    {
+        if (context == null)
+            throw new Exception($"{nameof(ApplicationContext)} not registered");
+
+        context.Database.Migrate();
     }
 }
