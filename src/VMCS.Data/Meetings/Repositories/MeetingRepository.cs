@@ -50,10 +50,10 @@ public class MeetingRepository : IMeetingRepository
         if (entity == null)
             throw new ArgumentException($"Meeting with id : {meetingId} doesn't exists");
 
-        if (entity.RepositoryId is not null)
+        if (entity.DirectoryId is not null)
             throw new InvalidOperationException("Meeting already has repository");
 
-        entity.RepositoryId = repositoryId;
+        entity.DirectoryId = repositoryId;
         await _applicationContext.SaveChangesAsync(token);
     }
 

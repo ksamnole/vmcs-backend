@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VMCS.Data.Contexts;
@@ -11,9 +12,11 @@ using VMCS.Data.Contexts;
 namespace VMCS.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230121134127_Add directory model")]
+    partial class Adddirectorymodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,9 +144,11 @@ namespace VMCS.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("DirectoryInJson")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<byte[]>("DirectoryZip")
+                        .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<string>("MeetingId")

@@ -1,6 +1,8 @@
 ﻿using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Chats;
 using VMCS.Core.Domains.Users;
+using Directory = VMCS.Core.Domains.Directories.Directory;
+
 
 namespace VMCS.Core.Domains.Meetings;
 
@@ -26,5 +28,6 @@ public class Meeting : BaseEntity
     public Chat Chat { get; set; }
     public virtual ICollection<User> Users { get; set; }
 
-    public string? RepositoryId { get; set; }
+    public string? DirectoryId { get; set; }
+    public Directory? Directory { get; set; }
 }

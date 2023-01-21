@@ -38,7 +38,7 @@ public class MeetingController : ControllerBase
             Name = meeting.Name,
             Chat = _mapper.Map<ShortChatDto>(meeting.Chat),
             Users = meeting.Users.Select(x => _mapper.Map<ShortUserDto>(x)),
-            RepositoryId = meeting.RepositoryId
+            RepositoryId = meeting.DirectoryId
         };
     }
 

@@ -8,6 +8,7 @@ using VMCS.Core.Domains.Chats.Services;
 using VMCS.Core.Domains.CodeSharing;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.CodeSharing.Validators;
+using VMCS.Core.Domains.Directories.Services;
 using VMCS.Core.Domains.Meetings;
 using VMCS.Core.Domains.Meetings.Services;
 using VMCS.Core.Domains.Meetings.Validators;
@@ -36,8 +37,8 @@ public static class Bootstrap
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IChannelInvitationService, ChannelInvitationService>();
+        services.AddScoped<IDirectoryService, DirectoryService>();
 
-        services.AddSingleton<ICodeSharing, CodeSharing>();
 
         return services;
     }

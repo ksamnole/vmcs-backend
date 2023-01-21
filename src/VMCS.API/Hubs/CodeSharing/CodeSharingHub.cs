@@ -1,71 +1,87 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using VMCS.Core.Domains.CodeSharing;
+using VMCS.Core.Domains.CodeSharing.Directories;
 using VMCS.Core.Domains.CodeSharing.Models;
+using VMCS.Core.Domains.Directories.Services;
 using VMCS.Core.Domains.Meetings.Services;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace VMCS.API.Hubs.CodeSharing;
 
 public class CodeSharingHub : Hub
 {
-    private static ICodeSharing _codeSharing;
     private static IMeetingService _meetingService;
+    private readonly IValidator<TextFile> _fileValidator;
+    private readonly IDirectoryService _directoryService;
+    private readonly Dictionary<string, IDirectory> _directories = new();
+    private readonly Dictionary<string, string> _connectionDirectory = new();
+    private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new();
 
-    public CodeSharingHub(IMeetingService meetingService, ICodeSharing codeSharing)
+    public CodeSharingHub(IMeetingService meetingService)
     {
-        _codeSharing = codeSharing;
         _meetingService = meetingService;
     }
 
     public override Task OnConnectedAsync()
     {
-        _codeSharing.AddConnection(Context.ConnectionId);
         return base.OnConnectedAsync();
     }
 
     public override Task OnDisconnectedAsync(Exception exception)
     {
-        _codeSharing.RemoveConnection(Context.ConnectionId);
+        _connectionDirectory.Remove(Context.ConnectionId);
         return base.OnDisconnectedAsync(exception);
     }
 
-    public async Task Upload(TextFileDTO file, int folderId, string repoId)
+    public async Task Upload(TextFileDTO file, int folderId, string directoryId)
     {
         var entity = new TextFile { Name = file.Name, Text = file.Text };
-        _codeSharing.Upload(entity, folderId, repoId, Context.ConnectionId);
 
-        await Clients.Group(repoId).SendAsync("Upload",
+        if (!_connectionDirectory[Context.ConnectionId].Contains(directoryId))
+            throw new Exception("Uploading file to not connected directory");
+
+        _fileValidator.ValidateAndThrow(entity);
+
+        _directories[Context.ConnectionId].UploadFile(folderId, entity);
+
+        await Clients.Group(directoryId).SendAsync("Upload",
             new TextFileReturnDTO { Id = entity.Id, Name = file.Name, Text = file.Text });
     }
 
-    public async Task ConnectToRepository(string repositoryId)
+    public async Task ConnectToRepository(string directoryId)
     {
-        _codeSharing.ConnectToRepository(repositoryId, Context.ConnectionId);
+        if (!_directories.ContainsKey(directoryId))
+        {
+            var dir = await _directoryService.Get(directoryId);
+            
+            _directories.Add(directoryId, new Directory(dir));
+        }
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, repositoryId);
+        _connectionDirectory[Context.ConnectionId] = directoryId;
 
-        var repository = await _codeSharing.GetRepositoryById(repositoryId);
-        await Clients.Caller.SendAsync("ConnectToRepository", repository);
+        await Groups.AddToGroupAsync(Context.ConnectionId, directoryId);
+        await Clients.Caller.SendAsync("ConnectToRepository", _directories[directoryId]);
     }
 
-    public async Task CreateRepository(string meetingId, string repoName)
+    public async Task SaveRepository(string directoryId)
     {
-        var repository =
-            await _codeSharing.CreateRepository(meetingId, repoName, Context.ConnectionId, _meetingService);
-
-        await Groups.AddToGroupAsync(Context.ConnectionId, repository.Id);
-        await Clients.Caller.SendAsync("ConnectToRepository", repository);
+        await _directories[directoryId].Save(_directoryService);
     }
 
-    public async Task SaveRepository(string repoId)
+    public async Task CreateFolder(string folderName, string directoryId, int parentFolderId)
     {
-        await _codeSharing.SaveRepository(repoId);
-    }
+        if (_connectionDirectory[Context.ConnectionId] != directoryId)
+            throw new Exception("Creating folder in not connected directory");
 
-    public async Task CreateFolder(string folderName, string repoId, int parentFolderId)
-    {
-        var folder = _codeSharing.CreateFolder(new Folder(folderName), repoId, parentFolderId, Context.ConnectionId);
+        
+
+        var folder = _directories[directoryId].CreateFolder(new Folder(folderName), parentFolderId);
         var returnDto = new FolderReturnDTO
         {
             Id = folder.Id,
@@ -74,14 +90,17 @@ public class CodeSharingHub : Hub
             Folders = folder.Folders
         };
 
-        await Clients.Group(repoId).SendAsync("CreateFolder", returnDto);
+        await Clients.Group(directoryId).SendAsync("CreateFolder", returnDto);
     }
 
-    public async Task Change(string text, string repositoryId, int fileId)
+    public async Task Change(string text, string directoryId, int fileId)
     {
-        _codeSharing.Change(text, repositoryId, fileId, Context.ConnectionId);
+        if (_connectionDirectory[Context.ConnectionId] != directoryId)
+            throw new Exception("Changing file in not connected directory");
+
+        _directories[directoryId].ChangeFile(text, fileId);
         //_codeSharing.Change(change, Context.ConnectionId);
 
-        await Clients.Group(repositoryId).SendAsync("Change", text, repositoryId, fileId);
+        await Clients.Group(directoryId).SendAsync("Change", text, directoryId, fileId);
     }
 }
