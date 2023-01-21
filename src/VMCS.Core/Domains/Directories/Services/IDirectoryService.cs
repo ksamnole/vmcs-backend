@@ -1,10 +1,9 @@
-﻿namespace VMCS.Core.Domains.Directories.Services
+﻿namespace VMCS.Core.Domains.Directories.Services;
+
+public interface IDirectoryService
 {
-    public interface IDirectoryService
-    {
-        Task<string> Create(Directory directory);
-        Task Delete(string directoryId);
-        Task<Directory> Get(string directoryId);
-        Task Save(Directory directory);
-    }
+    Task<string> Create(Directory directory);
+    Task Delete(string directoryId);
+    Task<Directory> Get(string directoryId);
+    Task Save(Directory directory);
 }

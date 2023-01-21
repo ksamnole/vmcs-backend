@@ -3,7 +3,6 @@ using VMCS.Core.Domains.Chats;
 using VMCS.Core.Domains.Users;
 using Directory = VMCS.Core.Domains.Directories.Directory;
 
-
 namespace VMCS.Core.Domains.Meetings;
 
 public class Meeting : BaseEntity

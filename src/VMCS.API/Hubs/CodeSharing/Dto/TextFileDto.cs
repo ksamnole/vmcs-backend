@@ -1,4 +1,4 @@
-﻿namespace VMCS.API.Hubs.CodeSharing;
+﻿namespace VMCS.API.Hubs.CodeSharing.Dto;
 
 public class TextFileDTO
 {

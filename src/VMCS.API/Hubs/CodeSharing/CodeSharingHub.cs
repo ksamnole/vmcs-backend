@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Core.Metadata.Edm;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using VMCS.Core.Domains.CodeSharing;
+using VMCS.API.Hubs.CodeSharing.Dto;
 using VMCS.Core.Domains.CodeSharing.Directories;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.Directories.Services;
-using VMCS.Core.Domains.Meetings.Services;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace VMCS.API.Hubs.CodeSharing;
 
 public class CodeSharingHub : Hub
 {
-    private readonly IValidator<TextFile> _fileValidator;
-    private readonly IDirectoryService _directoryService;
     private static readonly Dictionary<string, IDirectory> _directories = new();
     private static readonly Dictionary<string, string> _connectionDirectory = new();
+    private readonly IDirectoryService _directoryService;
+    private readonly IValidator<TextFile> _fileValidator;
 
     public CodeSharingHub(IValidator<TextFile> fileValidator, IDirectoryService directoryService)
     {
@@ -33,19 +29,19 @@ public class CodeSharingHub : Hub
         return base.OnDisconnectedAsync(exception);
     }
 
-    public async Task Upload(TextFileDTO file, int folderId, string directoryId)
+    public async Task CreateFile(TextFileDTO file, int folderId, string directoryId)
     {
         var entity = new TextFile { Name = file.Name, Text = file.Text };
 
         if (!_connectionDirectory[Context.ConnectionId].Contains(directoryId))
             throw new Exception("Uploading file to not connected directory");
 
-        _fileValidator.ValidateAndThrow(entity);
+        await _fileValidator.ValidateAndThrowAsync(entity);
 
-        _directories[directoryId].UploadFile(folderId, entity);
+        _directories[directoryId].CreateFile(folderId, entity);
 
         await Clients.Group(directoryId).SendAsync("Upload",
-            new TextFileReturnDTO { Id = entity.Id, Name = file.Name, Text = file.Text });
+            new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text });
     }
 
     public async Task ConnectToRepository(string directoryId)
@@ -53,7 +49,7 @@ public class CodeSharingHub : Hub
         if (!_directories.ContainsKey(directoryId))
         {
             var dir = await _directoryService.Get(directoryId);
-            
+
             _directories.Add(directoryId, new Directory(dir));
         }
 
@@ -73,10 +69,9 @@ public class CodeSharingHub : Hub
         if (_connectionDirectory[Context.ConnectionId] != directoryId)
             throw new Exception("Creating folder in not connected directory");
 
-        
 
         var folder = _directories[directoryId].CreateFolder(new Folder(folderName), parentFolderId);
-        var returnDto = new FolderReturnDTO
+        var returnDto = new FolderReturnDto
         {
             Id = folder.Id,
             Name = folder.Name,
@@ -93,7 +88,6 @@ public class CodeSharingHub : Hub
             throw new Exception("Changing file in not connected directory");
 
         _directories[directoryId].ChangeFile(text, fileId);
-        //_codeSharing.Change(change, Context.ConnectionId);
 
         await Clients.Group(directoryId).SendAsync("Change", text, directoryId, fileId);
     }

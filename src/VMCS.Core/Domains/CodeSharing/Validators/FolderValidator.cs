@@ -9,7 +9,7 @@ public class FolderValidator : AbstractValidator<Folder>
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Please specify a name")
-            .Must(name => name != "" && !name.Where(x => !char.IsLetterOrDigit(x)).Any())
+            .Must(name => name != "" && name.All(char.IsLetterOrDigit))
             .WithMessage("Invalid folder name");
     }
 }

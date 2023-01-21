@@ -1,42 +1,40 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Directory = VMCS.Core.Domains.Directories.Directory;
+using VMCS.API.Controllers.Directories.Dto;
+using VMCS.Core.Domains.Directories;
 using VMCS.Core.Domains.Directories.Services;
 
-namespace VMCS.API.Controllers.Directories
+namespace VMCS.API.Controllers.Directories;
+
+[ApiController]
+[Route("directories")]
+public class DirectoryController : ControllerBase
 {
+    private readonly IDirectoryService _directoryService;
+    private readonly IMapper _mapper;
 
-    [ApiController]
-    [Route("directories")]
-    public class DirectoryController : ControllerBase
+    public DirectoryController(IDirectoryService directoryService, IMapper mapper)
     {
-        private readonly IDirectoryService _directoryService;
-        private readonly IMapper _mapper;
+        _directoryService = directoryService;
+        _mapper = mapper;
+    }
 
-        public DirectoryController(IDirectoryService directoryService, IMapper mapper)
-        {
-            _directoryService = directoryService;
-            _mapper = mapper;
-        }
+    [HttpPost]
+    public async Task<string> Create(CreateDirectoryDto directoryDto)
+    {
+        return await _directoryService.Create(_mapper.Map<Directory>(directoryDto));
+    }
 
-        [HttpPost]
-        public async Task<string> Create(CreateDirectoryDto directoryDTO)
-        {
-            return await _directoryService.Create(_mapper.Map<Directory>(directoryDTO));
-        }
+    [HttpGet]
+    public async Task<DirectoryDto> Get(string directoryId)
+    {
+        return _mapper.Map<DirectoryDto>(await _directoryService.Get(directoryId));
+    }
 
-        [HttpGet]
-        public async Task<DirectoryDto> Get(string directoryId)
-        {
-            return _mapper.Map<DirectoryDto>(await _directoryService.Get(directoryId));
-        }
-
-        [HttpDelete]
-        public async Task Delete(string directoryId)
-        {
-            await _directoryService.Delete(directoryId);
-        }
+    [HttpDelete]
+    public async Task Delete(string directoryId)
+    {
+        await _directoryService.Delete(directoryId);
     }
 }

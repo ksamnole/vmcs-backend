@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VMCS.Core.Domains.Meetings;
 using Directory = VMCS.Core.Domains.Directories.Directory;
 
-
 namespace VMCS.Data.Contexts.Mapping;
 
 public static class MeetingMapper

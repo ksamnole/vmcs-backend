@@ -1,6 +1,6 @@
-﻿namespace VMCS.API.Hubs.CodeSharing;
+﻿namespace VMCS.API.Hubs.CodeSharing.Dto;
 
-public class TextFileReturnDTO
+public class TextFileReturnDto
 {
     public string Name { get; set; }
     public string Text { get; set; }

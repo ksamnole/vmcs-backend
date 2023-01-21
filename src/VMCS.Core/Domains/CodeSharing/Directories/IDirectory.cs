@@ -12,7 +12,7 @@ public interface IDirectory
 
     Folder CreateFolder(Folder folder, int parentFolderId);
     void DeleteFolder(int folderId);
-    void UploadFile(int folderId, TextFile textFile);
+    void CreateFile(int folderId, TextFile textFile);
     void DeleteFile(int fileId);
     Task Save(IDirectoryService directoryService);
     void ChangeFile(string text, int fileId);

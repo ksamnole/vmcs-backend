@@ -12,9 +12,9 @@ internal class TextFileValidator : AbstractValidator<TextFile>
             .Must(name =>
             {
                 return char.IsLetterOrDigit(name[0]) &&
-                       char.IsLetterOrDigit(name[name.Length - 1]) &&
-                       name.Where(x => x == '.').Count() == 1 &&
-                       !name.Where(x => !(char.IsLetterOrDigit(x) || x == '.')).Any();
+                       char.IsLetterOrDigit(name[^1]) &&
+                       name.Count(x => x == '.') == 1 && 
+                       name.All(x => char.IsLetterOrDigit(x) || x == '.');
             }).WithMessage("Invalid name for file");
     }
 }

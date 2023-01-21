@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Chats.Dto;
-using VMCS.API.Controllers.Directories;
+using VMCS.API.Controllers.Directories.Dto;
 using VMCS.API.Controllers.Meetings.Dto;
 using VMCS.API.Controllers.Messages.Dto;
 using VMCS.API.Controllers.Users.Dto;

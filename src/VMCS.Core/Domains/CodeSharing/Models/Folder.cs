@@ -18,8 +18,7 @@ public class Folder
     public List<TextFile> Files { get; set; } = new();
     public List<Folder> Folders { get; set; } = new();
 
-    [JsonIgnore]
-    public bool IsDeleted { get; set; }
+    [JsonIgnore] public bool IsDeleted { get; set; }
 
     public void DeleteDeletedObjects()
     {
@@ -30,9 +29,6 @@ public class Folder
         Folders.RemoveAll(f => f.IsDeleted);
 
         // Recursively go through each folder and delete deleted objects
-        foreach (var folder in Folders)
-        {
-            folder.DeleteDeletedObjects();
-        }
+        foreach (var folder in Folders) folder.DeleteDeletedObjects();
     }
 }

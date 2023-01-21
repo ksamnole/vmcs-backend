@@ -1,9 +1,7 @@
 ﻿using System.IO.Compression;
-using System.Text.Json.Serialization;
-using VMCS.Core.Domains.CodeSharing;
+using Newtonsoft.Json;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.Directories.Services;
-using Newtonsoft.Json;
 
 namespace VMCS.Core.Domains.CodeSharing.Directories;
 
@@ -12,37 +10,15 @@ public class Directory : IDirectory
     private readonly Dictionary<int, TextFile> _directoryFiles = new();
     private readonly Dictionary<int, Folder> _directoryFolders = new();
     private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new();
-    public string Id { get; } = Guid.NewGuid().ToString();
-    public string MeetingId { get; }
-    public string Name { get; }
-    public Folder RootFolder { get; }
 
     public Directory(Domains.Directories.Directory directory)
     {
         Id = directory.Id;
         Name = directory.Name;
         MeetingId = directory.MeetingId;
-        RootFolder = string.IsNullOrEmpty(directory.DirectoryInJson) ? 
-            new Folder() { 
-                Name = directory.Name,
-                Id = _uniqueIdentifierCreator.GetUniqueIdentifier()
-            } :
-            JsonConvert.DeserializeObject<Folder>(directory.DirectoryInJson);
+        RootFolder = GetRootFolder(directory);
 
         TraverseFolder(RootFolder);
-    }
-
-    private void TraverseFolder(Folder folder)
-    {
-        _directoryFolders.Add(folder.Id, folder);
-        foreach (var file in folder.Files)
-        {
-            _directoryFiles.Add(file.Id, file);
-        }
-        foreach(var f in folder.Folders)
-        {
-            TraverseFolder(f);
-        }
     }
 
     public Directory(string meetingId, string name)
@@ -58,12 +34,17 @@ public class Directory : IDirectory
         _directoryFolders.Add(RootFolder.Id, RootFolder);
     }
 
+    public string Id { get; } = Guid.NewGuid().ToString();
+    public string MeetingId { get; }
+    public string Name { get; }
+    public Folder RootFolder { get; }
+
     public Folder CreateFolder(Folder folder, int parentFolderId)
     {
         folder.Id = _uniqueIdentifierCreator.GetUniqueIdentifier();
 
         if (!_directoryFolders.ContainsKey(parentFolderId))
-            throw new ArgumentException($"Folder with id {parentFolderId} doesn`t exist");
+            throw new ArgumentException($"Folder with id {parentFolderId} doesn't exist");
 
         _directoryFolders.Add(folder.Id, folder);
         _directoryFolders[parentFolderId].Folders.Add(folder);
@@ -74,7 +55,7 @@ public class Directory : IDirectory
     public void DeleteFolder(int folderId)
     {
         if (!_directoryFolders.ContainsKey(folderId) || _directoryFolders[folderId].IsDeleted)
-            throw new ArgumentException($"Folder with id {folderId} doesn`t exist");
+            throw new ArgumentException($"Folder with id {folderId} doesn't exist");
 
         _directoryFolders[folderId].IsDeleted = true;
     }
@@ -83,13 +64,12 @@ public class Directory : IDirectory
     {
         if (!_directoryFiles.ContainsKey(fileId) || _directoryFiles[fileId].IsDeleted)
             throw new ArgumentException($"File with id {fileId} doesn't exist");
-
-
+        
         _directoryFiles[fileId].IsDeleted = true;
     }
 
 
-    public void UploadFile(int folderId, TextFile file)
+    public void CreateFile(int folderId, TextFile file)
     {
         file.Id = _uniqueIdentifierCreator.GetUniqueIdentifier();
         var files = _directoryFolders[folderId].Files;
@@ -104,28 +84,22 @@ public class Directory : IDirectory
 
         var path = System.IO.Directory.GetCurrentDirectory();
         var repoPath = Path.Combine(path, Name);
-
         var folder = new DirectoryInfo(path);
-        WriteFolder(RootFolder, folder);
-
         var zipPath = Path.Combine(path, $"{Name}.zip");
-
-        ZipFile.CreateFromDirectory(
-            repoPath,
-            zipPath);
-
+        
+        WriteFolder(RootFolder, folder);
+        ZipFile.CreateFromDirectory(repoPath, zipPath);
         System.IO.Directory.Delete(repoPath, true);
 
-
-        var directory = new Domains.Directories.Directory()
+        var directory = new Domains.Directories.Directory
         {
             Id = Id,
             DirectoryInJson = JsonConvert.SerializeObject(RootFolder),
-            DirectoryZip = File.ReadAllBytes(zipPath),
+            DirectoryZip = await File.ReadAllBytesAsync(zipPath),
             Name = Name,
-            MeetingId = MeetingId,
+            MeetingId = MeetingId
         };
-
+        
         File.Delete(zipPath);
 
         await directoryService.Save(directory);
@@ -139,13 +113,31 @@ public class Directory : IDirectory
         _directoryFiles[fileId].Text = text;
     }
 
-    private void WriteFolder(Folder folder, DirectoryInfo currentFolder)
+    private Folder GetRootFolder(Domains.Directories.Directory directory)
+    {
+        var folder = new Folder { Name = directory.Name, Id = _uniqueIdentifierCreator.GetUniqueIdentifier() };
+        
+        if (string.IsNullOrEmpty(directory.DirectoryInJson))
+            return folder;
+
+        var deserializeFolder = JsonConvert.DeserializeObject<Folder>(directory.DirectoryInJson);
+
+        return deserializeFolder ?? folder;
+    }
+
+    private void TraverseFolder(Folder folder)
+    {
+        _directoryFolders.Add(folder.Id, folder);
+        foreach (var file in folder.Files) _directoryFiles.Add(file.Id, file);
+        foreach (var f in folder.Folders) TraverseFolder(f);
+    }
+
+    private static void WriteFolder(Folder folder, DirectoryInfo currentFolder)
     {
         currentFolder = currentFolder.CreateSubdirectory(folder.Name);
         currentFolder.Create();
         foreach (var file in folder.Files)
         {
-            //var text = new string(file.TextInBytes.Select(b => (char)b).ToArray());
             var text = file.Text;
             File.WriteAllText(Path.Combine(currentFolder.FullName, file.Name), text);
         }
