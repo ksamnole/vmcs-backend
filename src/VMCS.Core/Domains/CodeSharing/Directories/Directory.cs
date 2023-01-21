@@ -22,7 +22,12 @@ public class Directory : IDirectory
         Id = directory.Id;
         Name = directory.Name;
         MeetingId = directory.MeetingId;
-        RootFolder = JsonConvert.DeserializeObject<Folder>(directory.DirectoryInJson)!;
+        RootFolder = string.IsNullOrEmpty(directory.DirectoryInJson) ? 
+            new Folder() { 
+                Name = directory.Name,
+                Id = _uniqueIdentifierCreator.GetUniqueIdentifier()
+            } :
+            JsonConvert.DeserializeObject<Folder>(directory.DirectoryInJson);
 
         TraverseFolder(RootFolder);
     }
@@ -97,7 +102,7 @@ public class Directory : IDirectory
     {
         RootFolder.DeleteDeletedObjects();
 
-        var path = Path.GetTempPath();
+        var path = System.IO.Directory.GetCurrentDirectory();
         var repoPath = Path.Combine(path, Name);
 
         var folder = new DirectoryInfo(path);
@@ -106,10 +111,10 @@ public class Directory : IDirectory
         var zipPath = Path.Combine(path, $"{Name}.zip");
 
         ZipFile.CreateFromDirectory(
-            path,
+            repoPath,
             zipPath);
 
-        System.IO.Directory.Delete(repoPath);
+        System.IO.Directory.Delete(repoPath, true);
 
 
         var directory = new Domains.Directories.Directory()
@@ -121,7 +126,7 @@ public class Directory : IDirectory
             MeetingId = MeetingId,
         };
 
-        System.IO.Directory.Delete(zipPath);
+        File.Delete(zipPath);
 
         await directoryService.Save(directory);
     }

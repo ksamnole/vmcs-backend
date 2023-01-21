@@ -16,21 +16,15 @@ namespace VMCS.API.Hubs.CodeSharing;
 
 public class CodeSharingHub : Hub
 {
-    private static IMeetingService _meetingService;
     private readonly IValidator<TextFile> _fileValidator;
     private readonly IDirectoryService _directoryService;
-    private readonly Dictionary<string, IDirectory> _directories = new();
-    private readonly Dictionary<string, string> _connectionDirectory = new();
-    private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new();
+    private static readonly Dictionary<string, IDirectory> _directories = new();
+    private static readonly Dictionary<string, string> _connectionDirectory = new();
 
-    public CodeSharingHub(IMeetingService meetingService)
+    public CodeSharingHub(IValidator<TextFile> fileValidator, IDirectoryService directoryService)
     {
-        _meetingService = meetingService;
-    }
-
-    public override Task OnConnectedAsync()
-    {
-        return base.OnConnectedAsync();
+        _fileValidator = fileValidator;
+        _directoryService = directoryService;
     }
 
     public override Task OnDisconnectedAsync(Exception exception)
@@ -48,7 +42,7 @@ public class CodeSharingHub : Hub
 
         _fileValidator.ValidateAndThrow(entity);
 
-        _directories[Context.ConnectionId].UploadFile(folderId, entity);
+        _directories[directoryId].UploadFile(folderId, entity);
 
         await Clients.Group(directoryId).SendAsync("Upload",
             new TextFileReturnDTO { Id = entity.Id, Name = file.Name, Text = file.Text });
@@ -63,7 +57,7 @@ public class CodeSharingHub : Hub
             _directories.Add(directoryId, new Directory(dir));
         }
 
-        _connectionDirectory[Context.ConnectionId] = directoryId;
+        _connectionDirectory.Add(Context.ConnectionId, directoryId);
 
         await Groups.AddToGroupAsync(Context.ConnectionId, directoryId);
         await Clients.Caller.SendAsync("ConnectToRepository", _directories[directoryId]);
