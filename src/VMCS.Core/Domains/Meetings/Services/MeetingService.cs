@@ -44,7 +44,7 @@ internal class MeetingService : IMeetingService
         return _meetingRepository.GetMeetingByIdAsync(id, token);
     }
 
-    public async Task SetRepositoryToMeeting(string repositoryId, string meetingId, CancellationToken token)
+    public async Task SetDirectoryToMeeting(string repositoryId, string meetingId, CancellationToken token)
     {
         await _meetingRepository.SetRepositoryToMeeting(repositoryId, meetingId, token);
         await _unitOfWork.SaveChange();
