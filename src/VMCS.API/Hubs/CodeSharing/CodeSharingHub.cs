@@ -68,8 +68,7 @@ public class CodeSharingHub : Hub
     {
         if (_connectionDirectory[Context.ConnectionId] != directoryId)
             throw new Exception("Creating folder in not connected directory");
-
-
+        
         var folder = _directories[directoryId].CreateFolder(new Folder(folderName), parentFolderId);
         var returnDto = new FolderReturnDto
         {

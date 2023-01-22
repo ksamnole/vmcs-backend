@@ -21,15 +21,14 @@ public class DirectoryController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<DirectoryDto> Create(CreateDirectoryDto directoryDto)
+    public async Task<string> Create(CreateDirectoryDto directoryDto)
     {
-       var directory = await _directoryService.Create(new Directory()
+       return await _directoryService.Create(new Directory()
        {
            Name = directoryDto.Name,
            MeetingId = directoryDto.MeetingId,
            DirectoryInJson = directoryDto.DirectoryInJson
        });
-       return _mapper.Map<DirectoryDto>(directory);
     }
 
     [HttpGet]

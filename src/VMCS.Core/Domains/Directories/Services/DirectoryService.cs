@@ -17,13 +17,13 @@ public class DirectoryService : IDirectoryService
         _meetingService = meetingService;
     }
 
-    public async Task<Directory> Create(Directory directory)
+    public async Task<string> Create(Directory directory)
     {
         await _directoryRepository.Create(directory);
         await _meetingService.SetDirectoryToMeeting(directory.Id, directory.MeetingId, CancellationToken.None);
         await _unitOfWork.SaveChange();
 
-        return directory;
+        return directory.Id;
     }
 
     public async Task Delete(string directoryId)
