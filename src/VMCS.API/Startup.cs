@@ -34,7 +34,6 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHostedService<MigrationHostedService>();
-
         services
             .AddData(Configuration)
             .AddCore();

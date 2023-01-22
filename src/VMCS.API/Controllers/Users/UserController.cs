@@ -97,6 +97,18 @@ public class UserController : ControllerBase
         });
     }
 
+    [HttpGet]
+    [Route("access-token")]
+    public async Task<bool> IsUserHaveAccessToken()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+            throw new ValidationException("Please log in");
+        
+        return await _userService.IsUserHaveAccessToken(userId);
+    }
+
     [HttpPut("{id}")]
     public async Task Update(string id, ChangeUserDto model, CancellationToken cancellationToken)
     {

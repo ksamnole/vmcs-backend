@@ -1,0 +1,32 @@
+﻿using System.Data.Entity.Core;
+using Microsoft.EntityFrameworkCore;
+using VMCS.Core.Domains.GitHub;
+using VMCS.Core.Domains.GitHub.Repositories;
+using VMCS.Data.Contexts;
+
+namespace VMCS.Data.GitHub.Repositories;
+
+public class GitHubRepository : IGitHubRepository
+{
+    private readonly ApplicationContext _applicationContext;
+
+    public GitHubRepository(ApplicationContext applicationContext)
+    {
+        _applicationContext = applicationContext;
+    }
+
+    public async Task Create(AccessToken accessToken)
+    {
+        await _applicationContext.AccessTokens.AddAsync(accessToken);
+    }
+
+    public async Task<AccessToken> GetToken(string userId)
+    {
+        var accessToken = await _applicationContext.AccessTokens.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (accessToken is null)
+            throw new ObjectNotFoundException($"AccessToken with userId = {userId} not found.");
+
+        return accessToken;
+    }
+}

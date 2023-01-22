@@ -59,6 +59,13 @@ public class UserRepository : IUserRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<bool> IsUserHaveAccessToken(string userId)
+    {
+        var accessToken = await _applicationContext.AccessTokens.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        return accessToken is not null;
+    }
+
     public async Task Create(User user, CancellationToken cancellationToken)
     {
         await _applicationContext.Users.AddAsync(user, cancellationToken);
