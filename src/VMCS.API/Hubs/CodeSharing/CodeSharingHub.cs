@@ -40,7 +40,7 @@ public class CodeSharingHub : Hub
 
         _directories[directoryId].CreateFile(folderId, entity);
 
-        await Clients.Group(directoryId).SendAsync("Upload",
+        await Clients.Group(directoryId).SendAsync("CreateFile",
             new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text });
     }
 
