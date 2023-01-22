@@ -9,4 +9,5 @@ public class FolderReturnDto
     public string Name { get; set; }
     public List<TextFile> Files { get; set; }
     public List<Folder> Folders { get; set; }
+    public int ParentId { get; set; }
 }

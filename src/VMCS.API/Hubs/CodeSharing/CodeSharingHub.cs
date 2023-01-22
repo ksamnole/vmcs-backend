@@ -41,7 +41,7 @@ public class CodeSharingHub : Hub
         _directories[directoryId].CreateFile(folderId, entity);
 
         await Clients.Group(directoryId).SendAsync("CreateFile",
-            new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text });
+            new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text, ParentId = folderId});
     }
 
     public async Task ConnectToRepository(string directoryId)
@@ -75,7 +75,8 @@ public class CodeSharingHub : Hub
             Id = folder.Id,
             Name = folder.Name,
             Files = folder.Files,
-            Folders = folder.Folders
+            Folders = folder.Folders,
+            ParentId = parentFolderId
         };
 
         await Clients.Group(directoryId).SendAsync("CreateFolder", returnDto);
