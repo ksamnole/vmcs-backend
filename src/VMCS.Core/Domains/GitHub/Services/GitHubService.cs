@@ -88,7 +88,7 @@ public class GitHubService : IGitHubService
         var folderTrees = CreateFolderTrees(folder);
         
         var shaBaseTree = await _gitHubApi.GetShaBaseTree($"/repos/{owner}/{repo}/git/trees/{branch}", accessToken.Token);
-        var treeContent = await CreateTree($"/repos/{owner}/{repo}/git/blobs", shaBaseTree, folderTrees, accessToken.Token);
+        var treeContent = await CreateTree($"/repos/{owner}/{repo}/git/blobs", shaBaseTree, folderTrees, accessToken.Token, isRepositoryCreated);
         var shaTree = await _gitHubApi.GetShaTree($"/repos/{owner}/{repo}/git/trees", treeContent, accessToken.Token);
         var shaParent = await _gitHubApi.GetShaParent($"/repos/{owner}/{repo}/git/refs/heads/{branch}", accessToken.Token);
         
@@ -126,9 +126,12 @@ public class GitHubService : IGitHubService
         return folderTrees;
     }
 
-    private async Task<StringContent> CreateTree(string url, string shaBaseTree, List<FolderTree> folderTrees, string token)
+    private async Task<StringContent> CreateTree(string url, string shaBaseTree, List<FolderTree> folderTrees, string token, bool isRepositoryCreated)
     {
-        var files = new JArray { await GetCustomReadmeFile(url, token) };
+        var files = new JArray();
+
+        if (!isRepositoryCreated)
+            files.Add(await GetCustomReadmeFile(url, token));
 
         foreach (var folderTree in folderTrees)
         {
