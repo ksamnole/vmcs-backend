@@ -1,7 +1,11 @@
 ﻿using System.Net.Http.Json;
+using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.Directories.Services;
 using VMCS.Core.Domains.GitHub.HttpClients;
+using VMCS.Core.Domains.GitHub.HttpClients.Models;
 using VMCS.Core.Domains.GitHub.Models;
 using VMCS.Core.Domains.GitHub.Repositories;
 
@@ -49,12 +53,100 @@ public class GitHubService : IGitHubService
     public async Task CreateRepository(CreateRepository createRepository)
     {
         var accessToken = await GetToken(createRepository.UserId);
-        var data = JsonContent.Create(createRepository);
-        await _gitHubApi.CreateRepository("/user/repos", accessToken.Token, data);
+        var json = new JObject
+        {
+            ["name"] = createRepository.Name,
+            ["auto_init"] = true
+        };
+        var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+        await _gitHubApi.CreateRepository("/user/repos", accessToken.Token, content);
     }
 
-    public Task PushToRepository(PushToRepository pushToRepository)
+    public async Task PushToRepository(PushToRepository pushToRepository)
     {
-        throw new NotImplementedException();
+        var accessToken = await GetToken(pushToRepository.UserId);
+        
+        var owner = pushToRepository.GitHubNickname;
+        var repo = pushToRepository.RepositoryName;
+        var branch = pushToRepository.Branch;
+
+        var directory = await _directoryService.Get(pushToRepository.DirectoryId);
+
+        if (string.IsNullOrEmpty(directory.DirectoryInJson))
+            return;
+
+        var folder = JsonConvert.DeserializeObject<Folder>(directory.DirectoryInJson);
+        var folderTrees = CreateFolderTrees(folder);
+
+        var shaBaseTree = await _gitHubApi.GetShaBaseTree($"/repos/{owner}/{repo}/git/trees/{branch}", accessToken.Token);
+        var treeContent = await CreateTree($"/repos/{owner}/{repo}/git/blobs", shaBaseTree, folderTrees, accessToken.Token);
+        var shaTree = await _gitHubApi.GetShaTree($"/repos/{owner}/{repo}/git/trees", treeContent, accessToken.Token);
+        var shaParent = await _gitHubApi.GetShaParent($"/repos/{owner}/{repo}/git/refs/heads/{branch}", accessToken.Token);
+        
+        var commitData = JsonContent.Create(new
+        {
+            tree=shaTree,
+            message=pushToRepository.Message,
+            parents=new[] {shaParent}
+        });
+        var shaCommit = await _gitHubApi.GetShaCommit($"/repos/{owner}/{repo}/git/commits", commitData, accessToken.Token);
+        
+        var patchData = JsonContent.Create(new
+        {
+            sha=shaCommit
+        });
+        await _gitHubApi.UpdateRef($"/repos/{owner}/{repo}/git/refs/heads/{branch}", patchData, accessToken.Token);
+    }
+    
+    public static List<FolderTree> CreateFolderTrees(Folder folder)
+    {
+        var folderTrees = new List<FolderTree>();
+        CreateFolderTreesFromFolders(folderTrees, folder, "");
+        return folderTrees;
+    }
+
+    private async Task<StringContent> CreateTree(string url, string shaBaseTree, List<FolderTree> folderTrees, string token)
+    {
+        var files = new JArray();
+
+        foreach (var folderTree in folderTrees)
+        {
+            var blob = JsonContent.Create(new { content = folderTree.Content, encoding = "utf-8" });
+            var path = folderTree.Path[0] == '/'
+                ? folderTree.Path.Substring(1, folderTree.Path.Length - 1)
+                : folderTree.Path;
+            var newFile = new JObject
+            {
+                ["path"] = path,
+                ["mode"] = "100644",
+                ["type"] = "blob",
+                ["sha"] = await _gitHubApi.GetShaBlob(url, blob, token)
+            };
+            files.Add(newFile);
+        }
+        var json = new JObject
+        {
+            ["base_tree"] = shaBaseTree,
+            ["tree"] = files
+        };
+
+        var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+        
+        return content;
+    }
+
+    private static void CreateFolderTreesFromFiles(List<FolderTree> folderTrees, IEnumerable<TextFile> files, string path)
+    {
+        folderTrees.AddRange(files.Select(file => new FolderTree() { Content = file.Text, Path = path + $"/{file.Name}" }));
+    }
+    
+    private static void CreateFolderTreesFromFolders(List<FolderTree> folderTrees, Folder folder, string parentPath)
+    {
+        CreateFolderTreesFromFiles(folderTrees, folder.Files, parentPath);
+        
+        foreach (var subFolder in folder.Folders)
+        {
+            CreateFolderTreesFromFolders(folderTrees, subFolder, parentPath + $"/{subFolder.Name}");
+        }
     }
 }

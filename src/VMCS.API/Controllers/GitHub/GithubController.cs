@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -49,14 +48,21 @@ public class GithubController : ControllerBase
         {
             UserId = createRepositoryDto.UserId,
             Name = createRepositoryDto.Name,
-            IsPrivate = createRepositoryDto.IsPrivate
         });
     }
     
-    // [HttpPost]
-    // [Route("repository/push")]
-    // public async Task PushToRepository(PushToRepositoryDto pushToRepositoryDto)
-    // {
-    //     
-    // }
+    [HttpPost]
+    [Route("repository/push")]
+    public async Task PushToRepository(PushToRepositoryDto pushToRepositoryDto)
+    {
+        await _gitHubService.PushToRepository(new PushToRepository()
+        {
+            Branch = pushToRepositoryDto.Branch,
+            DirectoryId = pushToRepositoryDto.DirectoryId,
+            GitHubNickname = pushToRepositoryDto.GitHubNickname,
+            Message = pushToRepositoryDto.Message,
+            RepositoryName = pushToRepositoryDto.RepositoryName,
+            UserId = pushToRepositoryDto.UserId
+        });
+    }
 }
