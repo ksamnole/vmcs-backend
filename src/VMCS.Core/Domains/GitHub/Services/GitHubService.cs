@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.Directories.Services;
 using VMCS.Core.Domains.GitHub.HttpClients;
-using VMCS.Core.Domains.GitHub.HttpClients.Models;
 using VMCS.Core.Domains.GitHub.Models;
 using VMCS.Core.Domains.GitHub.Repositories;
 
@@ -65,9 +64,10 @@ public class GitHubService : IGitHubService
     public async Task PushToRepository(PushToRepository pushToRepository)
     {
         var accessToken = await GetToken(pushToRepository.UserId);
-        var repo = GetRepositoryNameGitHubStyle(pushToRepository.RepositoryName);
+        var repo = GetRepositoryNameInGitHubStyle(pushToRepository.RepositoryName);
+        var owner = await _gitHubApi.GetUserLogin("/user", accessToken.Token);
         
-        var isRepositoryCreated = await IsRepositoryCreated(repo, accessToken.Token);
+        var isRepositoryCreated = await IsRepositoryCreated(repo, owner, accessToken.Token);
         
         if (!isRepositoryCreated)
         {
@@ -78,7 +78,6 @@ public class GitHubService : IGitHubService
             });
         }
         
-        var owner = await _gitHubApi.GetUserLogin("/user", accessToken.Token);
         var branch = await _gitHubApi.GetMainBranchName($"/repos/{owner}/{repo}/branches", accessToken.Token);
         var directory = await _directoryService.Get(pushToRepository.DirectoryId);
 
@@ -108,14 +107,14 @@ public class GitHubService : IGitHubService
         await _gitHubApi.UpdateRef($"/repos/{owner}/{repo}/git/refs/heads/{branch}", patchData, accessToken.Token);
     }
 
-    private string GetRepositoryNameGitHubStyle(string repositoryName)
+    private static string GetRepositoryNameInGitHubStyle(string repositoryName)
     {
         return repositoryName.Replace(' ', '-');
     }
 
-    private async Task<bool> IsRepositoryCreated(string repositoryName, string token)
+    private async Task<bool> IsRepositoryCreated(string repositoryName, string owner, string token)
     {
-        var userRepositoriesNames = await _gitHubApi.GetAllUserRepositoriesNames("/users/ksamnole/repos", token);
+        var userRepositoriesNames = await _gitHubApi.GetAllUserRepositoriesNames($"/users/{owner}/repos", token);
 
         return userRepositoriesNames.Any(x => x == repositoryName);
     }
