@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Newtonsoft.Json;
 using VMCS.Core.Domains.GitHub.HttpClients;
 using VMCS.Data.HttpClients.Models;
+using VMCS.Data.HttpClients.Models.Responses;
 
 namespace VMCS.Data.HttpClients.GitHub;
 
@@ -24,6 +25,42 @@ public class GitHubApi : IGitHubApi
 
         if (!response.IsSuccessStatusCode)
             throw new Exception();
+    }
+
+    public async Task<string> GetUserLogin(string url, string token)
+    {
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+        
+        var response = await _httpClient.GetAsync(url);
+
+        var deserializeObject = await GetDeserializeObject<UserResponse>(response);
+
+        return deserializeObject.Login;
+    }
+
+    public async Task<string> GetMainBranchName(string url, string token)
+    {
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+        
+        var response = await _httpClient.GetAsync(url);
+        
+        var deserializeObject = await GetDeserializeObject<List<BranchResponse>>(response);
+
+        return deserializeObject[0].Name;
+    }
+
+    public async Task<List<string>> GetAllUserRepositoriesNames(string url, string token)
+    {
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+        
+        var response = await _httpClient.GetAsync(url);
+        
+        var deserializeObject = await GetDeserializeObject<List<UserRepositoryResponse>>(response);
+
+        return deserializeObject.Select(x => x.Name).ToList();
     }
 
     public async Task<string> GetShaBaseTree(string url, string token)

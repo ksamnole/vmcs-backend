@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Directories.Dto;
@@ -31,10 +32,18 @@ public class DirectoryController : ControllerBase
        });
     }
 
-    [HttpGet]
+    [HttpGet("{directoryId}")]
     public async Task<DirectoryDto> Get(string directoryId)
     {
-        return _mapper.Map<DirectoryDto>(await _directoryService.Get(directoryId));
+        var directory = await _directoryService.Get(directoryId);
+        var directoryZip = Convert.ToBase64String(directory.DirectoryZip);
+        return new DirectoryDto()
+        {
+            DirectoryZip = directoryZip,
+            DirectoryInJson = directory.DirectoryInJson,
+            MeetingId = directory.MeetingId,
+            Name = directory.Name
+        };
     }
 
     [HttpDelete]

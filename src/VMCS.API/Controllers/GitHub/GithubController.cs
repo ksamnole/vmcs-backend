@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using VMCS.API.Controllers.GitHub.Dto;
@@ -44,9 +46,14 @@ public class GithubController : ControllerBase
     [Route("repository/create")]
     public async Task CreateRepository(CreateRepositoryDto createRepositoryDto)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+            throw new ValidationException("Please log in.");
+        
         await _gitHubService.CreateRepository(new CreateRepository()
         {
-            UserId = createRepositoryDto.UserId,
+            UserId = userId,
             Name = createRepositoryDto.Name,
         });
     }
@@ -55,14 +62,17 @@ public class GithubController : ControllerBase
     [Route("repository/push")]
     public async Task PushToRepository(PushToRepositoryDto pushToRepositoryDto)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+            throw new ValidationException("Please log in.");
+        
         await _gitHubService.PushToRepository(new PushToRepository()
         {
-            Branch = pushToRepositoryDto.Branch,
             DirectoryId = pushToRepositoryDto.DirectoryId,
-            GitHubNickname = pushToRepositoryDto.GitHubNickname,
             Message = pushToRepositoryDto.Message,
             RepositoryName = pushToRepositoryDto.RepositoryName,
-            UserId = pushToRepositoryDto.UserId
+            UserId = userId
         });
     }
 }

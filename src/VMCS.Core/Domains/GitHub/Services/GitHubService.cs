@@ -65,11 +65,21 @@ public class GitHubService : IGitHubService
     public async Task PushToRepository(PushToRepository pushToRepository)
     {
         var accessToken = await GetToken(pushToRepository.UserId);
+        var repo = GetRepositoryNameGitHubStyle(pushToRepository.RepositoryName);
         
-        var owner = pushToRepository.GitHubNickname;
-        var repo = pushToRepository.RepositoryName;
-        var branch = pushToRepository.Branch;
-
+        var isRepositoryCreated = await IsRepositoryCreated(repo, accessToken.Token);
+        
+        if (!isRepositoryCreated)
+        {
+            await CreateRepository(new CreateRepository()
+            {
+                Name = pushToRepository.RepositoryName,
+                UserId = pushToRepository.UserId
+            });
+        }
+        
+        var owner = await _gitHubApi.GetUserLogin("/user", accessToken.Token);
+        var branch = await _gitHubApi.GetMainBranchName($"/repos/{owner}/{repo}/branches", accessToken.Token);
         var directory = await _directoryService.Get(pushToRepository.DirectoryId);
 
         if (string.IsNullOrEmpty(directory.DirectoryInJson))
@@ -77,7 +87,7 @@ public class GitHubService : IGitHubService
 
         var folder = JsonConvert.DeserializeObject<Folder>(directory.DirectoryInJson);
         var folderTrees = CreateFolderTrees(folder);
-
+        
         var shaBaseTree = await _gitHubApi.GetShaBaseTree($"/repos/{owner}/{repo}/git/trees/{branch}", accessToken.Token);
         var treeContent = await CreateTree($"/repos/{owner}/{repo}/git/blobs", shaBaseTree, folderTrees, accessToken.Token);
         var shaTree = await _gitHubApi.GetShaTree($"/repos/{owner}/{repo}/git/trees", treeContent, accessToken.Token);
@@ -97,6 +107,18 @@ public class GitHubService : IGitHubService
         });
         await _gitHubApi.UpdateRef($"/repos/{owner}/{repo}/git/refs/heads/{branch}", patchData, accessToken.Token);
     }
+
+    private string GetRepositoryNameGitHubStyle(string repositoryName)
+    {
+        return repositoryName.Replace(' ', '-');
+    }
+
+    private async Task<bool> IsRepositoryCreated(string repositoryName, string token)
+    {
+        var userRepositoriesNames = await _gitHubApi.GetAllUserRepositoriesNames("/users/ksamnole/repos", token);
+
+        return userRepositoriesNames.Any(x => x == repositoryName);
+    }
     
     public static List<FolderTree> CreateFolderTrees(Folder folder)
     {
@@ -107,7 +129,7 @@ public class GitHubService : IGitHubService
 
     private async Task<StringContent> CreateTree(string url, string shaBaseTree, List<FolderTree> folderTrees, string token)
     {
-        var files = new JArray();
+        var files = new JArray { await GetCustomReadmeFile(url, token) };
 
         foreach (var folderTree in folderTrees)
         {
@@ -133,6 +155,20 @@ public class GitHubService : IGitHubService
         var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
         
         return content;
+    }
+
+    private async Task<JObject> GetCustomReadmeFile(string url, string token)
+    {
+        const string text = "<h1 align=\"center\">Репозиторий был создан при помощи приложения <a href=\"https://vmcs.space\">VMCS</a></h1>";
+        var blob = JsonContent.Create(new { content = text, encoding = "utf-8" });
+        var file = new JObject
+        {
+            ["path"] = "README.md",
+            ["mode"] = "100644",
+            ["type"] = "blob",
+            ["sha"] = await _gitHubApi.GetShaBlob(url, blob, token)
+        };
+        return file;
     }
 
     private static void CreateFolderTreesFromFiles(List<FolderTree> folderTrees, IEnumerable<TextFile> files, string path)

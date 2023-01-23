@@ -1,4 +1,4 @@
-﻿namespace VMCS.Data.HttpClients.Models;
+﻿namespace VMCS.Data.HttpClients.Models.Responses;
 
 public class ShaResponse
 {

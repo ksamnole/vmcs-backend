@@ -4,5 +4,4 @@ public class CreateRepository
 {
     public string Name { get; set; }
     public string UserId { get; set; }
-    public string DirectoryId { get; set; }
 }

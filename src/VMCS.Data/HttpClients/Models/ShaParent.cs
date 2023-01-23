@@ -1,6 +1,6 @@
 ﻿namespace VMCS.Data.HttpClients.Models;
 
-public class ShaParentResponse
+public class ShaParent
 {
     public string Sha { get; set; }
 }
