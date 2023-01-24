@@ -90,6 +90,7 @@ public class UserRepository : IUserRepository
 
         entity.Username = user.Username;
         entity.Email = user.Email;
+        entity.AvatarUri = user.AvatarUri;
     }
 
     public bool ContainsByLogin(string login)

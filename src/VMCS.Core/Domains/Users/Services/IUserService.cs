@@ -13,4 +13,5 @@ public interface IUserService
     Task Create(User user, CancellationToken cancellationToken);
     Task Update(User user, CancellationToken cancellationToken);
     Task Delete(string id, CancellationToken cancellationToken);
+    Task SetAvatarImage(string id, string avatarUrl, CancellationToken cancellationToken);
 }

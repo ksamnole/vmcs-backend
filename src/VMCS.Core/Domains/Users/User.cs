@@ -14,6 +14,7 @@ public class User : BaseEntity
     public string Login { get; set; }
     public string Username { get; set; }
     public string Email { get; set; }
+    public string? AvatarUri { get; set; }
 
     public virtual ICollection<Channel> Channels { get; set; }
     public virtual ICollection<Meeting> Meetings { get; set; }

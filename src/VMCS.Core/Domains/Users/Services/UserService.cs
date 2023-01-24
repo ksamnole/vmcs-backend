@@ -74,4 +74,14 @@ public class UserService : IUserService
         await _userRepository.Update(user, cancellationToken);
         await _unitOfWork.SaveChange();
     }
+
+    public async Task SetAvatarImage(string id, string avatarUrl, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetById(id, cancellationToken);
+
+        user.AvatarUri = avatarUrl;
+
+        await _userRepository.Update(user, cancellationToken);
+        await _unitOfWork.SaveChange();
+    }
 }

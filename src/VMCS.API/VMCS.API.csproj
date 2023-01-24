@@ -25,4 +25,8 @@
         <ProjectReference Include="..\VMCS.Data\VMCS.Data.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\imgs\" />
+    </ItemGroup>
+
 </Project>

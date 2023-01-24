@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
 using VMCS.API.Controllers.Channels.Dto;
@@ -18,10 +22,12 @@ namespace VMCS.API.Controllers.Users;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IWebHostEnvironment _webHostEnv;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IWebHostEnvironment env)
     {
         _userService = userService;
+        _webHostEnv = env;
     }
 
     [HttpGet]
@@ -39,7 +45,8 @@ public class UserController : ControllerBase
             Id = model.Id,
             Login = model.Login,
             Username = model.Username,
-            Email = model.Email
+            Email = model.Email,
+            AvatarUri = model.AvatarUri
         };
     }
 
@@ -54,7 +61,8 @@ public class UserController : ControllerBase
             Id = it.Id,
             Login = it.Login,
             Username = it.Username,
-            Email = it.Email
+            Email = it.Email,
+            AvatarUri = it.AvatarUri
         });
     }
 
@@ -124,5 +132,26 @@ public class UserController : ControllerBase
     public async Task Delete(string id, CancellationToken cancellationToken)
     {
         await _userService.Delete(id, cancellationToken);
+    }
+
+    [HttpPost]
+    [Route("upload-avatar")]
+    public async Task UploadAvatar(IFormFile image, CancellationToken cancellationToken)
+    {
+        byte[] bytes;
+        using (var stream = new MemoryStream())
+        {
+            image.CopyTo(stream);
+            bytes = stream.ToArray();
+        }
+
+        var name = Guid.NewGuid().ToString() + "." + image.FileName.Split(".")[^1];
+        var avatarUrl = $"/imgs/{name}";
+
+        var savePath = Path.Combine(_webHostEnv.WebRootPath, "imgs", name);
+
+        System.IO.File.WriteAllBytes(savePath, bytes.ToArray());
+
+        await _userService.SetAvatarImage(User.FindFirstValue(ClaimTypes.NameIdentifier), avatarUrl, cancellationToken);
     }
 }
