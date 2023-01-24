@@ -20,7 +20,7 @@ public class DirectoryService : IDirectoryService
     public async Task<string> Create(Directory directory)
     {
         await _directoryRepository.Create(directory);
-        await _meetingService.SetRepositoryToMeeting(directory.Id, directory.MeetingId, CancellationToken.None);
+        await _meetingService.SetDirectoryToMeeting(directory.Id, directory.MeetingId, CancellationToken.None);
         await _unitOfWork.SaveChange();
 
         return directory.Id;

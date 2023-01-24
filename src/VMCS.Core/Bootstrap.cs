@@ -8,6 +8,7 @@ using VMCS.Core.Domains.Chats.Services;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.CodeSharing.Validators;
 using VMCS.Core.Domains.Directories.Services;
+using VMCS.Core.Domains.GitHub.Services;
 using VMCS.Core.Domains.Meetings;
 using VMCS.Core.Domains.Meetings.Services;
 using VMCS.Core.Domains.Meetings.Validators;
@@ -31,13 +32,13 @@ public static class Bootstrap
         services.AddSingleton<IValidator<TextFile>, TextFileValidator>();
 
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IGitHubService, GitHubService>();
         services.AddScoped<IChannelService, ChannelService>();
         services.AddScoped<IMeetingService, MeetingService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IChannelInvitationService, ChannelInvitationService>();
         services.AddScoped<IDirectoryService, DirectoryService>();
-
 
         return services;
     }

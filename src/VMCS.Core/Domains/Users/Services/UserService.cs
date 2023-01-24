@@ -39,6 +39,11 @@ public class UserService : IUserService
         return await _userRepository.GetAllUserChannelInvitations(userId, cancellationToken);
     }
 
+    public async Task<bool> IsUserHaveAccessToken(string userId)
+    {
+        return await _userRepository.IsUserHaveAccessToken(userId);
+    }
+
     public async Task Create(User user, CancellationToken cancellationToken)
     {
         await _userValidator.ValidateAndThrowAsync(user, cancellationToken);

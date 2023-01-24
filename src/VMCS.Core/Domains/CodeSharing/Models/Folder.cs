@@ -4,9 +4,7 @@ namespace VMCS.Core.Domains.CodeSharing.Models;
 
 public class Folder
 {
-    public Folder()
-    {
-    }
+    public Folder() { }
 
     public Folder(string name)
     {

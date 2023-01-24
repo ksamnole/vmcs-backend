@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Directories.Dto;
@@ -23,13 +24,26 @@ public class DirectoryController : ControllerBase
     [HttpPost]
     public async Task<string> Create(CreateDirectoryDto directoryDto)
     {
-        return await _directoryService.Create(_mapper.Map<Directory>(directoryDto));
+       return await _directoryService.Create(new Directory()
+       {
+           Name = directoryDto.Name,
+           MeetingId = directoryDto.MeetingId,
+           DirectoryInJson = directoryDto.DirectoryInJson
+       });
     }
 
-    [HttpGet]
+    [HttpGet("{directoryId}")]
     public async Task<DirectoryDto> Get(string directoryId)
     {
-        return _mapper.Map<DirectoryDto>(await _directoryService.Get(directoryId));
+        var directory = await _directoryService.Get(directoryId);
+        var directoryZip = Convert.ToBase64String(directory.DirectoryZip);
+        return new DirectoryDto()
+        {
+            DirectoryZip = directoryZip,
+            DirectoryInJson = directory.DirectoryInJson,
+            MeetingId = directory.MeetingId,
+            Name = directory.Name
+        };
     }
 
     [HttpDelete]

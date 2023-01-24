@@ -40,8 +40,8 @@ public class CodeSharingHub : Hub
 
         _directories[directoryId].CreateFile(folderId, entity);
 
-        await Clients.Group(directoryId).SendAsync("Upload",
-            new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text });
+        await Clients.Group(directoryId).SendAsync("CreateFile",
+            new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text, ParentId = folderId});
     }
 
     public async Task ConnectToRepository(string directoryId)
@@ -68,15 +68,15 @@ public class CodeSharingHub : Hub
     {
         if (_connectionDirectory[Context.ConnectionId] != directoryId)
             throw new Exception("Creating folder in not connected directory");
-
-
+        
         var folder = _directories[directoryId].CreateFolder(new Folder(folderName), parentFolderId);
         var returnDto = new FolderReturnDto
         {
             Id = folder.Id,
             Name = folder.Name,
             Files = folder.Files,
-            Folders = folder.Folders
+            Folders = folder.Folders,
+            ParentId = parentFolderId
         };
 
         await Clients.Group(directoryId).SendAsync("CreateFolder", returnDto);

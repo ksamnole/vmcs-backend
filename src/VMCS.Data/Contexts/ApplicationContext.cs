@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using VMCS.Core.Domains.ChannelInvitations;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Chats;
+using VMCS.Core.Domains.GitHub;
 using VMCS.Core.Domains.Meetings;
 using VMCS.Core.Domains.Messages;
 using VMCS.Core.Domains.Users;
@@ -25,7 +26,7 @@ public class ApplicationContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<Chat> Chats { get; set; }
     public DbSet<Directory> Directories { get; set; }
-
+    public DbSet<AccessToken> AccessTokens { get; set; }
     public DbSet<ChannelInvitation> ChannelInvitations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,6 +38,7 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Chat>().Setup().ToTable("Chats");
 
         modelBuilder.Entity<Directory>().ToTable("Directories");
+        modelBuilder.Entity<AccessToken>().ToTable("AccessTokens");
         modelBuilder.Entity<ChannelInvitation>().ToTable("ChannelInvitations");
     }
 

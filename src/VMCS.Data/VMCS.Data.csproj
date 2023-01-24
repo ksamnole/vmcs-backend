@@ -7,21 +7,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\VMCS.Core\VMCS.Core.csproj"/>
+        <ProjectReference Include="..\VMCS.Core\VMCS.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="EntityFramework" Version="6.4.4"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.0"/>
+        <PackageReference Include="EntityFramework" Version="6.4.4" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
