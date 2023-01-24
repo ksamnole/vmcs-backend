@@ -58,6 +58,7 @@ public class Directory : IDirectory
             throw new ArgumentException($"Folder with id {folderId} doesn't exist");
 
         _directoryFolders[folderId].IsDeleted = true;
+        RootFolder.DeleteDeletedObjects();
     }
 
     public void DeleteFile(int fileId)
@@ -66,6 +67,7 @@ public class Directory : IDirectory
             throw new ArgumentException($"File with id {fileId} doesn't exist");
         
         _directoryFiles[fileId].IsDeleted = true;
+        RootFolder.DeleteDeletedObjects();
     }
 
 
