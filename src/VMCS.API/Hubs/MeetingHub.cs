@@ -48,6 +48,16 @@ public class MeetingHub : Hub
         await Clients.OthersInGroup(meetingId).SendAsync("LeaveClient", Context.ConnectionId);
     }
 
+    public async Task AddTrack(string meetingId, object track)
+    {
+        await Clients.Caller.SendAsync("ReceiveTrack", track);
+    }
+
+    public async Task ToggleWebCamera(string meetingId, bool isActive)
+    {
+        await Clients.Groups(meetingId).SendAsync("ToggleWebCamera", Context.ConnectionId,isActive);
+    }
+
     public async Task SendOffer(string clientId, object offer)
     {
         var username = Context.User.FindFirstValue(ClaimTypes.GivenName) ?? "Anonymous";
@@ -67,8 +77,11 @@ public class MeetingHub : Hub
 
     public override Task OnDisconnectedAsync(Exception exception)
     {
-        foreach (var meeting in _meetings.Values.Where(meeting => meeting.Contains(Context.ConnectionId)))
-            meeting.Remove(Context.ConnectionId);
+        foreach (var kvp in _meetings.Where(kvp => kvp.Value.Contains(Context.ConnectionId)))
+        {
+            kvp.Value.Remove(Context.ConnectionId);
+            Groups.RemoveFromGroupAsync(Context.ConnectionId, kvp.Key);
+        }
 
         return base.OnDisconnectedAsync(exception);
     }
