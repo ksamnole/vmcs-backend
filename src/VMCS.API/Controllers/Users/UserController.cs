@@ -141,16 +141,16 @@ public class UserController : ControllerBase
         byte[] bytes;
         using (var stream = new MemoryStream())
         {
-            image.CopyTo(stream);
+            await image.CopyToAsync(stream, cancellationToken);
             bytes = stream.ToArray();
         }
 
-        var name = Guid.NewGuid().ToString() + "." + image.FileName.Split(".")[^1];
+        var name = Guid.NewGuid() + "." + image.FileName.Split(".")[^1];
         var avatarUrl = $"/imgs/{name}";
 
         var savePath = Path.Combine(_webHostEnv.WebRootPath, "imgs", name);
 
-        System.IO.File.WriteAllBytes(savePath, bytes.ToArray());
+        await System.IO.File.WriteAllBytesAsync(savePath, bytes.ToArray(), cancellationToken);
 
         await _userService.SetAvatarImage(User.FindFirstValue(ClaimTypes.NameIdentifier), avatarUrl, cancellationToken);
     }
