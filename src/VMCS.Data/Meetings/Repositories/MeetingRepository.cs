@@ -40,7 +40,7 @@ public class MeetingRepository : IMeetingRepository
         await _applicationContext.Chats.LoadAsync(token);
         await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(token);
 
-        entity.Chat.Messages = entity.Chat.Messages.OrderByDescending(x => x.CreatedAt).ToList();
+        entity.Chat.Messages = entity.Chat.Messages.OrderBy(x => x.ModifiedAt).ToList();
 
         return entity;
     }
