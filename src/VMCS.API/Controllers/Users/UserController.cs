@@ -81,7 +81,8 @@ public class UserController : ControllerBase
         {
             Id = x.Id,
             Name = x.Name,
-            ChatId = x.ChatId
+            ChatId = x.ChatId,
+            AvatarUri = x.AvatarUri
         });
     }
 

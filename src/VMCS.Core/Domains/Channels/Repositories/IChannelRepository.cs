@@ -8,4 +8,5 @@ public interface IChannelRepository
     Task Create(Channel channel, CancellationToken cancellationToken);
     Task Delete(string id, CancellationToken cancellationToken);
     Task AddUser(User user, Channel channel, CancellationToken cancellationToken);
+    Task Update(Channel channel, CancellationToken cancellationToken);
 }

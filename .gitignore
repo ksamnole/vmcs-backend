@@ -38,3 +38,4 @@ packages/
 .vscode/
 #Configuration data
 appsettings.json
+**/imgs/*

@@ -56,4 +56,15 @@ public class ChannelRepository : IChannelRepository
 
         entity.Users.Add(user);
     }
+
+    public async Task Update(Channel channel, CancellationToken cancellationToken)
+    {
+        var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == channel.Id);
+
+        if (entity == null)
+            throw new ObjectNotFoundException($"Channel with id = {channel.Id} not found");
+
+        entity.AvatarUri = channel.AvatarUri;
+        entity.Name = channel.Name;
+    }
 }

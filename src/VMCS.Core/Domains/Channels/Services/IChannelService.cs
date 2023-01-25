@@ -8,4 +8,5 @@ public interface IChannelService
     Task<Channel> Create(Channel channel, CancellationToken cancellationToken);
     Task Delete(string id, CancellationToken cancellationToken);
     Task AddUser(User user, Channel channel, CancellationToken cancellationToken);
+    Task SetAvatarImage(string channelId, string imageUri, CancellationToken cancellationToken);
 }

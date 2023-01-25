@@ -13,4 +13,5 @@ public class ChannelDto
     public ShortChatDto Chat { get; set; }
     public IEnumerable<ShortUserDto> Users { get; set; }
     public IEnumerable<ShortMeetingDto> Meetings { get; set; }
+    public string AvatarUri { get; set; }
 }
