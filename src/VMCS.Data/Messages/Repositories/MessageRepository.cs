@@ -38,7 +38,7 @@ public class MessageRepository : IMessageRepository
 
     public async Task<IEnumerable<Message>> GetAllMessagesByChatId(string chatId, CancellationToken token)
     {
-        return await _applicationContext.Messages.Where(m => m.Chat.Id == chatId).ToArrayAsync(token);
+        return await _applicationContext.Messages.Where(m => m.Chat.Id == chatId).OrderBy(x => x.CreatedAt).ToArrayAsync(token);
     }
 
     public async Task<Message> GetById(string id, CancellationToken token)

@@ -13,7 +13,8 @@ internal class TextFileValidator : AbstractValidator<TextFile>
             {
                 return char.IsLetterOrDigit(name[0]) &&
                        char.IsLetterOrDigit(name[^1]) &&
-                       name.Count(x => x == '.') == 1 && 
+                       name.Count(x => x == '.') == 1 &&
+                       !string.IsNullOrWhiteSpace(name) &&
                        name.All(x => char.IsLetterOrDigit(x) || x == '.');
             }).WithMessage("Invalid name for file");
     }
