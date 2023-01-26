@@ -107,12 +107,17 @@ public class Directory : IDirectory
         await directoryService.Save(directory);
     }
 
-    public void ChangeFile(string text, int fileId)
+    public bool ChangeFile(string text, int fileId)
     {
         if (!_directoryFiles.ContainsKey(fileId))
             throw new ArgumentException($"No file with id {fileId}");
 
+        if (text == _directoryFiles[fileId].Text)
+            return false;
+
         _directoryFiles[fileId].Text = text;
+
+        return true;
     }
 
     private Folder GetRootFolder(Domains.Directories.Directory directory)
