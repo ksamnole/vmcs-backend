@@ -15,5 +15,5 @@ public interface IDirectory
     void CreateFile(int folderId, TextFile textFile);
     void DeleteFile(int fileId);
     Task Save(IDirectoryService directoryService);
-    ChangeInfo ChangeFile(string text, int fileId);
+    bool ChangeFile(string text, int fileId);
 }
