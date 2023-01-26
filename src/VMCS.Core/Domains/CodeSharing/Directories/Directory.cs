@@ -112,6 +112,9 @@ public class Directory : IDirectory
     {
         if (!_directoryFiles.ContainsKey(fileId))
             throw new ArgumentException($"No file with id {fileId}");
+        
+        if (text == _directoryFiles[fileId].Text)
+            return new ChangeInfo() { DirId = "-1" };
 
         var change = FindChange(_directoryFiles[fileId].Text, text);
         change.FileId = fileId;

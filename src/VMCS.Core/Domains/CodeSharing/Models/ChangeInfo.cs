@@ -8,4 +8,5 @@ public class ChangeInfo
     public ActionEnum Action { get; set; }
     public string InsertedString { get; set; }
     public int CharsDeleted { get; set; }
+    public string ClientId { get; set; }
 }
