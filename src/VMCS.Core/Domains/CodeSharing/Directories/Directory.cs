@@ -112,6 +112,9 @@ public class Directory : IDirectory
     {
         if (!_directoryFiles.ContainsKey(fileId))
             throw new ArgumentException($"No file with id {fileId}");
+        
+        if (text == _directoryFiles[fileId].Text)
+            return new ChangeInfo() { DirId = "-1" };
 
         lock (syncObj)
         {

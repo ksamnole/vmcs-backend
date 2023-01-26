@@ -94,7 +94,13 @@ public class CodeSharingHub : Hub
         {
             var change = _directories[directoryId].ChangeFile(text, fileId);
         }
+        
+        
+        if (change.DirId == "-1") 
+            return;
+            
         change.DirId = directoryId;
+        change.ClientId = Context.ConnectionId;
         await Clients.OthersInGroup(directoryId).SendAsync("Change", change);
     }
 }
