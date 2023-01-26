@@ -2,10 +2,10 @@
 
 public class ChangeInfo
 {
-    public string RepoId { get; set; }
-    public string FileId { get; set; }
+    public string DirId { get; set; }
+    public int FileId { get; set; }
     public int Position { get; set; }
     public ActionEnum Action { get; set; }
-    public byte[] InsertedChars { get; set; }
+    public string InsertedString { get; set; }
     public int CharsDeleted { get; set; }
 }

@@ -107,12 +107,74 @@ public class Directory : IDirectory
         await directoryService.Save(directory);
     }
 
-    public void ChangeFile(string text, int fileId)
+    public ChangeInfo ChangeFile(string text, int fileId)
     {
         if (!_directoryFiles.ContainsKey(fileId))
             throw new ArgumentException($"No file with id {fileId}");
 
-        _directoryFiles[fileId].Text = text;
+        var change = FindChange(_directoryFiles[fileId].Text, text);
+        change.FileId = fileId;
+
+        if (change.Action == ActionEnum.Insert)
+        {
+            text = _directoryFiles[fileId].Text;
+            _directoryFiles[fileId].Text = 
+                new string(text.Take(change.Position)
+                               .Concat(change.InsertedString)
+                               .Concat(text.Skip(change.Position)).ToArray());
+        }
+        else
+        {
+            text = _directoryFiles[fileId].Text;
+            _directoryFiles[fileId].Text = 
+                new string(text.Take(change.Position)
+                               .Concat(text
+                               .Skip(change.Position + change.CharsDeleted))
+                               .ToArray());
+        }
+
+        return change;
+    }
+
+    private ChangeInfo FindChange(string prevText, string curText)
+    {
+        var difPos = 0;
+        for (var i = 0; i < Math.Max(prevText.Length, curText.Length); i++)
+        {
+            if (i > prevText.Length - 1 || i > curText.Length - 1)
+            {
+                difPos = i;
+                break;
+            }
+            if (prevText[i] != curText[i])
+            {
+                difPos = i;
+                break;
+            }
+        }
+
+        var toTake = (curText.Length - difPos) - (prevText.Length - difPos);
+
+        if (prevText.Length < curText.Length)
+        {
+            return new ChangeInfo()
+            {
+                Action = 0,
+                CharsDeleted = 0,
+                InsertedString = new string(curText.Skip(difPos).Take(toTake).ToArray()),
+                Position = difPos
+            };
+        }
+        else
+        {
+            return new ChangeInfo()
+            {
+                Action = 0,
+                CharsDeleted = toTake * -1,
+                InsertedString = "",
+                Position = difPos
+            };
+        }
     }
 
     private Folder GetRootFolder(Domains.Directories.Directory directory)

@@ -11,10 +11,12 @@ namespace VMCS.Data.Users.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly ApplicationContext _applicationContext;
+    private readonly AuthenticationContext _authenticationContext;
 
-    public UserRepository(ApplicationContext applicationContext)
+    public UserRepository(ApplicationContext applicationContext, AuthenticationContext authenticationContext)
     {
         _applicationContext = applicationContext;
+        _authenticationContext = authenticationContext;
     }
 
     public async Task<User> GetById(string id, CancellationToken cancellationToken)
@@ -91,6 +93,14 @@ public class UserRepository : IUserRepository
         entity.Username = user.Username;
         entity.Email = user.Email;
         entity.AvatarUri = user.AvatarUri;
+
+        var authEntity = await _authenticationContext.Users.FirstOrDefaultAsync(it => it.Id == user.Id, cancellationToken);
+
+        if (authEntity == null)
+            throw new ObjectNotFoundException($"User with id = {user.Id} not found in auth db");
+
+        authEntity.GivenName = user.Username;
+        authEntity.Email = user.Email;
     }
 
     public bool ContainsByLogin(string login)

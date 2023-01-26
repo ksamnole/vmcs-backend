@@ -7,11 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Users.Dto;
 using VMCS.Core;
+using VMCS.Core.Domains.Auth;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
@@ -24,7 +26,7 @@ public class UserController : ControllerBase
     private readonly IUserService _userService;
     private readonly IWebHostEnvironment _webHostEnv;
 
-    public UserController(IUserService userService, IWebHostEnvironment env)
+    public UserController(IUserService userService, IWebHostEnvironment env, UserManager<AuthUser> userManager)
     {
         _userService = userService;
         _webHostEnv = env;
