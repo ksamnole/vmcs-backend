@@ -10,6 +10,7 @@ public class Directory : IDirectory
     private readonly Dictionary<int, TextFile> _directoryFiles = new();
     private readonly Dictionary<int, Folder> _directoryFolders = new();
     private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new();
+    private string syncObj = "";
 
     public Directory(Domains.Directories.Directory directory)
     {
@@ -114,23 +115,25 @@ public class Directory : IDirectory
 
         var change = FindChange(_directoryFiles[fileId].Text, text);
         change.FileId = fileId;
-
-        if (change.Action == ActionEnum.Insert)
+        lock (syncObj)
         {
-            text = _directoryFiles[fileId].Text;
-            _directoryFiles[fileId].Text = 
-                new string(text.Take(change.Position)
-                               .Concat(change.InsertedString)
-                               .Concat(text.Skip(change.Position)).ToArray());
-        }
-        else
-        {
-            text = _directoryFiles[fileId].Text;
-            _directoryFiles[fileId].Text = 
-                new string(text.Take(change.Position)
-                               .Concat(text
-                               .Skip(change.Position + change.CharsDeleted))
-                               .ToArray());
+            if (change.Action == ActionEnum.Insert)
+            {
+                text = _directoryFiles[fileId].Text;
+                _directoryFiles[fileId].Text =
+                    new string(text.Take(change.Position)
+                                   .Concat(change.InsertedString)
+                                   .Concat(text.Skip(change.Position)).ToArray());
+            }
+            else
+            {
+                text = _directoryFiles[fileId].Text;
+                _directoryFiles[fileId].Text =
+                    new string(text.Take(change.Position)
+                                   .Concat(text
+                                   .Skip(change.Position + change.CharsDeleted))
+                                   .ToArray());
+            }
         }
 
         return change;
