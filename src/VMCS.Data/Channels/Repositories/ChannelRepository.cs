@@ -28,6 +28,7 @@ public class ChannelRepository : IChannelRepository
         await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(cancellationToken);
         await _applicationContext.Meetings.LoadAsync(cancellationToken);
         await _applicationContext.Messages.LoadAsync(cancellationToken);
+        await _applicationContext.Users.LoadAsync(cancellationToken);
 
         entity.Chat.Messages = entity.Chat.Messages.OrderBy(x => x.ModifiedAt).ToList();
 
