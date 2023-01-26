@@ -113,10 +113,11 @@ public class Directory : IDirectory
         if (!_directoryFiles.ContainsKey(fileId))
             throw new ArgumentException($"No file with id {fileId}");
 
-        var change = FindChange(_directoryFiles[fileId].Text, text);
-        change.FileId = fileId;
         lock (syncObj)
         {
+            var change = FindChange(_directoryFiles[fileId].Text, text);
+            change.FileId = fileId;
+
             if (change.Action == ActionEnum.Insert)
             {
                 text = _directoryFiles[fileId].Text;
@@ -134,9 +135,8 @@ public class Directory : IDirectory
                                    .Skip(change.Position + change.CharsDeleted))
                                    .ToArray());
             }
+            return change;
         }
-
-        return change;
     }
 
     private ChangeInfo FindChange(string prevText, string curText)

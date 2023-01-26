@@ -90,7 +90,10 @@ public class CodeSharingHub : Hub
         if (_connectionDirectory[Context.ConnectionId] != directoryId)
             throw new Exception("Changing file in not connected directory");
 
-        var change = _directories[directoryId].ChangeFile(text, fileId);
+        lock ("lock")
+        {
+            var change = _directories[directoryId].ChangeFile(text, fileId);
+        }
         change.DirId = directoryId;
         await Clients.OthersInGroup(directoryId).SendAsync("Change", change);
     }
