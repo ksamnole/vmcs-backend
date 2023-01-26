@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VMCS.API.Controllers.Channel.Dto;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Chats.Dto;
 using VMCS.API.Controllers.Meetings.Dto;
