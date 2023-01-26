@@ -3,7 +3,7 @@ using VMCS.API.Controllers.Chats.Dto;
 using VMCS.API.Controllers.Meetings.Dto;
 using VMCS.API.Controllers.Users.Dto;
 
-namespace VMCS.API.Controllers.Channel.Dto;
+namespace VMCS.API.Controllers.Channels.Dto;
 
 public class ChannelDto
 {

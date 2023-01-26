@@ -1,29 +1,35 @@
 ﻿using FluentValidation;
 using VMCS.Core.Domains.Messages.Repositories;
+using VMCS.Core.Domains.Users.Services;
 
 namespace VMCS.Core.Domains.Messages.Services;
 
 public class MessageService : IMessageService
 {
     private readonly IMessageRepository _messageRepository;
+    private readonly IUserService _userService;
     private readonly IValidator<Message> _messageValidator;
     private readonly IUnitOfWork _unitOfWork;
 
     public MessageService(IMessageRepository messageRepository, IValidator<Message> messageValidator,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork, IUserService userService)
     {
         _messageRepository = messageRepository;
         _messageValidator = messageValidator;
         _unitOfWork = unitOfWork;
+        _userService = userService;
     }
 
     public async Task<Message> Create(Message message, CancellationToken token)
     {
         await _messageValidator.ValidateAndThrowAsync(message, token);
-
+        
         await _messageRepository.Create(message, token);
         await _unitOfWork.SaveChange();
-
+        
+        var user = await _userService.GetById(message.UserId, token);
+        message.User = user;
+        
         return message;
     }
 
