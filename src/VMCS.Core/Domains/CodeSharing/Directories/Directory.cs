@@ -162,22 +162,19 @@ public class Directory : IDirectory
         {
             return new ChangeInfo()
             {
-                Action = 0,
+                Action = ActionEnum.Insert,
                 CharsDeleted = 0,
                 InsertedString = new string(curText.Skip(difPos).Take(toTake).ToArray()),
                 Position = difPos
             };
         }
-        else
+        return new ChangeInfo()
         {
-            return new ChangeInfo()
-            {
-                Action = 0,
-                CharsDeleted = toTake * -1,
-                InsertedString = "",
-                Position = difPos
-            };
-        }
+            Action = ActionEnum.Delete,
+            CharsDeleted = toTake * -1,
+            InsertedString = "",
+            Position = difPos
+        };
     }
 
     private Folder GetRootFolder(Domains.Directories.Directory directory)
