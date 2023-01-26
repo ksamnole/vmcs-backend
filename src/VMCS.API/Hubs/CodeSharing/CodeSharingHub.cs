@@ -92,6 +92,6 @@ public class CodeSharingHub : Hub
 
         var change = _directories[directoryId].ChangeFile(text, fileId);
         change.DirId = directoryId;
-        await Clients.Group(directoryId).SendAsync("Change", change);
+        await Clients.OthersInGroup(directoryId).SendAsync("Change", change);
     }
 }
