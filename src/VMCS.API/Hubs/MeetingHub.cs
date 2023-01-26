@@ -53,6 +53,11 @@ public class MeetingHub : Hub
         await Clients.Caller.SendAsync("ReceiveTrack", track);
     }
 
+    public async Task ToggleMic(string meetingId)
+    {
+        await Clients.Groups(meetingId).SendAsync("ToggleMic", Context.ConnectionId);
+    }
+
     public async Task ToggleWebCamera(string meetingId, bool isActive)
     {
         await Clients.Groups(meetingId).SendAsync("ToggleWebCamera", Context.ConnectionId,isActive);

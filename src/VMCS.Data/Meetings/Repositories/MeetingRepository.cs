@@ -39,6 +39,7 @@ public class MeetingRepository : IMeetingRepository
 
         await _applicationContext.Chats.LoadAsync(token);
         await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(token);
+        await _applicationContext.Messages.LoadAsync(token);
 
         entity.Chat.Messages = entity.Chat.Messages.OrderBy(x => x.ModifiedAt).ToList();
 
