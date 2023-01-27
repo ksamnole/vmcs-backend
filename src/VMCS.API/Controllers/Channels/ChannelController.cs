@@ -77,22 +77,22 @@ public class ChannelController : ControllerBase
 
     [HttpPost()]
     [Route("upload-avatar")]
-    public async Task UploadAvatar(string channelId, IFormFile image, CancellationToken cancellationToken)
+    public async Task UploadAvatar([FromForm]UploadAvatarChannelDTO data, CancellationToken cancellationToken)
     {
         byte[] bytes;
         using (var stream = new MemoryStream())
         {
-            await image.CopyToAsync(stream, cancellationToken);
+            await data.Image.CopyToAsync(stream, cancellationToken);
             bytes = stream.ToArray();
         }
 
-        var name = Guid.NewGuid() + "." + image.FileName.Split(".")[^1];
+        var name = Guid.NewGuid() + "." + data.Image.FileName.Split(".")[^1];
         var avatarUrl = $"/imgs/{name}";
 
         var savePath = Path.Combine(_webHostEnv.WebRootPath, "imgs", name);
 
         await System.IO.File.WriteAllBytesAsync(savePath, bytes.ToArray(), cancellationToken);
 
-        await _channelService.SetAvatarImage(channelId, avatarUrl, cancellationToken);
+        await _channelService.SetAvatarImage(data.ChannelId, avatarUrl, cancellationToken);
     }
 }
