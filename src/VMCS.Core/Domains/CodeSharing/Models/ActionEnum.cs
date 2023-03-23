@@ -2,6 +2,6 @@
 
 public enum ActionEnum
 {
-    Insert,
-    Delete
+    Delete,
+    Insert
 }
