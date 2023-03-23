@@ -5,7 +5,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-using VMCS.API.Controllers.Channel.Dto;
+using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Hubs.CodeSharing.Dto;
 using VMCS.Core.Domains.CodeSharing.Directories;
 using VMCS.Core.Domains.CodeSharing.Models;
