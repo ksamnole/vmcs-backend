@@ -101,8 +101,9 @@ public class CodeSharingHub : Hub
 
         _logger.LogInformation($"{Context.ConnectionId} =====================\n " + JsonConvert.SerializeObject(change));
 
-        _directories[change.DirectoryId].ChangeFile(change.FileId, change.Change, _logger);
+        change.ConnectionId = Context.ConnectionId;
 
+        _directories[change.DirectoryId].ChangeFile(change.FileId, change.Change, _logger);
 
         await Clients.Group(change.DirectoryId).SendAsync("Change", change);
 

@@ -29,6 +29,8 @@ public class TextFile
 
         foreach(var ch in changes.Skip(change.VersionId + 1))
         {
+            //if (ch.ConnectionId == change.ConnectionId)
+            //    continue;
             if (ch.Position <= change.Position)
             {
                 if (ch.Action == 0)
@@ -50,9 +52,9 @@ public class TextFile
             var oldText = Text;
             changes.Add(CorrectChange(change));
             VersionId++;
-            logger.LogInformation("\n File ============" +
-                "\n OldText: \n" + oldText + "\n NewText: \n" + Text
-                + "\n Changes \n" + JsonConvert.SerializeObject(changes) + "\n VersionId: " + VersionId);
+            //logger.LogInformation("\n File ============" +
+            //    "\n OldText: \n" + oldText + "\n NewText: \n" + Text
+            //    + "\n Changes \n" + "\n VersionId: " + VersionId);
         }
     }
 

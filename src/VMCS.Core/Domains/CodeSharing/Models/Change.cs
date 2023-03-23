@@ -14,5 +14,6 @@ namespace VMCS.Core.Domains.CodeSharing.Models
         public int CharsDeleted { get; set; }
         public int VersionId { get; set; }
         public int ChangeId { get; set; }
+        public string ConnectionId { get; set; }
     }
 }
