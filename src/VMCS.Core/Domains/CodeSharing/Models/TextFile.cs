@@ -1,4 +1,6 @@
-﻿using System.Net.Http.Headers;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace VMCS.Core.Domains.CodeSharing.Models;
 
@@ -40,10 +42,14 @@ public class TextFile
         return change;
     }
 
-    public void ApplyChange(Change change)
+    public void ApplyChange(Change change, ILogger logger)
     {
+        var oldText = Text;
         changes.Add(CorrectChange(change));
         VersionId++;
+        logger.LogInformation("\n File ============" + 
+            "\n OldText: \n" + oldText + "\n NewText: \n" +Text
+            + "\n Changes \n" +JsonConvert.SerializeObject(changes) + "\n VersionId: " + VersionId);
     }
 
     private string ApplyAllChanges()

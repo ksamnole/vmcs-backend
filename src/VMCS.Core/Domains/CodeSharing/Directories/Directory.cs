@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.Directories.Services;
@@ -108,14 +109,14 @@ public class Directory : IDirectory
         await directoryService.Save(directory);
     }
 
-    public void ChangeFile(int fileId, Change change)
+    public void ChangeFile(int fileId, Change change, ILogger logger)
     {
         if (!_directoryFiles.ContainsKey(fileId))
             throw new ArgumentException($"No file with id {fileId}");
 
         var file = _directoryFiles[fileId];
 
-        file.ApplyChange(change);
+        file.ApplyChange(change, logger);
     }
 
     private Folder GetRootFolder(Domains.Directories.Directory directory)

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Hubs.CodeSharing.Dto;
@@ -19,11 +20,13 @@ public class CodeSharingHub : Hub
     private static readonly Dictionary<string, string> _connectionDirectory = new();
     private readonly IDirectoryService _directoryService;
     private readonly IValidator<TextFile> _fileValidator;
+    private readonly ILogger<CodeSharingHub> _logger;
 
-    public CodeSharingHub(IValidator<TextFile> fileValidator, IDirectoryService directoryService)
+    public CodeSharingHub(IValidator<TextFile> fileValidator, IDirectoryService directoryService, ILogger<CodeSharingHub> logger)
     {
         _fileValidator = fileValidator;
         _directoryService = directoryService;
+        _logger = logger;
     }
 
     public override Task OnDisconnectedAsync(Exception exception)
@@ -95,7 +98,10 @@ public class CodeSharingHub : Hub
         if (_connectionDirectory[Context.ConnectionId] != change.DirectoryId)
             throw new Exception("Changing file in not connected directory");
 
-        _directories[change.DirectoryId].ChangeFile(change.FileId, change.Change);
+        _logger.LogInformation($"{Context.ConnectionId} =====================\n " + JsonConvert.SerializeObject(change));
+
+        _directories[change.DirectoryId].ChangeFile(change.FileId, change.Change, _logger);
+
 
         await Clients.Group(change.DirectoryId).SendAsync("Change", change);
 
