@@ -28,6 +28,9 @@ public class ChannelRepository : IChannelRepository
         await _applicationContext.Entry(entity).Collection(c => c.Users).LoadAsync(cancellationToken);
         await _applicationContext.Meetings.LoadAsync(cancellationToken);
         await _applicationContext.Messages.LoadAsync(cancellationToken);
+        await _applicationContext.Users.LoadAsync(cancellationToken);
+
+        entity.Chat.Messages = entity.Chat.Messages.OrderBy(x => x.ModifiedAt).ToList();
 
         return entity;
     }
@@ -49,11 +52,22 @@ public class ChannelRepository : IChannelRepository
 
     public async Task AddUser(User user, Channel channel, CancellationToken cancellationToken)
     {
-        var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == channel.Id);
+        var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == channel.Id, cancellationToken);
 
         if (entity == null)
             throw new ObjectNotFoundException($"Channel with id = {channel.Id} not found");
 
         entity.Users.Add(user);
+    }
+
+    public async Task Update(Channel channel, CancellationToken cancellationToken)
+    {
+        var entity = await _applicationContext.Channels.FirstOrDefaultAsync(x => x.Id == channel.Id, cancellationToken);
+
+        if (entity == null)
+            throw new ObjectNotFoundException($"Channel with id = {channel.Id} not found");
+
+        entity.AvatarUri = channel.AvatarUri;
+        entity.Name = channel.Name;
     }
 }

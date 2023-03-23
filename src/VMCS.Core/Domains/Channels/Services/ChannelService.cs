@@ -50,4 +50,14 @@ public class ChannelService : IChannelService
         await _channelRepository.AddUser(user, channel, cancellationToken);
         await _unitOfWork.SaveChange();
     }
+
+    public async Task SetAvatarImage(string channelId, string imageUri, CancellationToken cancellationToken)
+    {
+        var channel = await _channelRepository.GetById(channelId, cancellationToken);
+
+        channel.AvatarUri = imageUri;
+
+        await _channelRepository.Update(channel, cancellationToken);
+        await _unitOfWork.SaveChange();
+    }
 }

@@ -18,6 +18,7 @@ public class Channel : BaseEntity
     public string Name { get; set; }
     public string ChatId { get; set; }
     public string CreatorId { get; set; }
+    public string? AvatarUri { get; set; }
 
     public User Creator { get; set; }
     public Chat Chat { get; set; }

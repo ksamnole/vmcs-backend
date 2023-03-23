@@ -23,7 +23,8 @@ public class MessageRepository : IMessageRepository
 
     public async Task CreateAll(IEnumerable<Message> messages, CancellationToken token)
     {
-        foreach (var message in messages) await Create(message, token);
+        foreach (var message in messages) 
+            await Create(message, token);
     }
 
     public async Task Delete(string id, CancellationToken token)
@@ -38,7 +39,13 @@ public class MessageRepository : IMessageRepository
 
     public async Task<IEnumerable<Message>> GetAllMessagesByChatId(string chatId, CancellationToken token)
     {
-        return await _applicationContext.Messages.Where(m => m.Chat.Id == chatId).ToArrayAsync(token);
+        var entity = await _applicationContext.Messages.Where(m => m.Chat.Id == chatId)
+            .OrderBy(x => x.CreatedAt)
+            .ToArrayAsync(token);
+
+        await _applicationContext.Users.LoadAsync(token);
+
+        return entity;
     }
 
     public async Task<Message> GetById(string id, CancellationToken token)

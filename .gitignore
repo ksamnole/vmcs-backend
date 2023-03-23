@@ -38,3 +38,6 @@ packages/
 .vscode/
 #Configuration data
 appsettings.json
+# Static files
+**/imgs/*
+!.gitkeep

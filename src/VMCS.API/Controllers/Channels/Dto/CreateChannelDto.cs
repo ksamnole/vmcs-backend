@@ -1,4 +1,4 @@
-﻿namespace VMCS.API.Controllers.Channel.Dto;
+﻿namespace VMCS.API.Controllers.Channels.Dto;
 
 public class CreateChannelDto
 {

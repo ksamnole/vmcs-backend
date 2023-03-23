@@ -7,11 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.ChannelInvitations.Dto;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Users.Dto;
 using VMCS.Core;
+using VMCS.Core.Domains.Auth;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 
@@ -24,7 +26,7 @@ public class UserController : ControllerBase
     private readonly IUserService _userService;
     private readonly IWebHostEnvironment _webHostEnv;
 
-    public UserController(IUserService userService, IWebHostEnvironment env)
+    public UserController(IUserService userService, IWebHostEnvironment env, UserManager<AuthUser> userManager)
     {
         _userService = userService;
         _webHostEnv = env;
@@ -81,7 +83,8 @@ public class UserController : ControllerBase
         {
             Id = x.Id,
             Name = x.Name,
-            ChatId = x.ChatId
+            ChatId = x.ChatId,
+            AvatarUri = x.AvatarUri
         });
     }
 
@@ -141,16 +144,16 @@ public class UserController : ControllerBase
         byte[] bytes;
         using (var stream = new MemoryStream())
         {
-            image.CopyTo(stream);
+            await image.CopyToAsync(stream, cancellationToken);
             bytes = stream.ToArray();
         }
 
-        var name = Guid.NewGuid().ToString() + "." + image.FileName.Split(".")[^1];
+        var name = Guid.NewGuid() + "." + image.FileName.Split(".")[^1];
         var avatarUrl = $"/imgs/{name}";
 
         var savePath = Path.Combine(_webHostEnv.WebRootPath, "imgs", name);
 
-        System.IO.File.WriteAllBytes(savePath, bytes.ToArray());
+        await System.IO.File.WriteAllBytesAsync(savePath, bytes.ToArray(), cancellationToken);
 
         await _userService.SetAvatarImage(User.FindFirstValue(ClaimTypes.NameIdentifier), avatarUrl, cancellationToken);
     }

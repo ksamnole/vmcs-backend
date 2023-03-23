@@ -26,7 +26,7 @@ public class GithubController : ControllerBase
     
     [HttpGet]
     [Route("signin")]
-    public async Task SignIn(string code, string userId)
+    public async Task<string> SignIn(string code, string userId)
     {
         // https://github.com/login/oauth/authorize?client_id=c287f00c6d12fd1c2aad&redirect_uri=https%3A%2F%2Flocalhost%3A5001%2Fgithub%2Fsignin%3FuserId%3D9de5cd29-a809-464d-83a9-c4bda5800637&scope=repo&response_type=code
 
@@ -40,6 +40,8 @@ public class GithubController : ControllerBase
         });
 
         await _gitHubService.SignIn(userId, data);
+
+        return "Successful authentication on github. Go back to the application page.";
     }
     
     [HttpPost]

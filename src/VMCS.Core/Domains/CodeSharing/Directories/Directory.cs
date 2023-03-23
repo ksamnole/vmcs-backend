@@ -10,6 +10,7 @@ public class Directory : IDirectory
     private readonly Dictionary<int, TextFile> _directoryFiles = new();
     private readonly Dictionary<int, Folder> _directoryFolders = new();
     private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new();
+    private string syncObj = "";
 
     public Directory(Domains.Directories.Directory directory)
     {
