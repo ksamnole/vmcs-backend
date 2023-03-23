@@ -21,6 +21,7 @@ public class CodeSharingHub : Hub
     private readonly IDirectoryService _directoryService;
     private readonly IValidator<TextFile> _fileValidator;
     private readonly ILogger<CodeSharingHub> _logger;
+    
 
     public CodeSharingHub(IValidator<TextFile> fileValidator, IDirectoryService directoryService, ILogger<CodeSharingHub> logger)
     {

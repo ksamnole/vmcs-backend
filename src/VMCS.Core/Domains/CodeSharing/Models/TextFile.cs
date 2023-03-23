@@ -13,6 +13,7 @@ public class TextFile
     public string Text => ApplyAllChanges();
     public int VersionId  { get; set;}
     public bool IsDeleted { get; set; }
+    private readonly string _lockObject = "";
 
     public TextFile(string name, string originText)
     {
@@ -44,12 +45,15 @@ public class TextFile
 
     public void ApplyChange(Change change, ILogger logger)
     {
-        var oldText = Text;
-        changes.Add(CorrectChange(change));
-        VersionId++;
-        logger.LogInformation("\n File ============" + 
-            "\n OldText: \n" + oldText + "\n NewText: \n" +Text
-            + "\n Changes \n" +JsonConvert.SerializeObject(changes) + "\n VersionId: " + VersionId);
+        lock (_lockObject)
+        {
+            var oldText = Text;
+            changes.Add(CorrectChange(change));
+            VersionId++;
+            logger.LogInformation("\n File ============" +
+                "\n OldText: \n" + oldText + "\n NewText: \n" + Text
+                + "\n Changes \n" + JsonConvert.SerializeObject(changes) + "\n VersionId: " + VersionId);
+        }
     }
 
     private string ApplyAllChanges()

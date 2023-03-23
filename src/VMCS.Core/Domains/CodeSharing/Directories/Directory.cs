@@ -114,6 +114,8 @@ public class Directory : IDirectory
         if (!_directoryFiles.ContainsKey(fileId))
             throw new ArgumentException($"No file with id {fileId}");
 
+        
+
         var file = _directoryFiles[fileId];
 
         file.ApplyChange(change, logger);
