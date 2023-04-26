@@ -27,6 +27,7 @@ public class Folder
         Folders.RemoveAll(f => f.IsDeleted);
 
         // Recursively go through each folder and delete deleted objects
-        foreach (var folder in Folders) folder.DeleteDeletedObjects();
+        foreach (var folder in Folders) 
+            folder.DeleteDeletedObjects();
     }
 }

@@ -43,4 +43,36 @@ public class ChannelServiceTests
 
         Assert.Equal(typeof(Channel), channel.GetType());
     }
+    
+    [Fact]
+    public async Task CreateChannel_SuccessPath_CreateCalledOneTime()
+    {
+        var channel = new Channel()
+        {
+            Name = "channel",
+            ChatId = "fakeChatId",
+            CreatorId = "fakeCreatorId"
+        };
+
+        await _channelService.Create(channel, CancellationToken.None);
+        
+        _mockChannelRepository.Verify(verify => verify.Create(channel, CancellationToken.None));
+        _mockUnitOfWork.Verify(verify => verify.SaveChange());
+    }
+    
+    [Fact]
+    public async Task CreateChannel_WithEmptyName_ShouldThrowException()
+    {
+        var channel = new Channel()
+        {
+            ChatId = "fakeChatId",
+            CreatorId = "fakeCreatorId"
+        };
+
+        var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(() => _channelService.Create(channel, CancellationToken.None));
+        var error = exception.Errors.First();
+        
+        Assert.Equal("Name", error.PropertyName);
+        Assert.Equal("Please specify a Name", error.ErrorMessage);
+    }
 }
