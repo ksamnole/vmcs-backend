@@ -4,12 +4,13 @@ using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Repositories;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Channels.Validators;
+using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
 using Xunit;
 
 namespace VMCS.Core.Tests.Tests;
 
-public class ChannelServiceTests
+public class ChannelServiceTests : TestBase
 {
     private readonly IChannelService _channelService;
     private readonly IValidator<Channel> _channelValidator;
@@ -47,16 +48,9 @@ public class ChannelServiceTests
     [Fact]
     public async Task CreateChannel_SuccessPath_CreateCalledOneTime()
     {
-        var channel = new Channel()
-        {
-            Name = "channel",
-            ChatId = "fakeChatId",
-            CreatorId = "fakeCreatorId"
-        };
-
-        await _channelService.Create(channel, CancellationToken.None);
+        await _channelService.Create(Channel, CancellationToken.None);
         
-        _mockChannelRepository.Verify(verify => verify.Create(channel, CancellationToken.None));
+        _mockChannelRepository.Verify(verify => verify.Create(Channel, CancellationToken.None));
         _mockUnitOfWork.Verify(verify => verify.SaveChange());
     }
     
@@ -74,5 +68,50 @@ public class ChannelServiceTests
         
         Assert.Equal("Name", error.PropertyName);
         Assert.Equal("Please specify a Name", error.ErrorMessage);
+    }
+    
+    [Fact]
+    public async Task DeleteChannel_SuccessPath_DeleteCalledOneTime()
+    {
+        await _channelService.Delete(FakeId, CancellationToken.None);
+
+        _mockChannelRepository.Verify(verify => verify.Delete(FakeId, CancellationToken.None));
+        _mockUnitOfWork.Verify(verify => verify.SaveChange());
+    }
+    
+    [Fact]
+    public async Task AddUserToChannel_SuccessPath_ChannelGetUser()
+    {
+        await _channelService.AddUser(User, Channel, CancellationToken.None);
+
+        _mockChannelRepository.Verify(verify => verify.AddUser(User, Channel, CancellationToken.None));
+        _mockUnitOfWork.Verify(verify => verify.SaveChange());
+    }
+}
+
+public class TestBase
+{
+    protected readonly Channel Channel;
+    protected readonly User User;
+    protected readonly string FakeId;
+
+    protected TestBase()
+    {
+        Channel = new Channel()
+        {
+            Name = "name",
+            ChatId = "fakeChatId",
+            CreatorId = "fakeCreatorId"
+        };
+        
+        User = new User()
+        {
+            Id = "fakeId",
+            Login = "login",
+            Username = "username",
+            Email = "email"
+        };
+
+        FakeId = "fakeId";
     }
 }
