@@ -29,8 +29,8 @@ public class TextFile
 
         foreach(var ch in changes.Skip(change.VersionId + 1))
         {
-            //if (ch.ConnectionId == change.ConnectionId)
-            //    continue;
+            if (ch.ConnectionId == change.ConnectionId)
+                continue;
             if (ch.Position <= change.Position)
             {
                 if (ch.Action == 0)

@@ -45,7 +45,7 @@ public class CodeSharingHub : Hub
 
         await _fileValidator.ValidateAndThrowAsync(entity);
 
-        _directories[directoryId].CreateFile(folderId, entity);
+        _directories[directoryId].CreateFile(entity, folderId);
 
         await Clients.Group(directoryId).SendAsync("CreateFile",
             new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text, ParentId = folderId});

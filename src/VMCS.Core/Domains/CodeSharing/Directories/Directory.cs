@@ -72,7 +72,7 @@ public class Directory : IDirectory
         RootFolder.DeleteDeletedObjects();
     }
 
-    public void CreateFile(int folderId, TextFile file)
+    public void CreateFile(TextFile file, int folderId)
     {
         file.Id = _uniqueIdentifierCreator.GetUniqueIdentifier();
         var files = _directoryFolders[folderId].Files;
