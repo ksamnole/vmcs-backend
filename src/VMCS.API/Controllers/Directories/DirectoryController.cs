@@ -37,7 +37,8 @@ public class DirectoryController : ControllerBase
     {
         var directory = await _directoryService.Get(directoryId);
         var directoryZip = Convert.ToBase64String(directory.DirectoryZip);
-        return new DirectoryDto()
+        
+        return new DirectoryDto
         {
             DirectoryZip = directoryZip,
             DirectoryInJson = directory.DirectoryInJson,
