@@ -5,6 +5,7 @@ using VMCS.Core;
 using VMCS.Core.Domains.ChannelInvitations.Repositories;
 using VMCS.Core.Domains.Channels.Repositories;
 using VMCS.Core.Domains.Chats.Repositories;
+using VMCS.Core.Domains.CodeExecution.HttpClients;
 using VMCS.Core.Domains.Directories.Repositories;
 using VMCS.Core.Domains.GitHub.HttpClients;
 using VMCS.Core.Domains.GitHub.Repositories;
@@ -18,6 +19,7 @@ using VMCS.Data.Contexts;
 using VMCS.Data.Directories;
 using VMCS.Data.GitHub.Repositories;
 using VMCS.Data.HttpClients;
+using VMCS.Data.HttpClients.CodeExecution.JudgeZero;
 using VMCS.Data.HttpClients.GitHub;
 using VMCS.Data.Meetings.Repositories;
 using VMCS.Data.Messages.Repositories;
@@ -53,7 +55,18 @@ public static class Bootstrap
             options.BaseAddress = new Uri(configuration["GitHub:ApiUri"]);
             options.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
         });
-        
+        services.AddHttpClient<ICodeExecutor, JudgeZeroCodeExecutor>(options =>
+        {
+            options.BaseAddress = new Uri(configuration["JudgeZero:ApiUri"]);
+            options.DefaultRequestHeaders.Add("X-RapidAPI-Key", configuration["JudgeZero:RapidApiKey"]);
+            options.DefaultRequestHeaders.Add("X-RapidAPI-Host", configuration["JudgeZero:RapidApiHost"]);
+        });
+        services.AddHttpClient<ICodeExecutor, JudgeZeroCodeExecutor>(options =>
+        {
+            options.BaseAddress = new Uri(configuration["JudgeZeroExtra:ApiUri"]);
+            options.DefaultRequestHeaders.Add("X-RapidAPI-Key", configuration["JudgeZeroExtra:RapidApiKey"]);
+            options.DefaultRequestHeaders.Add("X-RapidAPI-Host", configuration["JudgeZeroExtra:RapidApiHost"]);
+        });
         return services;
     }
 }

@@ -93,7 +93,7 @@ public class Directory : IDirectory
         WriteFolder(RootFolder, folder);
         ZipFile.CreateFromDirectory(repoPath, zipPath);
         System.IO.Directory.Delete(repoPath, true);
-
+        
         var directory = new Domains.Directories.Directory
         {
             Id = Id,
@@ -112,8 +112,6 @@ public class Directory : IDirectory
     {
         if (!_directoryFiles.ContainsKey(fileId))
             throw new ArgumentException($"No file with id {fileId}");
-
-        
 
         var file = _directoryFiles[fileId];
 
