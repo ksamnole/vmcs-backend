@@ -1,4 +1,5 @@
-﻿using VMCS.Core.Domains.Meetings;
+﻿using VMCS.Core.Domains.CodeExecution.Enums;
+using VMCS.Core.Domains.Meetings;
 
 namespace VMCS.Core.Domains.Directories;
 
@@ -11,4 +12,5 @@ public class Directory
 
     public string MeetingId { get; set; }
     public Meeting Meeting { get; set; }
+    public Language Language { get; set; }
 }

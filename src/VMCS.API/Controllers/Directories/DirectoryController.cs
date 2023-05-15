@@ -52,4 +52,10 @@ public class DirectoryController : ControllerBase
     {
         await _directoryService.Delete(directoryId);
     }
+
+    [HttpGet("{directoryId}/execute")]
+    public async Task<string> Execute(string directoryId)
+    {
+        return await _directoryService.Execute(directoryId);
+    }
 }

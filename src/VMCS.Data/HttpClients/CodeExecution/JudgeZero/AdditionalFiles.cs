@@ -4,4 +4,5 @@ public static class AdditionalFiles
 {
     public static string CsharpCompile = "dotnet build -o \"./Result\"";
     public static string CsharpRun = "dotnet Result/ConsoleApp1.dll";
+    public static string PythonRun = "python main.py";
 }

@@ -61,18 +61,7 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
 
     private static async Task<string> CreateSubmission(StringContent data, Language language, HttpClient httpClient)
     {
-        HttpResponseMessage response = null;
-        
-        switch (language)
-        {
-            case Language.Csharp:
-                response = await httpClient.PostAsync("/submissions", data);
-                break;
-            case Language.Python:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(language), language, null);
-        }
+        var response = await httpClient.PostAsync("/submissions", data);
 
         var deserializeObject = await GetDeserializeObject<SubmissionResponse>(response);
 
@@ -112,16 +101,23 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
                 run = AdditionalFiles.CsharpRun;
                 break;
             case Language.Python:
+                run = AdditionalFiles.PythonRun;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(language), language, null);
         }
 
-        await using var writerCompile = new StreamWriter(entryCompile.Open());
-        await writerCompile.WriteAsync(compile);
+        if (string.IsNullOrEmpty(compile))
+        {
+            await using var writerCompile = new StreamWriter(entryCompile.Open());
+            await writerCompile.WriteAsync(compile);
+        }
 
-        await using var writerRun = new StreamWriter(entryRun.Open());
-        await writerRun.WriteAsync(run);
+        if (string.IsNullOrEmpty(run))
+        {
+            await using var writerRun = new StreamWriter(entryRun.Open());
+            await writerRun.WriteAsync(run);
+        }
     }
     
     private static async Task<T> GetDeserializeObject<T>(HttpResponseMessage requestMessage)

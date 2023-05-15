@@ -6,4 +6,5 @@ public interface IDirectoryService
     Task Delete(string directoryId);
     Task<Directory> Get(string directoryId);
     Task Save(Directory directory);
+    Task<string> Execute(string directoryId);
 }
