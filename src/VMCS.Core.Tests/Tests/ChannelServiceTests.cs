@@ -1,16 +1,16 @@
 ﻿using FluentValidation;
 using Moq;
+using Xunit;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Repositories;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Channels.Validators;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
-using Xunit;
 
 namespace VMCS.Core.Tests.Tests;
 
-public class ChannelServiceTests : TestBase
+public class ChannelServiceTests : TestBaseChannel
 {
     private readonly IChannelService _channelService;
     private readonly IValidator<Channel> _channelValidator;
@@ -89,13 +89,13 @@ public class ChannelServiceTests : TestBase
     }
 }
 
-public class TestBase
+public class TestBaseChannel
 {
     protected readonly Channel Channel;
     protected readonly User User;
     protected readonly string FakeId;
 
-    protected TestBase()
+    protected TestBaseChannel()
     {
         Channel = new Channel()
         {

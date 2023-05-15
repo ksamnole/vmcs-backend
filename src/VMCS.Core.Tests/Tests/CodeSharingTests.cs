@@ -7,12 +7,8 @@ using Directory = VMCS.Core.Domains.CodeSharing.Directories.Directory;
 
 namespace VMCS.Core.Tests.Tests
 {
-    public class CodeSharingTests : TestBase
+    public class CodeSharingTests : TestBaseCodeSharing
     {
-        public CodeSharingTests()
-        {
-        }
-
         [Fact]
         public void CreateFile_SuccessPath_ShouldCreateFile()
         {
@@ -64,16 +60,12 @@ namespace VMCS.Core.Tests.Tests
         }
     }
 
-    public class TestBase
+    public class TestBaseCodeSharing
     {
         public IDirectory directory = new Directory("testId", "testName");
 
         public TextFile file = new TextFile("fileName", "text");
 
         public Folder folder = new Folder("testName");
-        public TestBase() 
-        { 
-        }
     }
-
 }

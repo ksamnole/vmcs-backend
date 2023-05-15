@@ -40,7 +40,8 @@ public static class Bootstrap
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IChannelInvitationRepository, ChannelInvitationRepository>();
         services.AddScoped<IDirectoryRepository, DirectoryRepository>();
-
+        services.AddScoped<ICodeExecutor, JudgeZeroCodeExecutor>();
+        
         services.AddDbContext<AuthenticationContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
         services.AddDbContext<ApplicationContext>(options =>
@@ -55,13 +56,13 @@ public static class Bootstrap
             options.BaseAddress = new Uri(configuration["GitHub:ApiUri"]);
             options.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
         });
-        services.AddHttpClient<ICodeExecutor, JudgeZeroCodeExecutor>(options =>
+        services.AddHttpClient("JudgeZeroDefault",options =>
         {
             options.BaseAddress = new Uri(configuration["JudgeZero:ApiUri"]);
             options.DefaultRequestHeaders.Add("X-RapidAPI-Key", configuration["JudgeZero:RapidApiKey"]);
             options.DefaultRequestHeaders.Add("X-RapidAPI-Host", configuration["JudgeZero:RapidApiHost"]);
         });
-        services.AddHttpClient<ICodeExecutor, JudgeZeroCodeExecutor>(options =>
+        services.AddHttpClient("JudgeZeroExtra",options =>
         {
             options.BaseAddress = new Uri(configuration["JudgeZeroExtra:ApiUri"]);
             options.DefaultRequestHeaders.Add("X-RapidAPI-Key", configuration["JudgeZeroExtra:RapidApiKey"]);

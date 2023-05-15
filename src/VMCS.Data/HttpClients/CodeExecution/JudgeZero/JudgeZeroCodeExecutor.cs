@@ -11,25 +11,29 @@ namespace VMCS.Data.HttpClients.CodeExecution.JudgeZero;
 public class JudgeZeroCodeExecutor : ICodeExecutor
 {
     private const int LanguageId = 89;
-    private const string JudgeZeroExtraApiUri = "https://judge0-extra-ce.p.rapidapi.com";
-    
+
     private readonly HttpClient _httpClientExtra;
     private readonly HttpClient _httpClientDefault;
+    
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public JudgeZeroCodeExecutor(IEnumerable<HttpClient> httpClients)
+    public JudgeZeroCodeExecutor(IHttpClientFactory httpClientFactory)
     {
-        var httpClient = httpClients.First();
-        
-        if (IsExtraApi(httpClient.BaseAddress))
-        {
-            _httpClientExtra = httpClient;
-            _httpClientDefault = httpClients.Skip(1).First();
-        }
-        else
-        {
-            _httpClientExtra = httpClients.Skip(1).First();
-            _httpClientDefault = httpClient;
-        }
+        _httpClientFactory = httpClientFactory;
+        _httpClientExtra = httpClientFactory.CreateClient("JudgeZeroExtra");
+        _httpClientDefault = httpClientFactory.CreateClient("JudgeZeroDefault");
+        // var httpClient = httpClients.First();
+        //
+        // if (IsExtraApi(httpClient.BaseAddress))
+        // {
+        //     _httpClientExtra = httpClient;
+        //     _httpClientDefault = httpClients.Skip(1).First();
+        // }
+        // else
+        // {
+        //     _httpClientExtra = httpClients.Skip(1).First();
+        //     _httpClientDefault = httpClient;
+        // }
     }
     
     public async Task<string> ExecuteAsync(ZipArchive zipArchive, Language language)
