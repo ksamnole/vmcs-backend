@@ -18,14 +18,12 @@ using VMCS.Data.Chats.Repositories;
 using VMCS.Data.Contexts;
 using VMCS.Data.Directories;
 using VMCS.Data.GitHub.Repositories;
-using VMCS.Data.HttpClients;
 using VMCS.Data.HttpClients.CodeExecution.JudgeZero;
 using VMCS.Data.HttpClients.CodeSharing;
 using VMCS.Data.HttpClients.GitHub;
 using VMCS.Data.Meetings.Repositories;
 using VMCS.Data.Messages.Repositories;
 using VMCS.Data.Users.Repositories;
-using VMCS.Data.WebSocketClients;
 
 namespace VMCS.Data;
 
@@ -76,8 +74,6 @@ public static class Bootstrap
             options.DefaultRequestHeaders.Add("X-RapidAPI-Host", configuration["JudgeZeroExtra:RapidApiHost"]);
         });
 
-        services.AddSingleton<CodeSharingWs>();
-        
         return services;
     }
 }
