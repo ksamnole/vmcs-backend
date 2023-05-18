@@ -40,16 +40,6 @@ public class Startup
             .AddData(Configuration)
             .AddCore();
 
-        services.AddCors(options =>
-        {
-            options.AddPolicy("CorsPolicy",
-                builder => builder
-                    .AllowAnyMethod()
-                    .AllowCredentials()
-                    .SetIsOriginAllowed((host) => true)
-                    .AllowAnyHeader());
-        });
-
         services.AddAutoMapper(typeof(AppMappingProfile));
 
         services.AddControllers();
@@ -130,8 +120,7 @@ public class Startup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseMiddleware<ExceptionMiddleware>();
-        app.UseWebSockets();
-        
+
         app.UseRouting();
 
         if (env.IsDevelopment())
@@ -140,8 +129,6 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VMCS.API v1"));
         }
-        
-        app.UseCors("CorsPolicy");
 
         app.UseStaticFiles();
         // app.UseHttpsRedirection();
