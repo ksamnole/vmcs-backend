@@ -16,5 +16,5 @@ public interface IDirectory
     void CreateFile(TextFile textFile, int folderId);
     void DeleteFile(int fileId);
     Task Save(IDirectoryService directoryService);
-    void ChangeFile(int fileId, Change change, ILogger logger);
+    void ChangeFile(int fileId, string text);
 }

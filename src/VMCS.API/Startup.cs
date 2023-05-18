@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebSockets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,9 +35,20 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHostedService<MigrationHostedService>();
+
         services
             .AddData(Configuration)
             .AddCore();
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy",
+                builder => builder
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowAnyHeader());
+        });
 
         services.AddAutoMapper(typeof(AppMappingProfile));
 
@@ -103,7 +115,6 @@ public class Startup
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
-
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken)) context.Token = accessToken;
                         return Task.CompletedTask;
@@ -119,7 +130,8 @@ public class Startup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseMiddleware<ExceptionMiddleware>();
-
+        app.UseWebSockets();
+        
         app.UseRouting();
 
         if (env.IsDevelopment())
@@ -128,12 +140,8 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VMCS.API v1"));
         }
-
-        app.UseCors(x => x
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .SetIsOriginAllowed(origin => true) // allow any origin
-            .AllowCredentials()); // allow credentials
+        
+        app.UseCors("CorsPolicy");
 
         app.UseStaticFiles();
         // app.UseHttpsRedirection();

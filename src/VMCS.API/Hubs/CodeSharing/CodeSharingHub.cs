@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Npgsql.Replication.PgOutput.Messages;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Hubs.CodeSharing.Dto;
 using VMCS.Core.Domains.CodeSharing.Directories;
@@ -38,7 +39,7 @@ public class CodeSharingHub : Hub
 
     public async Task CreateFile(TextFileDTO file, int folderId, string directoryId)
     {
-        var entity = new TextFile (file.Name, file.Text);
+        var entity = new TextFile(file.Name, file.Text);
 
         if (!_connectionDirectory[Context.ConnectionId].Contains(directoryId))
             throw new Exception("Uploading file to not connected directory");
@@ -91,26 +92,13 @@ public class CodeSharingHub : Hub
 
         await Clients.Group(directoryId).SendAsync("CreateFolder", returnDto);
     }
-
-    public async Task Change(string changeJSON)
+    
+    // UpdateFile : oldText -> newText
+    public async Task Change(string directoryId, int fileId, string text)
     {
-        var change = JsonConvert.DeserializeObject<ChangeDTO>(changeJSON); 
-
-        if (_connectionDirectory[Context.ConnectionId] != change.DirectoryId)
+        if (_connectionDirectory[Context.ConnectionId] != directoryId)
             throw new Exception("Changing file in not connected directory");
-
-        _logger.LogInformation($"{Context.ConnectionId} =====================\n " + JsonConvert.SerializeObject(change));
-
-        change.ConnectionId = Context.ConnectionId;
-
-        _directories[change.DirectoryId].ChangeFile(change.FileId, change.Change, _logger);
-
-        await Clients.Group(change.DirectoryId).SendAsync("Change", change);
-
-        //if (_connectionDirectory[Context.ConnectionId] != changeDto.DirectoryId)
-        //    throw new Exception("Changing file in not connected directory");
-        //_directories[changeDto.DirectoryId].ChangeFile(changeDto.FileId, change);
-
-        //await Clients.Group(changeDto.DirectoryId).SendAsync("Change", changeDto, change);
+        
+        _directories[directoryId].ChangeFile(fileId, text);
     }
 }
