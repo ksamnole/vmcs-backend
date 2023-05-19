@@ -5,6 +5,7 @@ using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Channels.Validators;
 using VMCS.Core.Domains.Chats.Services;
+using VMCS.Core.Domains.CodeSharing.Directories;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.CodeSharing.Validators;
 using VMCS.Core.Domains.Directories.Services;

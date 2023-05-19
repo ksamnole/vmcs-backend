@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using VMCS.Core.Domains.Directories.Repositories;
 using VMCS.Data.Contexts;
-using Directory = VMCS.Core.Domains.Directories.Directory;
+using DirectoryDataModel = VMCS.Core.Domains.Directories.DirectoryDataModel;
 
 namespace VMCS.Data.Directories;
 
@@ -15,7 +15,7 @@ public class DirectoryRepository : IDirectoryRepository
         _applicationContext = applicationContext;
     }
 
-    public async Task Create(Directory directory)
+    public async Task Create(DirectoryDataModel directory)
     {
         await _applicationContext.Directories.AddAsync(directory);
     }
@@ -29,7 +29,7 @@ public class DirectoryRepository : IDirectoryRepository
         _applicationContext.Directories.Remove(entity);
     }
 
-    public async Task<Directory> Get(string directoryId)
+    public async Task<DirectoryDataModel> Get(string directoryId)
     {
         var entity = await _applicationContext.Directories.FirstOrDefaultAsync(x => x.Id == directoryId);
 
@@ -38,7 +38,7 @@ public class DirectoryRepository : IDirectoryRepository
         return entity;
     }
 
-    public async Task Save(Directory directory)
+    public async Task Save(DirectoryDataModel directory)
     {
         var entity = await _applicationContext.Directories.FirstOrDefaultAsync(x => x.Id == directory.Id);
 

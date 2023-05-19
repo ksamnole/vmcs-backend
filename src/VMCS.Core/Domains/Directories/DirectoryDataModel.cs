@@ -4,7 +4,7 @@ using VMCS.Core.Domains.Meetings;
 
 namespace VMCS.Core.Domains.Directories;
 
-public class Directory
+public class DirectoryDataModel
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name { get; set; }

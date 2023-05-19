@@ -2,9 +2,9 @@
 
 public interface IDirectoryService
 {
-    Task<string> Create(Directory directory);
+    Task<string> Create(DirectoryDataModel directory);
     Task Delete(string directoryId);
-    Task<Directory> Get(string directoryId);
-    Task Save(Directory directory);
+    Task<DirectoryDataModel> Get(string directoryId);
+    Task Save(DirectoryDataModel directory);
     Task<string> Execute(string directoryId);
 }

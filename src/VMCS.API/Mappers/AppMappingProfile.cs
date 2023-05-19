@@ -23,8 +23,8 @@ public class AppMappingProfile : Profile
         CreateMap<Chat, ShortChatDto>();
         CreateMap<Meeting, ShortMeetingDto>();
         CreateMap<Channel, ShortChannelDto>();
-        CreateMap<Directory, DirectoryDto>();
-        CreateMap<CreateDirectoryDto, Directory>();
+        CreateMap<DirectoryDataModel, DirectoryDto>();
+        CreateMap<CreateDirectoryDto, DirectoryDataModel>();
 
         CreateMap<Message, MessageDto>();
     }

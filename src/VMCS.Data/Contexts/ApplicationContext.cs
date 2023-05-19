@@ -10,7 +10,7 @@ using VMCS.Core.Domains.Meetings;
 using VMCS.Core.Domains.Messages;
 using VMCS.Core.Domains.Users;
 using VMCS.Data.Contexts.Mapping;
-using Directory = VMCS.Core.Domains.Directories.Directory;
+using DirectoryDataModel = VMCS.Core.Domains.Directories.DirectoryDataModel;
 
 namespace VMCS.Data.Contexts;
 
@@ -25,7 +25,7 @@ public class ApplicationContext : DbContext
     public DbSet<Meeting> Meetings { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<Chat> Chats { get; set; }
-    public DbSet<Directory> Directories { get; set; }
+    public DbSet<DirectoryDataModel> Directories { get; set; }
     public DbSet<AccessToken> AccessTokens { get; set; }
     public DbSet<ChannelInvitation> ChannelInvitations { get; set; }
 
@@ -37,7 +37,7 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Message>().Setup().ToTable("Messages");
         modelBuilder.Entity<Chat>().Setup().ToTable("Chats");
 
-        modelBuilder.Entity<Directory>().ToTable("Directories");
+        modelBuilder.Entity<DirectoryDataModel>().ToTable("Directories");
         modelBuilder.Entity<AccessToken>().ToTable("AccessTokens");
         modelBuilder.Entity<ChannelInvitation>().ToTable("ChannelInvitations");
     }

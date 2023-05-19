@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.Directories.Services;
+using VMCS.Core.Extensions;
 
 namespace VMCS.Core.Domains.CodeSharing.Directories;
 
@@ -13,7 +14,7 @@ public class Directory : IDirectory
     private readonly UniqueIdentifierCreator _uniqueIdentifierCreator = new();
     private string syncObj = "";
 
-    public Directory(Domains.Directories.Directory directory)
+    public Directory(Domains.Directories.DirectoryDataModel directory)
     {
         Id = directory.Id;
         Name = directory.Name;
@@ -85,27 +86,39 @@ public class Directory : IDirectory
     {
         RootFolder.DeleteDeletedObjects();
 
-        var path = System.IO.Directory.GetCurrentDirectory();
-        var repoPath = Path.Combine(path, Name);
-        var folder = new DirectoryInfo(path);
-        var zipPath = Path.Combine(path, $"{Name}.zip");
+        var memoryStream = new MemoryStream();
+        var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true);
+
+        WriteFolder(RootFolder, "", zipArchive);
+
+        zipArchive.Dispose();
         
-        WriteFolder(RootFolder, folder);
-        ZipFile.CreateFromDirectory(repoPath, zipPath);
-        System.IO.Directory.Delete(repoPath, true);
-        
-        var directory = new Domains.Directories.Directory
+        var directory = new Domains.Directories.DirectoryDataModel
         {
             Id = Id,
             DirectoryInJson = JsonConvert.SerializeObject(RootFolder),
-            DirectoryZip = await File.ReadAllBytesAsync(zipPath),
+            DirectoryZip = memoryStream.ToArray(),
             Name = Name,
             MeetingId = MeetingId
         };
-        
-        File.Delete(zipPath);
 
         await directoryService.Save(directory);
+    }
+
+    private static void WriteFolder(Folder folder, string folderPath, ZipArchive zipArchive)
+    {
+        foreach (var file in folder.Files)
+        {
+            var text = file.Text;
+            zipArchive.AddTextFile(Path.Combine(folderPath, file.Name), text);
+        }
+
+        foreach (var subFolder in folder.Folders)
+        {
+            var subFPath = Path.Combine(folderPath, subFolder.Name + "\\");
+            zipArchive.CreateEntry(subFPath);
+            WriteFolder(subFolder, subFPath, zipArchive);
+        }
     }
 
     public void ChangeFile(int fileId, string text)
@@ -118,7 +131,7 @@ public class Directory : IDirectory
         file.Text = text;
     }
 
-    private Folder GetRootFolder(Domains.Directories.Directory directory)
+    private Folder GetRootFolder(Domains.Directories.DirectoryDataModel directory)
     {
         var folder = new Folder { Name = directory.Name, Id = _uniqueIdentifierCreator.GetUniqueIdentifier() };
         
@@ -135,18 +148,5 @@ public class Directory : IDirectory
         _directoryFolders.Add(folder.Id, folder);
         foreach (var file in folder.Files) _directoryFiles.Add(file.Id, file);
         foreach (var f in folder.Folders) TraverseFolder(f);
-    }
-
-    private static void WriteFolder(Folder folder, DirectoryInfo currentFolder)
-    {
-        currentFolder = currentFolder.CreateSubdirectory(folder.Name);
-        currentFolder.Create();
-        foreach (var file in folder.Files)
-        {
-            var text = file.Text;
-            File.WriteAllText(Path.Combine(currentFolder.FullName, file.Name), text);
-        }
-
-        foreach (var subFolder in folder.Folders) WriteFolder(subFolder, currentFolder);
     }
 }

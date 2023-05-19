@@ -24,7 +24,7 @@ public class DirectoryController : ControllerBase
     [HttpPost]
     public async Task<string> Create(CreateDirectoryDto directoryDto)
     {
-       return await _directoryService.Create(new Directory()
+       return await _directoryService.Create(new DirectoryDataModel()
        {
            Name = directoryDto.Name,
            MeetingId = directoryDto.MeetingId,
