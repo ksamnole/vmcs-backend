@@ -40,7 +40,7 @@ public static class Bootstrap
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IChannelInvitationRepository, ChannelInvitationRepository>();
         services.AddScoped<IDirectoryRepository, DirectoryRepository>();
-        //services.AddScoped<ICodeExecutor, JudgeZeroCodeExecutor>();
+        services.AddScoped<ICodeExecutor, JudgeZeroCodeExecutor>();
         
         services.AddDbContext<AuthenticationContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));

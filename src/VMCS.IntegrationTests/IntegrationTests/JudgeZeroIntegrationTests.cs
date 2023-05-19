@@ -10,25 +10,17 @@ using VMCS.Core.Extensions;
 using VMCS.Data.HttpClients.CodeExecution.JudgeZero;
 using Xunit;
 
-namespace VMCS.Core.Tests.IntegrationTests
+namespace VMCS.IntegrationTests
 {
-    public class JudgeZeroIntegrationTests
+    public class JudgeZeroIntegrationTests : IntegrationTestBase
     {
 
         private readonly JudgeZeroCodeExecutor judgeZeroCodeExecutor;
         public JudgeZeroIntegrationTests()
         {
-            var clientExtra = new HttpClient();
-            clientExtra.BaseAddress = new Uri("https://judge0-extra-ce.p.rapidapi.com");
-            //clientExtra.DefaultRequestHeaders.Add("X-RapidAPI-Key", );
-            clientExtra.DefaultRequestHeaders.Add("X-RapidAPI-Host", "judge0-extra-ce.p.rapidapi.com");
+            var clientFactory = (IHttpClientFactory)_webApplicationFactory.Services.GetService(typeof(IHttpClientFactory));
 
-            var clientDefault = new HttpClient();
-            clientDefault.BaseAddress = new Uri("https://judge0-ce.p.rapidapi.com");
-            //clientDefault.DefaultRequestHeaders.Add("X-RapidAPI-Key", );
-            clientDefault.DefaultRequestHeaders.Add("X-RapidAPI-Host", "judge0-ce.p.rapidapi.com");
-
-            judgeZeroCodeExecutor = new JudgeZeroCodeExecutor(clientExtra, clientDefault);
+            judgeZeroCodeExecutor = new JudgeZeroCodeExecutor(clientFactory);
         }
 
         [Fact]

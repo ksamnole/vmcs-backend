@@ -39,12 +39,8 @@ public class DirectoryService : IDirectoryService
     public async Task<string> Execute(string directoryId)
     {
         var directory = await Get(directoryId);
-
-        var stream = new MemoryStream(directory.DirectoryZip);
-
-        var zipArchive = new ZipArchive(stream);
         
-        return await _codeExecutor.ExecuteAsync(zipArchive, directory.Language);
+        return await _codeExecutor.ExecuteAsync(directory.DirectoryZip, directory.Language);
 
     }
 

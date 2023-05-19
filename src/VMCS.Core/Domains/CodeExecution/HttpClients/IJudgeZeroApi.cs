@@ -5,5 +5,5 @@ namespace VMCS.Core.Domains.CodeExecution.HttpClients;
 
 public interface ICodeExecutor
 {
-    public Task<string> ExecuteAsync(ZipArchive zipArchive, Language language);
+    public Task<string> ExecuteAsync(byte[] zipInByteArray, Language language);
 }

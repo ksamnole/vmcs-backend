@@ -16,6 +16,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VMCS.Core.Tests", "VMCS.Cor
 		{6711AE56-4B9D-4165-84D9-8793A20056CA} = {6711AE56-4B9D-4165-84D9-8793A20056CA}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMCS.IntegrationTests", "VMCS.IntegrationTests\VMCS.IntegrationTests.csproj", "{1419E4BE-2EEF-400A-8E83-94F9AA280CCF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1D924D33-7857-4299-89E9-724C3BFD0A31} = {1D924D33-7857-4299-89E9-724C3BFD0A31}
+		{6711AE56-4B9D-4165-84D9-8793A20056CA} = {6711AE56-4B9D-4165-84D9-8793A20056CA}
+		{FF48EE6E-D7AF-461B-8AC8-EB5BE80BEC15} = {FF48EE6E-D7AF-461B-8AC8-EB5BE80BEC15}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,12 +45,17 @@ Global
 		{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1419E4BE-2EEF-400A-8E83-94F9AA280CCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1419E4BE-2EEF-400A-8E83-94F9AA280CCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1419E4BE-2EEF-400A-8E83-94F9AA280CCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1419E4BE-2EEF-400A-8E83-94F9AA280CCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9} = {16C88433-C0B2-410C-A5AE-ECFE8FFFDB4B}
+		{1419E4BE-2EEF-400A-8E83-94F9AA280CCF} = {16C88433-C0B2-410C-A5AE-ECFE8FFFDB4B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB591FF2-1B61-412E-B585-10A3B448565E}

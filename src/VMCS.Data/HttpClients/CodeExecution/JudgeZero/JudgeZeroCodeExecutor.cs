@@ -10,7 +10,7 @@ using VMCS.Data.HttpClients.Models.Responses;
 
 namespace VMCS.Data.HttpClients.CodeExecution.JudgeZero;
 
-public class JudgeZeroCodeExecutor
+public class JudgeZeroCodeExecutor : ICodeExecutor
 {
     private const int LanguageId = 89;
 
@@ -24,12 +24,6 @@ public class JudgeZeroCodeExecutor
         _httpClientFactory = httpClientFactory;
         _httpClientExtra = httpClientFactory.CreateClient("JudgeZeroExtra");
         _httpClientDefault = httpClientFactory.CreateClient("JudgeZeroDefault");
-    }
-
-    public JudgeZeroCodeExecutor(HttpClient extraClient, HttpClient defaultClient)
-    {
-        _httpClientExtra = extraClient;
-        _httpClientDefault = defaultClient;
     }
     
     public async Task<string> ExecuteAsync(byte[] zipArchiveInBytes, Language language)
