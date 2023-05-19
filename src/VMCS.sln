@@ -1,14 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMCS.API", "VMCS.API\VMCS.API.csproj", "{FF48EE6E-D7AF-461B-8AC8-EB5BE80BEC15}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33424.131
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VMCS.API", "VMCS.API\VMCS.API.csproj", "{FF48EE6E-D7AF-461B-8AC8-EB5BE80BEC15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMCS.Core", "VMCS.Core\VMCS.Core.csproj", "{1D924D33-7857-4299-89E9-724C3BFD0A31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VMCS.Core", "VMCS.Core\VMCS.Core.csproj", "{1D924D33-7857-4299-89E9-724C3BFD0A31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMCS.Data", "VMCS.Data\VMCS.Data.csproj", "{6711AE56-4B9D-4165-84D9-8793A20056CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VMCS.Data", "VMCS.Data\VMCS.Data.csproj", "{6711AE56-4B9D-4165-84D9-8793A20056CA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{16C88433-C0B2-410C-A5AE-ECFE8FFFDB4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMCS.Core.Tests", "VMCS.Core.Tests\VMCS.Core.Tests.csproj", "{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VMCS.Core.Tests", "VMCS.Core.Tests\VMCS.Core.Tests.csproj", "{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6711AE56-4B9D-4165-84D9-8793A20056CA} = {6711AE56-4B9D-4165-84D9-8793A20056CA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,7 +39,13 @@ Global
 		{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4AC2767A-5C12-4CE1-8CAE-7BF190D9A3B9} = {16C88433-C0B2-410C-A5AE-ECFE8FFFDB4B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AB591FF2-1B61-412E-B585-10A3B448565E}
 	EndGlobalSection
 EndGlobal

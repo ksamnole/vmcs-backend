@@ -1,9 +1,17 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace VMCS.Data.HttpClients.Models.Responses;
-
-public class SubmissionResponse
+namespace VMCS.Data.HttpClients.Models.Responses
 {
-    [JsonPropertyName("submission_id")]
-    public string SubmissionId { get; set; }
+    internal class SubmissionResponse
+    {
+        [JsonProperty("stdout")]
+        public string Stdout { get;set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
+    }
 }

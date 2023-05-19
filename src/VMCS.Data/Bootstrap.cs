@@ -18,8 +18,8 @@ using VMCS.Data.Chats.Repositories;
 using VMCS.Data.Contexts;
 using VMCS.Data.Directories;
 using VMCS.Data.GitHub.Repositories;
-using VMCS.Data.HttpClients;
 using VMCS.Data.HttpClients.CodeExecution.JudgeZero;
+using VMCS.Data.HttpClients.CodeSharing;
 using VMCS.Data.HttpClients.GitHub;
 using VMCS.Data.Meetings.Repositories;
 using VMCS.Data.Messages.Repositories;
@@ -40,13 +40,18 @@ public static class Bootstrap
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IChannelInvitationRepository, ChannelInvitationRepository>();
         services.AddScoped<IDirectoryRepository, DirectoryRepository>();
-        services.AddScoped<ICodeExecutor, JudgeZeroCodeExecutor>();
+        //services.AddScoped<ICodeExecutor, JudgeZeroCodeExecutor>();
         
         services.AddDbContext<AuthenticationContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
         services.AddDbContext<ApplicationContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("ConnectionString")));
 
+        services.AddHttpClient<CodeSharingApi>(options =>
+        {
+            options.BaseAddress = new Uri(configuration["CodeSharingApi:BaseUri"]);
+        });
+        
         services.AddHttpClient<IGitHubSignIn, GitHubSignIn>(options =>
         {
             options.BaseAddress = new Uri(configuration["GitHub:SignInUri"]);
@@ -68,6 +73,7 @@ public static class Bootstrap
             options.DefaultRequestHeaders.Add("X-RapidAPI-Key", configuration["JudgeZeroExtra:RapidApiKey"]);
             options.DefaultRequestHeaders.Add("X-RapidAPI-Host", configuration["JudgeZeroExtra:RapidApiHost"]);
         });
+
         return services;
     }
 }

@@ -10,7 +10,7 @@ public class TextFile
     public string Name { get; set; }
     private string originText { get; }
     private List<Change> changes { get; set; }
-    public string Text => ApplyAllChanges();
+    public string Text = "";
     public int VersionId  { get; set;}
     public bool IsDeleted { get; set; }
     private readonly string _lockObject = "";

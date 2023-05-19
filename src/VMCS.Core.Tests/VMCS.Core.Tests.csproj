@@ -19,6 +19,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\VMCS.Core\VMCS.Core.csproj" />
+        <ProjectReference Include="..\VMCS.Data\VMCS.Data.csproj" />
     </ItemGroup>
 
 </Project>

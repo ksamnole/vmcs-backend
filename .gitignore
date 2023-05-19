@@ -37,6 +37,7 @@ packages/
 .idea/
 .vscode/
 #Configuration data
+**/appsettings*.json
 appsettings.json
 # Static files
 **/imgs/*

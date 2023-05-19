@@ -13,5 +13,5 @@ public class Directory
 
     public string MeetingId { get; set; }
     public Meeting Meeting { get; set; }
-    public Language Language { get; set; }
+    public Language Language { get; set; } = Language.Csharp;
 }

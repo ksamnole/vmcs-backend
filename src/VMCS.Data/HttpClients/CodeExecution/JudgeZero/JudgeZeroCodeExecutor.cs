@@ -1,14 +1,16 @@
-﻿using System.IO.Compression;
+﻿using System.Buffers.Text;
+using System.IO.Compression;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VMCS.Core.Domains.CodeExecution.Enums;
 using VMCS.Core.Domains.CodeExecution.HttpClients;
+using VMCS.Core.Extensions;
 using VMCS.Data.HttpClients.Models.Responses;
 
 namespace VMCS.Data.HttpClients.CodeExecution.JudgeZero;
 
-public class JudgeZeroCodeExecutor : ICodeExecutor
+public class JudgeZeroCodeExecutor
 {
     private const int LanguageId = 89;
 
@@ -22,31 +24,33 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
         _httpClientFactory = httpClientFactory;
         _httpClientExtra = httpClientFactory.CreateClient("JudgeZeroExtra");
         _httpClientDefault = httpClientFactory.CreateClient("JudgeZeroDefault");
-        // var httpClient = httpClients.First();
-        //
-        // if (IsExtraApi(httpClient.BaseAddress))
-        // {
-        //     _httpClientExtra = httpClient;
-        //     _httpClientDefault = httpClients.Skip(1).First();
-        // }
-        // else
-        // {
-        //     _httpClientExtra = httpClients.Skip(1).First();
-        //     _httpClientDefault = httpClient;
-        // }
+    }
+
+    public JudgeZeroCodeExecutor(HttpClient extraClient, HttpClient defaultClient)
+    {
+        _httpClientExtra = extraClient;
+        _httpClientDefault = defaultClient;
     }
     
-    public async Task<string> ExecuteAsync(ZipArchive zipArchive, Language language)
+    public async Task<string> ExecuteAsync(byte[] zipArchiveInBytes, Language language)
     {
+        var memoryStream = new MemoryStream();
+        memoryStream.Write(zipArchiveInBytes);
+        var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Update, true);
+
         var httpClient = GetHttpClient(language);
         
         await AddAdditionalFiles(zipArchive, language);
-        
+
+        zipArchive.Dispose();
+
+        var newZipArchive = new ZipArchive(memoryStream);
+
         var json = new JObject
         {
             ["language_id"] = LanguageId,
-            ["additional_files"] = ConvertToBase64(zipArchive)
-        };
+            ["additional_files"] = Convert.ToBase64String(memoryStream.ToArray())
+    };
         var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
 
         var submissionId = await CreateSubmission(content, language, httpClient);
@@ -57,43 +61,31 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
     private static async Task<string> GetSubmission(string submissionId, HttpClient httpClient)
     {
         var response = await httpClient.GetAsync($"/submissions/{submissionId}");
-        
-        var body = await response.Content.ReadAsStringAsync();
-        
-        return body;
+
+        var obj = new { Stdout = "", Status = new { Id = 0, Description = "" } };
+
+        var deserializeObject = JsonConvert.DeserializeAnonymousType(await response.Content.ReadAsStringAsync(), obj);
+
+        if (deserializeObject.Status.Id == 2)
+        {
+            await Task.Delay(2000);
+            return await GetSubmission(submissionId, httpClient);
+        }
+
+        return deserializeObject.Stdout;
     }
 
     private static async Task<string> CreateSubmission(StringContent data, Language language, HttpClient httpClient)
     {
         var response = await httpClient.PostAsync("/submissions", data);
 
-        var deserializeObject = await GetDeserializeObject<SubmissionResponse>(response);
+        var deserializeObject = await GetDeserializeObject<SubmissionTokenResponse>(response);
 
-        return deserializeObject.SubmissionId;
-    }
-
-    private static string ConvertToBase64(ZipArchive zipArchive)
-    {
-        using var memoryStream = new MemoryStream();
-        using (var newZipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-        {
-            foreach (var entry in zipArchive.Entries)
-            {
-                using var entryStream = entry.Open();
-                var newEntry = newZipArchive.CreateEntry(entry.FullName, CompressionLevel.Optimal);
-                using var newEntryStream = newEntry.Open();
-                entryStream.CopyTo(newEntryStream);
-            }
-        }
-
-        var zipBytes = memoryStream.ToArray();
-        return Convert.ToBase64String(zipBytes);
+        return deserializeObject.Token;
     }
 
     private static async Task AddAdditionalFiles(ZipArchive zipArchive, Language language)
     {
-        var entryCompile = zipArchive.CreateEntry("compile");
-        var entryRun = zipArchive.CreateEntry("run");
 
         var compile = string.Empty;
         var run = string.Empty;
@@ -111,29 +103,28 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
                 throw new ArgumentOutOfRangeException(nameof(language), language, null);
         }
 
-        if (string.IsNullOrEmpty(compile))
-        {
-            await using var writerCompile = new StreamWriter(entryCompile.Open());
-            await writerCompile.WriteAsync(compile);
-        }
 
-        if (string.IsNullOrEmpty(run))
+        if (!string.IsNullOrEmpty(compile))
         {
-            await using var writerRun = new StreamWriter(entryRun.Open());
-            await writerRun.WriteAsync(run);
+            zipArchive.AddTextFile("compile", compile);
+        }
+        if (!string.IsNullOrEmpty(run))
+        {
+            zipArchive.AddTextFile("run", run);
         }
     }
     
-    private static async Task<T> GetDeserializeObject<T>(HttpResponseMessage requestMessage)
+    private static async Task<T> GetDeserializeObject<T>(HttpResponseMessage responseMessage)
     {
-        if (!requestMessage.IsSuccessStatusCode)
-            throw new Exception();
-        
-        var responseContent = await requestMessage.Content.ReadAsStringAsync();
+        var responseContent = await responseMessage.Content.ReadAsStringAsync();
+
+        if (!responseMessage.IsSuccessStatusCode)
+            throw new Exception($"Judge0 bad request {responseContent}");
+
         var deserializeObject = JsonConvert.DeserializeObject<T>(responseContent);
 
         if (deserializeObject is null)
-            throw new Exception();
+            throw new Exception($"Failed to deserialize response {responseContent}");
 
         return deserializeObject;
     }
@@ -146,10 +137,5 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
             Language.Python => _httpClientDefault,
             _ => throw new ArgumentOutOfRangeException(nameof(language), language, null)
         };
-    }
-
-    private static bool IsExtraApi(Uri baseAddress)
-    {
-        return baseAddress.ToString().Contains("extra");
     }
 }
