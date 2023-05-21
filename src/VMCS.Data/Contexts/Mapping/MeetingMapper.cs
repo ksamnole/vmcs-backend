@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using VMCS.Core.Domains.Directories;
 using VMCS.Core.Domains.Meetings;
-using Directory = VMCS.Core.Domains.Directories.Directory;
 
 namespace VMCS.Data.Contexts.Mapping;
 
@@ -18,7 +18,7 @@ public static class MeetingMapper
             .OnDelete(DeleteBehavior.Cascade);
         typeBuilder.HasOne(x => x.Directory)
             .WithOne(x => x.Meeting)
-            .HasForeignKey<Directory>(x => x.MeetingId)
+            .HasForeignKey<DirectoryDataModel>(x => x.MeetingId)
             .OnDelete(DeleteBehavior.Cascade);
 
         typeBuilder.Property(x => x.Name).IsRequired();

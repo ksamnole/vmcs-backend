@@ -20,7 +20,7 @@ public class DirectoryService : IDirectoryService
         _codeExecutor = codeExecutor;
     }
 
-    public async Task<string> Create(Directory directory)
+    public async Task<string> Create(DirectoryDataModel directory)
     {
         await _directoryRepository.Create(directory);
         await _meetingService.SetDirectoryToMeeting(directory.Id, directory.MeetingId, CancellationToken.None);
@@ -42,12 +42,12 @@ public class DirectoryService : IDirectoryService
         return await _codeExecutor.ExecuteAsync(directory.DirectoryZip, directory.Language);
     }
 
-    public async Task<Directory> Get(string directoryId)
+    public async Task<DirectoryDataModel> Get(string directoryId)
     {
         return await _directoryRepository.Get(directoryId);
     }
 
-    public async Task Save(Directory directory)
+    public async Task Save(DirectoryDataModel directory)
     {
         await _directoryRepository.Save(directory);
         await _unitOfWork.SaveChange();

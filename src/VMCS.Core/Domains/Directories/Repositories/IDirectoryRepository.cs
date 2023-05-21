@@ -2,8 +2,8 @@
 
 public interface IDirectoryRepository
 {
-    Task Create(Directory directory);
+    Task Create(DirectoryDataModel directory);
     Task Delete(string directoryId);
-    Task<Directory> Get(string directoryId);
-    Task Save(Directory directory);
+    Task<DirectoryDataModel> Get(string directoryId);
+    Task Save(DirectoryDataModel directory);
 }
