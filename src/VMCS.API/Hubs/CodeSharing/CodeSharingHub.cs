@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Npgsql.Replication.PgOutput.Messages;
-using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Hubs.CodeSharing.Dto;
 using VMCS.Core.Domains.CodeSharing.Directories;
 using VMCS.Core.Domains.CodeSharing.Models;
@@ -22,9 +18,10 @@ public class CodeSharingHub : Hub
     private readonly IDirectoryService _directoryService;
     private readonly IValidator<TextFile> _fileValidator;
     private readonly ILogger<CodeSharingHub> _logger;
-    
 
-    public CodeSharingHub(IValidator<TextFile> fileValidator, IDirectoryService directoryService, ILogger<CodeSharingHub> logger)
+
+    public CodeSharingHub(IValidator<TextFile> fileValidator, IDirectoryService directoryService,
+        ILogger<CodeSharingHub> logger)
     {
         _fileValidator = fileValidator;
         _directoryService = directoryService;
@@ -49,7 +46,7 @@ public class CodeSharingHub : Hub
         _directories[directoryId].CreateFile(entity, folderId);
 
         await Clients.Group(directoryId).SendAsync("CreateFile",
-            new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text, ParentId = folderId});
+            new TextFileReturnDto { Id = entity.Id, Name = file.Name, Text = file.Text, ParentId = folderId });
     }
 
     public async Task ConnectToRepository(string directoryId)
@@ -92,13 +89,13 @@ public class CodeSharingHub : Hub
 
         await Clients.Group(directoryId).SendAsync("CreateFolder", returnDto);
     }
-    
+
     // UpdateFile : oldText -> newText
     public async Task Change(string directoryId, int fileId, string text)
     {
         if (_connectionDirectory[Context.ConnectionId] != directoryId)
             throw new Exception("Changing file in not connected directory");
-        
+
         _directories[directoryId].ChangeFile(fileId, text);
     }
 }

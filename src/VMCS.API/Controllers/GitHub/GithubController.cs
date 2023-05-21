@@ -17,13 +17,13 @@ public class GithubController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly IGitHubService _gitHubService;
-    
+
     public GithubController(IConfiguration configuration, IGitHubService gitHubService)
     {
         _configuration = configuration;
         _gitHubService = gitHubService;
     }
-    
+
     [HttpGet]
     [Route("signin")]
     public async Task<string> SignIn(string code, string userId)
@@ -43,7 +43,7 @@ public class GithubController : ControllerBase
 
         return "Successful authentication on github. Go back to the application page.";
     }
-    
+
     [HttpPost]
     [Route("repository/create")]
     public async Task CreateRepository(CreateRepositoryDto createRepositoryDto)
@@ -52,14 +52,14 @@ public class GithubController : ControllerBase
 
         if (string.IsNullOrEmpty(userId))
             throw new ValidationException("Please log in.");
-        
-        await _gitHubService.CreateRepository(new CreateRepository()
+
+        await _gitHubService.CreateRepository(new CreateRepository
         {
             UserId = userId,
-            Name = createRepositoryDto.Name,
+            Name = createRepositoryDto.Name
         });
     }
-    
+
     [HttpPost]
     [Route("repository/push")]
     public async Task PushToRepository(PushToRepositoryDto pushToRepositoryDto)
@@ -68,8 +68,8 @@ public class GithubController : ControllerBase
 
         if (string.IsNullOrEmpty(userId))
             throw new ValidationException("Please log in.");
-        
-        await _gitHubService.PushToRepository(new PushToRepository()
+
+        await _gitHubService.PushToRepository(new PushToRepository
         {
             DirectoryId = pushToRepositoryDto.DirectoryId,
             Message = pushToRepositoryDto.Message,

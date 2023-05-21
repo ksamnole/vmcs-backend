@@ -23,7 +23,7 @@ public class MessageRepository : IMessageRepository
 
     public async Task CreateAll(IEnumerable<Message> messages, CancellationToken token)
     {
-        foreach (var message in messages) 
+        foreach (var message in messages)
             await Create(message, token);
     }
 

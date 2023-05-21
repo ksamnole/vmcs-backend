@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using VMCS.Core.Domains.CodeExecution.Enums;
+﻿using VMCS.Core.Domains.CodeExecution.Enums;
 using VMCS.Core.Domains.Meetings;
 
 namespace VMCS.Core.Domains.Directories;

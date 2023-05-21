@@ -4,6 +4,5 @@ namespace VMCS.Data.HttpClients.Models.Responses;
 
 public class SubmissionTokenResponse
 {
-    [JsonProperty("token")]
-    public string Token { get; set; }
+    [JsonProperty("token")] public string Token { get; set; }
 }

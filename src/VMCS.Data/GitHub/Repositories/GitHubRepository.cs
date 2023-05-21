@@ -18,7 +18,7 @@ public class GitHubRepository : IGitHubRepository
     public async Task Create(AccessToken accessToken)
     {
         var entity = await _applicationContext.AccessTokens.FirstOrDefaultAsync(x => x.UserId == accessToken.UserId);
-        
+
         if (entity is null)
             await _applicationContext.AccessTokens.AddAsync(accessToken);
         else

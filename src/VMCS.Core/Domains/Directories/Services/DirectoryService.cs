@@ -1,5 +1,4 @@
-﻿using System.IO.Compression;
-using VMCS.Core.Domains.CodeExecution.HttpClients;
+﻿using VMCS.Core.Domains.CodeExecution.HttpClients;
 using VMCS.Core.Domains.Directories.Repositories;
 using VMCS.Core.Domains.Meetings.Services;
 
@@ -7,10 +6,10 @@ namespace VMCS.Core.Domains.Directories.Services;
 
 public class DirectoryService : IDirectoryService
 {
+    private readonly ICodeExecutor _codeExecutor;
     private readonly IDirectoryRepository _directoryRepository;
     private readonly IMeetingService _meetingService;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICodeExecutor _codeExecutor;
 
     public DirectoryService(IDirectoryRepository directoryRepository, IUnitOfWork unitOfWork,
         IMeetingService meetingService, ICodeExecutor codeExecutor)
@@ -39,9 +38,8 @@ public class DirectoryService : IDirectoryService
     public async Task<string> Execute(string directoryId)
     {
         var directory = await Get(directoryId);
-        
-        return await _codeExecutor.ExecuteAsync(directory.DirectoryZip, directory.Language);
 
+        return await _codeExecutor.ExecuteAsync(directory.DirectoryZip, directory.Language);
     }
 
     public async Task<Directory> Get(string directoryId)

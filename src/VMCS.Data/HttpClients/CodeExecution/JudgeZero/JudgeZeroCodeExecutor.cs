@@ -1,5 +1,4 @@
-﻿using System.Buffers.Text;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,10 +12,10 @@ namespace VMCS.Data.HttpClients.CodeExecution.JudgeZero;
 public class JudgeZeroCodeExecutor : ICodeExecutor
 {
     private const int LanguageId = 89;
+    private readonly HttpClient _httpClientDefault;
 
     private readonly HttpClient _httpClientExtra;
-    private readonly HttpClient _httpClientDefault;
-    
+
     private readonly IHttpClientFactory _httpClientFactory;
 
     public JudgeZeroCodeExecutor(IHttpClientFactory httpClientFactory)
@@ -25,7 +24,7 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
         _httpClientExtra = httpClientFactory.CreateClient("JudgeZeroExtra");
         _httpClientDefault = httpClientFactory.CreateClient("JudgeZeroDefault");
     }
-    
+
     public async Task<string> ExecuteAsync(byte[] zipArchiveInBytes, Language language)
     {
         var memoryStream = new MemoryStream();
@@ -33,7 +32,7 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
         var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Update, true);
 
         var httpClient = GetHttpClient(language);
-        
+
         await AddAdditionalFiles(zipArchive, language);
 
         zipArchive.Dispose();
@@ -44,7 +43,7 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
         {
             ["language_id"] = LanguageId,
             ["additional_files"] = Convert.ToBase64String(memoryStream.ToArray())
-    };
+        };
         var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
 
         var submissionId = await CreateSubmission(content, language, httpClient);
@@ -80,7 +79,6 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
 
     private static async Task AddAdditionalFiles(ZipArchive zipArchive, Language language)
     {
-
         var compile = string.Empty;
         var run = string.Empty;
 
@@ -98,16 +96,10 @@ public class JudgeZeroCodeExecutor : ICodeExecutor
         }
 
 
-        if (!string.IsNullOrEmpty(compile))
-        {
-            zipArchive.AddTextFile("compile", compile);
-        }
-        if (!string.IsNullOrEmpty(run))
-        {
-            zipArchive.AddTextFile("run", run);
-        }
+        if (!string.IsNullOrEmpty(compile)) zipArchive.AddTextFile("compile", compile);
+        if (!string.IsNullOrEmpty(run)) zipArchive.AddTextFile("run", run);
     }
-    
+
     private static async Task<T> GetDeserializeObject<T>(HttpResponseMessage responseMessage)
     {
         var responseContent = await responseMessage.Content.ReadAsStringAsync();

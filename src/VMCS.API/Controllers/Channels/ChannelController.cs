@@ -1,21 +1,20 @@
-﻿using System.IO;
-using System;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using VMCS.API.Controllers.Channels.Dto;
 using VMCS.API.Controllers.Chats.Dto;
 using VMCS.API.Controllers.Meetings.Dto;
 using VMCS.API.Controllers.Users.Dto;
 using VMCS.Core;
+using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Services;
-using static System.Net.Mime.MediaTypeNames;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
 
 namespace VMCS.API.Controllers.Channels;
 
@@ -60,7 +59,7 @@ public class ChannelController : ControllerBase
         if (string.IsNullOrEmpty(creatorId))
             throw new ValidationException("Please log in");
 
-        var channel = await _channelService.Create(new Core.Domains.Channels.Channel
+        var channel = await _channelService.Create(new Channel
         {
             Name = model.Name,
             CreatorId = creatorId
@@ -75,9 +74,9 @@ public class ChannelController : ControllerBase
         await _channelService.Delete(id, cancellationToken);
     }
 
-    [HttpPost()]
+    [HttpPost]
     [Route("upload-avatar")]
-    public async Task UploadAvatar([FromForm]UploadAvatarChannelDTO data, CancellationToken cancellationToken)
+    public async Task UploadAvatar([FromForm] UploadAvatarChannelDTO data, CancellationToken cancellationToken)
     {
         byte[] bytes;
         using (var stream = new MemoryStream())

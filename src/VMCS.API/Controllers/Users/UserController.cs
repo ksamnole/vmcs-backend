@@ -116,7 +116,7 @@ public class UserController : ControllerBase
 
         if (string.IsNullOrEmpty(userId))
             throw new ValidationException("Please log in");
-        
+
         return await _userService.IsUserHaveAccessToken(userId);
     }
 

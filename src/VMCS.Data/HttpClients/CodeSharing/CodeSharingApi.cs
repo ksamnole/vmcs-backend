@@ -28,12 +28,12 @@ public class CodeSharingApi
 
         return await GetDeserializeObject<string>(response);
     }
-    
+
     private static async Task<T> GetDeserializeObject<T>(HttpResponseMessage requestMessage)
     {
         if (!requestMessage.IsSuccessStatusCode)
             throw new Exception();
-        
+
         var responseContent = await requestMessage.Content.ReadAsStringAsync();
         var deserializeObject = JsonConvert.DeserializeObject<T>(responseContent);
 

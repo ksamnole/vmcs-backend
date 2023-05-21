@@ -1,5 +1,4 @@
-﻿using System.IO.Compression;
-using VMCS.Core.Domains.CodeExecution.Enums;
+﻿using VMCS.Core.Domains.CodeExecution.Enums;
 
 namespace VMCS.Core.Domains.CodeExecution.HttpClients;
 

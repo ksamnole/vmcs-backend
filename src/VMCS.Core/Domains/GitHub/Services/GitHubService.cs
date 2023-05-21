@@ -12,13 +12,14 @@ namespace VMCS.Core.Domains.GitHub.Services;
 
 public class GitHubService : IGitHubService
 {
-    private readonly IGitHubRepository _gitHubRepository;
     private readonly IDirectoryService _directoryService;
-    private readonly IGitHubSignIn _gitHubSignIn;
     private readonly IGitHubApi _gitHubApi;
+    private readonly IGitHubRepository _gitHubRepository;
+    private readonly IGitHubSignIn _gitHubSignIn;
     private readonly IUnitOfWork _unitOfWork;
 
-    public GitHubService(IGitHubRepository gitHubRepository, IUnitOfWork unitOfWork, IGitHubSignIn gitHubSignIn, IGitHubApi gitHubApi, IDirectoryService directoryService)
+    public GitHubService(IGitHubRepository gitHubRepository, IUnitOfWork unitOfWork, IGitHubSignIn gitHubSignIn,
+        IGitHubApi gitHubApi, IDirectoryService directoryService)
     {
         _gitHubRepository = gitHubRepository;
         _unitOfWork = unitOfWork;
@@ -37,16 +38,11 @@ public class GitHubService : IGitHubService
     {
         var token = await _gitHubSignIn.SignIn(data);
 
-        await Create(new AccessToken()
+        await Create(new AccessToken
         {
             Token = token,
             UserId = userId
         });
-    }
-
-    private async Task<AccessToken> GetToken(string userId)
-    {
-        return await _gitHubRepository.GetToken(userId);
     }
 
     public async Task CreateRepository(CreateRepository createRepository)
@@ -66,18 +62,16 @@ public class GitHubService : IGitHubService
         var accessToken = await GetToken(pushToRepository.UserId);
         var repo = GetRepositoryNameInGitHubStyle(pushToRepository.RepositoryName);
         var owner = await _gitHubApi.GetUserLogin("/user", accessToken.Token);
-        
+
         var isRepositoryCreated = await IsRepositoryCreated(repo, owner, accessToken.Token);
-        
+
         if (!isRepositoryCreated)
-        {
-            await CreateRepository(new CreateRepository()
+            await CreateRepository(new CreateRepository
             {
                 Name = pushToRepository.RepositoryName,
                 UserId = pushToRepository.UserId
             });
-        }
-        
+
         var branch = await _gitHubApi.GetMainBranchName($"/repos/{owner}/{repo}/branches", accessToken.Token);
         var directory = await _directoryService.Get(pushToRepository.DirectoryId);
 
@@ -86,25 +80,34 @@ public class GitHubService : IGitHubService
 
         var folder = JsonConvert.DeserializeObject<Folder>(directory.DirectoryInJson);
         var folderTrees = CreateFolderTrees(folder);
-        
-        var shaBaseTree = await _gitHubApi.GetShaBaseTree($"/repos/{owner}/{repo}/git/trees/{branch}", accessToken.Token);
-        var treeContent = await CreateTree($"/repos/{owner}/{repo}/git/blobs", shaBaseTree, folderTrees, accessToken.Token, isRepositoryCreated);
+
+        var shaBaseTree =
+            await _gitHubApi.GetShaBaseTree($"/repos/{owner}/{repo}/git/trees/{branch}", accessToken.Token);
+        var treeContent = await CreateTree($"/repos/{owner}/{repo}/git/blobs", shaBaseTree, folderTrees,
+            accessToken.Token, isRepositoryCreated);
         var shaTree = await _gitHubApi.GetShaTree($"/repos/{owner}/{repo}/git/trees", treeContent, accessToken.Token);
-        var shaParent = await _gitHubApi.GetShaParent($"/repos/{owner}/{repo}/git/refs/heads/{branch}", accessToken.Token);
-        
+        var shaParent =
+            await _gitHubApi.GetShaParent($"/repos/{owner}/{repo}/git/refs/heads/{branch}", accessToken.Token);
+
         var commitData = JsonContent.Create(new
         {
-            tree=shaTree,
-            message=pushToRepository.Message,
-            parents=new[] {shaParent}
+            tree = shaTree,
+            message = pushToRepository.Message,
+            parents = new[] { shaParent }
         });
-        var shaCommit = await _gitHubApi.GetShaCommit($"/repos/{owner}/{repo}/git/commits", commitData, accessToken.Token);
-        
+        var shaCommit =
+            await _gitHubApi.GetShaCommit($"/repos/{owner}/{repo}/git/commits", commitData, accessToken.Token);
+
         var patchData = JsonContent.Create(new
         {
-            sha=shaCommit
+            sha = shaCommit
         });
         await _gitHubApi.UpdateRef($"/repos/{owner}/{repo}/git/refs/heads/{branch}", patchData, accessToken.Token);
+    }
+
+    private async Task<AccessToken> GetToken(string userId)
+    {
+        return await _gitHubRepository.GetToken(userId);
     }
 
     private static string GetRepositoryNameInGitHubStyle(string repositoryName)
@@ -118,7 +121,7 @@ public class GitHubService : IGitHubService
 
         return userRepositoriesNames.Any(x => x == repositoryName);
     }
-    
+
     public static List<FolderTree> CreateFolderTrees(Folder folder)
     {
         var folderTrees = new List<FolderTree>();
@@ -126,7 +129,8 @@ public class GitHubService : IGitHubService
         return folderTrees;
     }
 
-    private async Task<StringContent> CreateTree(string url, string shaBaseTree, List<FolderTree> folderTrees, string token, bool isRepositoryCreated)
+    private async Task<StringContent> CreateTree(string url, string shaBaseTree, List<FolderTree> folderTrees,
+        string token, bool isRepositoryCreated)
     {
         var files = new JArray();
 
@@ -148,6 +152,7 @@ public class GitHubService : IGitHubService
             };
             files.Add(newFile);
         }
+
         var json = new JObject
         {
             ["base_tree"] = shaBaseTree,
@@ -155,13 +160,14 @@ public class GitHubService : IGitHubService
         };
 
         var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
-        
+
         return content;
     }
 
     private async Task<JObject> GetCustomReadmeFile(string url, string token)
     {
-        const string text = "<h1 align=\"center\">Репозиторий был создан при помощи приложения <a href=\"https://vmcs.space\">VMCS</a></h1>";
+        const string text =
+            "<h1 align=\"center\">Репозиторий был создан при помощи приложения <a href=\"https://vmcs.space\">VMCS</a></h1>";
         var blob = JsonContent.Create(new { content = text, encoding = "utf-8" });
         var file = new JObject
         {
@@ -173,18 +179,18 @@ public class GitHubService : IGitHubService
         return file;
     }
 
-    private static void CreateFolderTreesFromFiles(List<FolderTree> folderTrees, IEnumerable<TextFile> files, string path)
+    private static void CreateFolderTreesFromFiles(List<FolderTree> folderTrees, IEnumerable<TextFile> files,
+        string path)
     {
-        folderTrees.AddRange(files.Select(file => new FolderTree() { Content = file.Text, Path = path + $"/{file.Name}" }));
+        folderTrees.AddRange(
+            files.Select(file => new FolderTree { Content = file.Text, Path = path + $"/{file.Name}" }));
     }
-    
+
     private static void CreateFolderTreesFromFolders(List<FolderTree> folderTrees, Folder folder, string parentPath)
     {
         CreateFolderTreesFromFiles(folderTrees, folder.Files, parentPath);
-        
+
         foreach (var subFolder in folder.Folders)
-        {
             CreateFolderTreesFromFolders(folderTrees, subFolder, parentPath + $"/{subFolder.Name}");
-        }
     }
 }

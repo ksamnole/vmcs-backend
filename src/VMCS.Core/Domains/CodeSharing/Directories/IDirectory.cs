@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using VMCS.Core.Domains.CodeSharing.Models;
+﻿using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.Directories.Services;
 
 namespace VMCS.Core.Domains.CodeSharing.Directories;

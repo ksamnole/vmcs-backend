@@ -94,7 +94,8 @@ public class UserRepository : IUserRepository
         entity.Email = user.Email;
         entity.AvatarUri = user.AvatarUri;
 
-        var authEntity = await _authenticationContext.Users.FirstOrDefaultAsync(it => it.Id == user.Id, cancellationToken);
+        var authEntity =
+            await _authenticationContext.Users.FirstOrDefaultAsync(it => it.Id == user.Id, cancellationToken);
 
         if (authEntity == null)
             throw new ObjectNotFoundException($"User with id = {user.Id} not found in auth db");

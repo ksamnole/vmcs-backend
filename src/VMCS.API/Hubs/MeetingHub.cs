@@ -60,7 +60,7 @@ public class MeetingHub : Hub
 
     public async Task ToggleWebCamera(string meetingId, bool isActive)
     {
-        await Clients.Groups(meetingId).SendAsync("ToggleWebCamera", Context.ConnectionId,isActive);
+        await Clients.Groups(meetingId).SendAsync("ToggleWebCamera", Context.ConnectionId, isActive);
     }
 
     public async Task SendOffer(string clientId, object offer)

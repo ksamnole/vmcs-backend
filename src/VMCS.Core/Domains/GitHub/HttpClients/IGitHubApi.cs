@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 
-
 namespace VMCS.Core.Domains.GitHub.HttpClients;
 
 public interface IGitHubApi

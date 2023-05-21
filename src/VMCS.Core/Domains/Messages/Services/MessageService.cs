@@ -7,9 +7,9 @@ namespace VMCS.Core.Domains.Messages.Services;
 public class MessageService : IMessageService
 {
     private readonly IMessageRepository _messageRepository;
-    private readonly IUserService _userService;
     private readonly IValidator<Message> _messageValidator;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserService _userService;
 
     public MessageService(IMessageRepository messageRepository, IValidator<Message> messageValidator,
         IUnitOfWork unitOfWork, IUserService userService)
@@ -23,13 +23,13 @@ public class MessageService : IMessageService
     public async Task<Message> Create(Message message, CancellationToken token)
     {
         await _messageValidator.ValidateAndThrowAsync(message, token);
-        
+
         await _messageRepository.Create(message, token);
         await _unitOfWork.SaveChange();
-        
+
         var user = await _userService.GetById(message.UserId, token);
         message.User = user;
-        
+
         return message;
     }
 

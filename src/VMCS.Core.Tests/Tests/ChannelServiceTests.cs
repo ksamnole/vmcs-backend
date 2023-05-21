@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 using Moq;
-using Xunit;
 using VMCS.Core.Domains.Channels;
 using VMCS.Core.Domains.Channels.Repositories;
 using VMCS.Core.Domains.Channels.Services;
 using VMCS.Core.Domains.Channels.Validators;
 using VMCS.Core.Domains.Users;
 using VMCS.Core.Domains.Users.Services;
+using Xunit;
 
 namespace VMCS.Core.Tests.Tests;
 
@@ -44,32 +44,34 @@ public class ChannelServiceTests : TestBaseChannel
 
         Assert.Equal(typeof(Channel), channel.GetType());
     }
-    
+
     [Fact]
     public async Task CreateChannel_SuccessPath_CreateCalledOneTime()
     {
         await _channelService.Create(Channel, CancellationToken.None);
-        
+
         _mockChannelRepository.Verify(verify => verify.Create(Channel, CancellationToken.None));
         _mockUnitOfWork.Verify(verify => verify.SaveChange());
     }
-    
+
     [Fact]
     public async Task CreateChannel_WithEmptyName_ShouldThrowException()
     {
-        var channel = new Channel()
+        var channel = new Channel
         {
             ChatId = "fakeChatId",
             CreatorId = "fakeCreatorId"
         };
 
-        var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(() => _channelService.Create(channel, CancellationToken.None));
+        var exception =
+            await Assert.ThrowsAsync<FluentValidation.ValidationException>(() =>
+                _channelService.Create(channel, CancellationToken.None));
         var error = exception.Errors.First();
-        
+
         Assert.Equal("Name", error.PropertyName);
         Assert.Equal("Please specify a Name", error.ErrorMessage);
     }
-    
+
     [Fact]
     public async Task DeleteChannel_SuccessPath_DeleteCalledOneTime()
     {
@@ -78,7 +80,7 @@ public class ChannelServiceTests : TestBaseChannel
         _mockChannelRepository.Verify(verify => verify.Delete(FakeId, CancellationToken.None));
         _mockUnitOfWork.Verify(verify => verify.SaveChange());
     }
-    
+
     [Fact]
     public async Task AddUserToChannel_SuccessPath_ChannelGetUser()
     {
@@ -92,19 +94,19 @@ public class ChannelServiceTests : TestBaseChannel
 public class TestBaseChannel
 {
     protected readonly Channel Channel;
-    protected readonly User User;
     protected readonly string FakeId;
+    protected readonly User User;
 
     protected TestBaseChannel()
     {
-        Channel = new Channel()
+        Channel = new Channel
         {
             Name = "name",
             ChatId = "fakeChatId",
             CreatorId = "fakeCreatorId"
         };
-        
-        User = new User()
+
+        User = new User
         {
             Id = "fakeId",
             Login = "login",

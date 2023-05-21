@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO.Compression;
 
-namespace VMCS.Core.Extensions
+namespace VMCS.Core.Extensions;
+
+public static class ZipArchiveExtensions
 {
-    public static class ZipArchiveExtensions
+    public static ZipArchive AddTextFile(this ZipArchive zipArchive, string fileName, string text)
     {
-        public static ZipArchive AddTextFile(this ZipArchive zipArchive, string fileName, string text)
-        {
-            var entry = zipArchive.CreateEntry(fileName);
+        var entry = zipArchive.CreateEntry(fileName);
 
-            using var stream = entry.Open();
-            using var writer = new StreamWriter(stream);
+        using var stream = entry.Open();
+        using var writer = new StreamWriter(stream);
 
-            writer.Write(text);
+        writer.Write(text);
 
-            return zipArchive;
-        }
+        return zipArchive;
     }
 }

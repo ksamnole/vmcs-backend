@@ -1,5 +1,4 @@
 ﻿using System.IO.Compression;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VMCS.Core.Domains.CodeSharing.Models;
 using VMCS.Core.Domains.Directories.Services;
@@ -67,7 +66,7 @@ public class Directory : IDirectory
     {
         if (!_directoryFiles.ContainsKey(fileId) || _directoryFiles[fileId].IsDeleted)
             throw new ArgumentException($"File with id {fileId} doesn't exist");
-        
+
         _directoryFiles[fileId].IsDeleted = true;
         RootFolder.DeleteDeletedObjects();
     }
@@ -89,11 +88,11 @@ public class Directory : IDirectory
         var repoPath = Path.Combine(path, Name);
         var folder = new DirectoryInfo(path);
         var zipPath = Path.Combine(path, $"{Name}.zip");
-        
+
         WriteFolder(RootFolder, folder);
         ZipFile.CreateFromDirectory(repoPath, zipPath);
         System.IO.Directory.Delete(repoPath, true);
-        
+
         var directory = new Domains.Directories.Directory
         {
             Id = Id,
@@ -102,7 +101,7 @@ public class Directory : IDirectory
             Name = Name,
             MeetingId = MeetingId
         };
-        
+
         File.Delete(zipPath);
 
         await directoryService.Save(directory);
@@ -121,7 +120,7 @@ public class Directory : IDirectory
     private Folder GetRootFolder(Domains.Directories.Directory directory)
     {
         var folder = new Folder { Name = directory.Name, Id = _uniqueIdentifierCreator.GetUniqueIdentifier() };
-        
+
         if (string.IsNullOrEmpty(directory.DirectoryInJson))
             return folder;
 

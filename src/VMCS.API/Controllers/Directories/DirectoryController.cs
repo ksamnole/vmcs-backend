@@ -24,12 +24,12 @@ public class DirectoryController : ControllerBase
     [HttpPost]
     public async Task<string> Create(CreateDirectoryDto directoryDto)
     {
-       return await _directoryService.Create(new Directory()
-       {
-           Name = directoryDto.Name,
-           MeetingId = directoryDto.MeetingId,
-           DirectoryInJson = directoryDto.DirectoryInJson
-       });
+        return await _directoryService.Create(new Directory
+        {
+            Name = directoryDto.Name,
+            MeetingId = directoryDto.MeetingId,
+            DirectoryInJson = directoryDto.DirectoryInJson
+        });
     }
 
     [HttpGet("{directoryId}")]
@@ -37,7 +37,7 @@ public class DirectoryController : ControllerBase
     {
         var directory = await _directoryService.Get(directoryId);
         var directoryZip = Convert.ToBase64String(directory.DirectoryZip);
-        
+
         return new DirectoryDto
         {
             DirectoryZip = directoryZip,
